@@ -6,6 +6,7 @@ import userRouter from "./user.route.ts";
 import productRouter from "./product.route.ts";
 import categoryRouter from "./category.route.ts";
 import slugRouter from "./slug.route.ts";
+import couponRouter from "./coupon.route.ts";
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use("/users", userRouter);
 router.use("/products", productRouter);
 router.use("/categories", categoryRouter);
 router.use("/slugs", slugRouter);
+router.use("/coupons", couponRouter);
 
 export default router;

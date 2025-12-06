@@ -5,6 +5,7 @@ import type { Request, Response, NextFunction } from "express";
 import User from "../Models/user.model.ts";
 import Product from "../Models/product.model.ts";
 import Category from "../Models/category.model.ts";
+import Coupon from "../Models/coupon.model.ts";
 
 // Utils
 import { isValidObjectId } from "../Utils/mongoose.management.ts";
@@ -143,6 +144,41 @@ export const categoryIdParamHandler = async (
     }
 
     req.targetCategory = category;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+};
+
+export const couponIdParamHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { couponId } = req.params;
+
+    // Validate ObjectId
+    if (!couponId || !isValidObjectId(couponId)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid coupon ID",
+      });
+    }
+
+    const coupon = await Coupon.findById(couponId);
+
+    if (!coupon) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Coupon not found",
+      });
+    }
+
+    req.targetCoupon = coupon;
     next();
   } catch (error) {
     res.status(500).json({
