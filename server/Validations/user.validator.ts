@@ -21,6 +21,7 @@ export const registerSchema = z
       country: z.string().optional().default("Nepal"),
       postalCode: z.string().optional(),
     }),
+    referralCode: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

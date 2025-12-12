@@ -1,6 +1,9 @@
 import { ZodObject, ZodError, type ZodIssue } from "zod";
 import type { Request, Response, NextFunction } from "express";
 
+// Utils
+import AppError from "../Utils/AppError.ts";
+
 export const validateRequest =
   (schema: ZodObject<any>) =>
   (req: Request, res: Response, next: NextFunction) => {
@@ -20,16 +23,10 @@ export const validateRequest =
 
         const firstErrorMsg = Object.values(formattedErrors)[0];
 
-        return res.status(400).json({
-          success: false,
-          message: firstErrorMsg,
-        });
+        throw new AppError(firstErrorMsg || "Something went wrong", 400);
       }
 
       // fallback for other errors
-      return res.status(400).json({
-        success: false,
-        message: (err as Error).message || "Validation error",
-      });
+      throw new AppError((err as Error).message || "Validation error", 400);
     }
   };

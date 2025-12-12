@@ -8,7 +8,7 @@ interface AllowedQueryFields {
   [key: string]: unknown;
 }
 
-interface Meta {
+export interface Meta {
   page: number;
   limit: number;
   total: number;

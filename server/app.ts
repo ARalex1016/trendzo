@@ -6,6 +6,7 @@ import morgan from "morgan";
 
 import { env } from "./Config/env.config.ts";
 import router from "./Routes/index.ts";
+import { globalErrorHandler } from "./Controllers/errorController.ts";
 
 const app = express();
 
@@ -25,5 +26,15 @@ if (env.NODE_ENV === "development") {
 }
 
 app.use("/api", router);
+
+app.use((req, res) => {
+  res.status(404).json({
+    status: "fail",
+    message: `Cannot find ${req.originalUrl} on this server!`,
+  });
+});
+
+// Global error handling middleware
+app.use(globalErrorHandler);
 
 export default app;

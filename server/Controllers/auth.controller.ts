@@ -1,340 +1,132 @@
+import { Types } from "mongoose";
+import type { Request, Response } from "express";
 import crypto from "crypto";
-import { env } from "../Config/env.config.ts";
 
-// Models
-import User from "./../Models/user.model.ts";
+// Services
+import { AuthService } from "../Services/auth.service.ts";
 
 // Utils
-import { hashPassword, comparePassword } from "../Utils/password.utils.ts";
-import {
-  generateToken,
-  clearCookie,
-  verifyToken,
-} from "../Utils/generateToken.utils.ts";
+import { generateToken, clearCookie } from "../Utils/generateToken.utils.ts";
+import { asyncHandler } from "../Utils/asyncHandler.ts";
+import { verifyToken } from "../Utils/generateToken.utils.ts";
+import { hashPassword } from "../Utils/password.utils.ts";
 import { generateOTPandSendVerificationEmail } from "../Utils/generateOTPandSendVerificationEmail.utils.ts";
 import { sendEmail } from "../Utils/sendEmail.ts";
+import AppError from "../Utils/AppError.ts";
 
 // Lib
 import { passwordResetTemplate } from "../Lib/emailTemplates.lib.ts";
 
-// Types
-import type { Request, Response } from "express";
+// Register User
+export const registerUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = await AuthService.registerUser(req.body);
 
-// Public routes
-export const registerUser = async (req: Request, res: Response) => {
-  const { name, email, phone, password, role, address } = req.body;
-
-  try {
-    // Prevent self-registering as Admin (Security)
-    const finalRole = role === "admin" ? "user" : role || "user";
-
-    //  Check if email exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Email already in use",
-      });
-    }
-
-    //  Hash password
-    const hashedPassword = await hashPassword(password);
-
-    //  Create user
-    const user = await User.create({
-      name,
-      email,
-      phone,
-      password: hashedPassword,
-      role: finalRole,
-      address,
-    });
-
-    //  Generate JWT token
     generateToken(user, res);
 
-    //  Remove password before sending response
-    const { password: _, ...userData } = user.toObject();
+    const { password, ...userData } = user.toObject();
 
-    // Success logic here
     res.status(201).json({
       status: "success",
       message: "User registered successfully",
       data: userData,
     });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
   }
-};
+);
 
-export const registerAdmin = async (req: Request, res: Response) => {
-  try {
-    const { adminSecret } = req.body;
-
-    if (!adminSecret) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Admin secret is required",
-      });
-    }
-
-    if (adminSecret !== env.ADMIN_MASTER_KEY) {
-      return res.status(403).json({
-        status: "fail",
-        message: "Unauthorized",
-      });
-    }
-
-    const { name, email, phone, password, address } = req.body;
-
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Email already exists",
-      });
-    }
-
-    const hashedPassword = await hashPassword(password);
-
-    const admin = await User.create({
-      name,
-      email,
-      phone,
-      password: hashedPassword,
-      role: "admin",
-      address,
-    });
+// Register Admin
+export const registerAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const admin = await AuthService.registerAdmin(req.body);
 
     generateToken(admin, res);
 
-    //  Remove password before sending response
-    const { password: _, ...adminData } = admin.toObject();
+    const { password, ...adminData } = admin.toObject();
 
-    return res.status(201).json({
+    res.status(201).json({
       status: "success",
       message: "Admin created successfully",
       data: adminData,
     });
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
   }
-};
+);
 
-export const loginUser = async (req: Request, res: Response) => {
+// Login
+export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  try {
-    // Find user by email
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-      return res.status(401).json({
-        status: "fail",
-        message: "Invalid email or password",
-      });
-    }
+  const user = await AuthService.loginUser(email, password);
 
-    // Ensure password exists
-    if (!user.password) {
-      return res
-        .status(500)
-        .json({ status: "fail", message: "User password not set" });
-    }
+  generateToken(user, res);
+  const { password: _, ...userData } = user.toObject();
 
-    // Compare password
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-    // ✅ Generate token & set cookie
-    generateToken(user, res);
+  res.status(200).json({
+    status: "success",
+    message: "Login successful",
+    data: userData,
+  });
+});
 
-    // ✅ Return user info (without password) and token
-    const { password: _, ...userData } = user.toObject();
+// Logout
+export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
+  clearCookie(res);
+  res
+    .status(200)
+    .json({ status: "success", message: "Logged out successfully" });
+});
 
-    // Success logic here
-    return res.status(200).json({
-      status: "success",
-      message: "Login successful",
-      data: userData,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
-  }
-};
+export const protect = asyncHandler(
+  async (req: Request, res: Response, next: Function) => {
+    const token = req.cookies?.token || "";
 
-export const protect = async (req: Request, res: Response, next: Function) => {
-  const token = req.cookies?.token || "";
-
-  try {
-    if (!token) {
-      return res.status(401).json({
-        status: "fail",
-        message: "Authentication required",
-      });
-    }
+    if (!token) throw new AppError("Authentication required", 401);
 
     const decoded = verifyToken(token) as { id: string };
 
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await AuthService.getUserById(new Types.ObjectId(decoded.id));
 
-    if (!user) {
-      return res.status(401).json({
-        status: "fail",
-        message: "User no longer exists",
-      });
-    }
+    if (!user) throw new AppError("User not found", 401);
 
     // Attach user to request object
     req.user = user;
 
     next();
-  } catch (error) {
-    return res.status(401).json({
-      status: "error",
-      message: "Unauthorized: Invalid token",
-    });
   }
-};
+);
 
 export const authorize =
   (...role: string[]) =>
   (req: Request, res: Response, next: Function) => {
     if (!req.user || !role.includes(req.user.role)) {
-      return res.status(403).json({
-        status: "fail",
-        message: "You do not have permission to perform this action!",
-      });
+      throw new AppError(
+        "You do not have permission to perform this action!",
+        403
+      );
     }
 
     next();
   };
 
-export const refreshAccessToken = async (req: Request, res: Response) => {
-  try {
-    // Success logic here
-    res.status(200).json({
-      status: "success",
-      message: "",
-    });
-  } catch (error) {}
-};
-
-// Verification
-export const verifyEmail = async (req: Request, res: Response) => {
-  const { otp } = req.body;
-  const { user } = req;
-
-  try {
-    if (!user) {
-      return res.status(401).json({
-        status: "fail",
-        message: "User no longer exists",
+export const refreshAccessToken = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      // Success logic here
+      res.status(200).json({
+        status: "success",
+        message: "",
       });
-    }
-
-    // Verify OTP
-    const isMatch = String(user?.emailVerificationOTP!) === String(otp);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Invalid OTP",
-      });
-    }
-
-    // Check OTP expiration
-    if (new Date() > user?.emailVerificationOTPExpiresAt!) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Expired Verification Code",
-      });
-    }
-
-    // Mark user as verified
-    user.isEmailVerified = true;
-    user.emailVerificationOTP = undefined;
-    user.emailVerificationOTPExpiresAt = undefined;
-    await user.save();
-
-    // Success logic here
-    res.status(200).json({
-      status: "success",
-      message: "OTP verified successfully",
-      data: user,
-    });
-  } catch (error) {
-    // Error
-    res.status(500).json({
-      status: "error",
-      message: "Error verifying OTP",
-    });
+    } catch (error) {}
   }
-};
-
-export const sendEmailOtp = async (req: Request, res: Response) => {
-  const { user } = req;
-
-  try {
-    await generateOTPandSendVerificationEmail(user);
-
-    // Success logic here
-    res.status(200).json({
-      status: "success",
-      message: "Email with OTP sent successfully",
-    });
-  } catch (error) {
-    // Error
-    res.status(500).json({
-      status: "error",
-      message: "Error sending email",
-    });
-  }
-};
-
-export const verifyPhone = async (req: Request, res: Response) => {
-  try {
-    // Success logic here
-    res.status(200).json({
-      status: "success",
-      message: "",
-    });
-  } catch (error) {}
-};
-
-export const sendPhoneOtp = async (req: Request, res: Response) => {
-  try {
-    // Success logic here
-    res.status(200).json({
-      status: "success",
-      message: "",
-    });
-  } catch (error) {}
-};
+);
 
 // Password reset
-export const forgotPassword = async (req: Request, res: Response) => {
-  const { email } = req.body;
+export const forgotPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Email is required",
-    });
-  }
+    if (!email) throw new AppError("Email is required", 400);
 
-  try {
-    const user = await User.findOne({ email });
+    const user = await AuthService.getUserByEmail(email);
 
     // Always return same response
     res.status(200).json({
@@ -358,38 +150,21 @@ export const forgotPassword = async (req: Request, res: Response) => {
       passwordResetTemplate(resetUrl, user.name),
       "Password Reset"
     );
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
   }
-};
+);
 
-export const resetPassword = async (req: Request, res: Response) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
 
-  if (!token) {
-    return res
-      .status(400)
-      .json({ status: "fail", message: "Reset token is missing" });
-  }
+    if (!token) throw new AppError("Reset token is missing", 400);
 
-  try {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const user = await User.findOne({
-      resetPasswordToken: hashedToken,
-      resetPasswordExpiresAt: { $gt: Date.now() },
-    });
+    const user = await AuthService.getUserByResetToken(hashedToken);
 
-    if (!user) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Invalid or expired token",
-      });
-    }
+    if (!user) throw new AppError("Invalid or expired token", 400);
 
     user.password = await hashPassword(newPassword);
     user.resetPasswordToken = undefined;
@@ -409,29 +184,66 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: "Password reset successfully",
       data: userData,
     });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
   }
-};
+);
 
-// Logout
-export const logoutUser = async (req: Request, res: Response) => {
-  try {
-    // Clear the cookie
-    clearCookie(res);
+// Verification
+export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
+  const { otp } = req.body;
+  const user = req.user!;
+
+  // Verify OTP
+  const isMatch = String(user?.emailVerificationOTP!) === String(otp);
+
+  if (!isMatch) throw new AppError("Invalid OTP", 400);
+
+  // Check OTP expiration
+  if (new Date() > user?.emailVerificationOTPExpiresAt!) {
+    throw new AppError("Expired Verification Code", 400);
+  }
+
+  // Mark user as verified
+  user.isEmailVerified = true;
+  user.emailVerificationOTP = undefined;
+  user.emailVerificationOTPExpiresAt = undefined;
+  await user.save();
+
+  // Success logic here
+  res.status(200).json({
+    status: "success",
+    message: "OTP verified successfully",
+    data: user,
+  });
+});
+
+export const sendEmailOtp = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = req.user!;
+
+    await generateOTPandSendVerificationEmail(user);
 
     // Success logic here
     res.status(200).json({
       status: "success",
-      message: "Logged out successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Something went wrong while logging out",
+      message: "Email with OTP sent successfully",
     });
   }
-};
+);
+
+export const verifyPhone = asyncHandler(async (req: Request, res: Response) => {
+  // Success logic here
+  res.status(200).json({
+    status: "success",
+    message: "",
+  });
+});
+
+export const sendPhoneOtp = asyncHandler(
+  async (req: Request, res: Response) => {
+    // Success logic here
+    res.status(200).json({
+      status: "success",
+      message: "",
+    });
+  }
+);

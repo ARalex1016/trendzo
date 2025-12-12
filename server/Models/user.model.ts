@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 export type Role = "user" | "operator" | "admin";
 
@@ -10,7 +11,7 @@ export interface IUser extends Document {
   emailVerificationOTPExpiresAt?: Date | undefined;
   resetPasswordToken?: string | undefined;
   resetPasswordExpiresAt?: Date | undefined;
-  phone?: string;
+  phone: string | undefined;
   isPhoneVerified: boolean;
   verified: boolean;
   password?: string; // only for local auth
@@ -31,6 +32,10 @@ export interface IUser extends Document {
     country?: string;
     postalCode: string;
   };
+  // Referral fields
+  referralId: string;
+  displayCode?: string;
+  previousDisplayCodes?: { code: string; changedAt: Date }[];
 }
 
 const AddressSchema = new Schema(
@@ -103,6 +108,24 @@ const UserSchema = new Schema<IUser>(
     },
     address: {
       type: AddressSchema,
+    },
+    // Referral fields
+    referralId: {
+      type: String,
+      required: true,
+      default: () => uuidv4(),
+      immutable: true,
+      unique: true,
+    },
+    displayCode: { type: String, unique: true, sparse: true }, // optional, can change
+    previousDisplayCodes: {
+      type: [
+        {
+          code: { type: String, required: true },
+          changedAt: { type: Date, required: true, default: Date.now },
+        },
+      ],
+      default: [],
     },
   },
   { timestamps: true }

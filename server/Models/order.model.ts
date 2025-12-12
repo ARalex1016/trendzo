@@ -8,13 +8,18 @@ export type OrderStatus =
   | "cancelled"
   | "returned";
 
+export type PaymentStatus = "pending" | "completed" | "failed";
+
+export type PaymentMethod = "bank" | "esewa" | "khalti" | "cod";
+
 export interface IOrder extends Document {
   user: Types.ObjectId;
   items: Types.ObjectId[];
   totalAmount: number;
   discount?: number;
   deliveryCharge: number;
-  paymentMethod: "bank" | "esewa" | "khalti" | "cod";
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   status: OrderStatus;
   deliveryAddress: {
     name: string;
@@ -25,6 +30,7 @@ export interface IOrder extends Document {
     country?: string;
   };
   orderNote?: string;
+  cancellationDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +53,11 @@ const orderSchema = new Schema<IOrder>(
       enum: ["bank", "esewa", "khalti", "cod"],
       required: true,
     },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
+    },
     status: {
       type: String,
       enum: [
@@ -67,8 +78,10 @@ const orderSchema = new Schema<IOrder>(
       postalCode: String,
       country: String,
     },
-    orderNote: String,
+    orderNote: { type: String, required: false },
+    cancellationDate: { type: Date },
   },
+
   { timestamps: true }
 );
 

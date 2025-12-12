@@ -1,10 +1,5 @@
 import express from "express";
 
-// Middlewares
-import { protect, authorize } from "../Controllers/auth.controller.ts";
-import { couponIdParamHandler } from "../Middleware/param.middleware.ts";
-import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
-
 // Controllers
 import {
   validateCoupon,
@@ -17,16 +12,37 @@ import {
   deleteCoupon,
 } from "../Controllers/coupon.controller.ts";
 
+// Middlewares
+import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { couponIdParamHandler } from "../Middleware/param.middleware.ts";
+import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
+
 // Validation Schemas
-import { createCouponSchema } from "../Validations/coupon.validator.ts";
+import {
+  createCouponSchema,
+  updateCouponSchema,
+  validateCouponParamsSchema,
+  applyCouponBodySchema,
+} from "../Validations/coupon.validator.ts";
 
 const router = express.Router();
 
 router.param("couponId", couponIdParamHandler);
 
 // Apply coupon
-router.get("/validate/:code", protect, validateCoupon);
-router.post("/apply", protect, authorize("user"), applyCoupon);
+router.get(
+  "/validate",
+  protect,
+  validateRequest(validateCouponParamsSchema),
+  validateCoupon
+);
+router.post(
+  "/apply",
+  protect,
+  authorize("user"),
+  validateRequest(applyCouponBodySchema),
+  applyCoupon
+);
 
 // Admin
 router.get("/", protect, authorize("admin"), getAllCoupons);
@@ -38,7 +54,13 @@ router.post(
   validateRequest(createCouponSchema),
   createCoupon
 );
-router.patch("/:couponId", protect, authorize("admin"), updateCoupon);
+router.patch(
+  "/:couponId",
+  protect,
+  authorize("admin"),
+  validateRequest(updateCouponSchema),
+  updateCoupon
+);
 router.patch(
   "/:couponId/status",
   protect,

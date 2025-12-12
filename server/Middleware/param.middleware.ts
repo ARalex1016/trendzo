@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
 import type { Request, Response, NextFunction } from "express";
 
+// Utils
+import { isValidObjectId } from "../Utils/mongoose.management.ts";
+
 // Models
 import User from "../Models/user.model.ts";
 import Product from "../Models/product.model.ts";
 import Category from "../Models/category.model.ts";
 import Coupon from "../Models/coupon.model.ts";
-
-// Utils
-import { isValidObjectId } from "../Utils/mongoose.management.ts";
+import Order from "../Models/order.model.ts";
 
 export const userIdParamHandler = async (
   req: Request,
@@ -179,6 +180,41 @@ export const couponIdParamHandler = async (
     }
 
     req.targetCoupon = coupon;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+};
+
+export const orderIdParamHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orderId } = req.params;
+
+    // Validate ObjectId
+    if (!orderId || !isValidObjectId(orderId)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid order ID",
+      });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Order not found",
+      });
+    }
+
+    req.targetOrder = order;
     next();
   } catch (error) {
     res.status(500).json({

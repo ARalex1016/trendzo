@@ -6,7 +6,7 @@ export interface ICoupon extends Document {
   value: number;
   minPurchase: number;
   maxDiscount?: number;
-  applicableUsers: "all" | "firstTime" | "referred";
+  applicableUsers: "all" | "firstTime";
   expiryDate: Date;
   usageLimit?: number;
   usedCount: number;
@@ -25,7 +25,7 @@ const couponSchema = new Schema<ICoupon>(
     maxDiscount: Number,
     applicableUsers: {
       type: String,
-      enum: ["all", "firstTime", "referred"],
+      enum: ["all", "firstTime"],
       default: "all",
     },
     expiryDate: { type: Date, required: true },

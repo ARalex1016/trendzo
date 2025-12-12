@@ -5,6 +5,7 @@ import {
   registerUser,
   registerAdmin,
   loginUser,
+  logoutUser,
   refreshAccessToken,
   verifyEmail,
   sendEmailOtp,
@@ -12,11 +13,10 @@ import {
   sendPhoneOtp,
   forgotPassword,
   resetPassword,
-  logoutUser,
-} from "../Controllers/auth.controller.ts";
+} from "./../Controllers/auth.controller.ts";
 
 // Middleware
-import { protect } from "../Controllers/auth.controller.ts";
+import { protect } from "./../Controllers/auth.controller.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
 // Validation Schemas

@@ -1,4 +1,3 @@
-// src/validations/coupon.validation.ts
 import { z } from "zod";
 
 export const createCouponSchema = z.object({
@@ -20,3 +19,17 @@ export const createCouponSchema = z.object({
 });
 
 export const updateCouponSchema = createCouponSchema.partial();
+
+// Request-level schemas
+export const validateCouponParamsSchema = z.object({
+  code: z.string().min(1, "Coupon code is required"),
+});
+
+export const applyCouponBodySchema = z.object({
+  code: z
+    .string("Coupon code is required")
+    .min(1, "Coupon code cannot be empty"),
+  totalAmount: z.number().nonnegative("totalAmount must be >= 0"),
+  isReferredUser: z.boolean().optional(),
+  isFirstTimeUser: z.boolean().optional(),
+});
