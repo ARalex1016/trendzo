@@ -5,7 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import { env } from "./Config/env.config.ts";
-import router from "./Routes/index.ts";
+import router from "./Routes/index.route.ts";
 import { globalErrorHandler } from "./Controllers/errorController.ts";
 
 const app = express();

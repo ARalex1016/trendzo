@@ -2,11 +2,12 @@ import express from "express";
 
 // Controllers
 import {
-  placeOrderController,
+  placeOrder,
   getMyOrders,
   getSingleOrder,
   cancelOrder,
   getAllOrders,
+  markOrderDelivered,
   updateOrderStatus,
 } from "../Controllers/order.controller.ts";
 
@@ -28,7 +29,7 @@ router.post(
   protect,
   authorize("user"),
   validateRequest(placeOrderSchema),
-  placeOrderController
+  placeOrder
 );
 router.get("/my-orders", protect, authorize("user"), getMyOrders);
 router.get(
@@ -41,6 +42,12 @@ router.patch("/cancel/:orderId", protect, authorize("user"), cancelOrder);
 
 // ADMIN / OPERATOR ROUTES
 router.get("/", protect, authorize("operator", "admin"), getAllOrders);
+router.patch(
+  "/:orderId/deliver",
+  protect,
+  authorize("admin"),
+  markOrderDelivered
+);
 router.patch(
   "/status/:orderId",
   protect,

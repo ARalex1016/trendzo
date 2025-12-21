@@ -1,99 +1,81 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 
 // Models
 import Product from "../Models/product.model.ts";
 import Category from "../Models/category.model.ts";
 
-// Utils
-import { generateUniqueSlugs, isSlugAvailable } from "../Utils/slugManager.ts";
+// Services
+import { SlugService } from "../Services/slug.service.ts";
 
-export const suggestSlug = async (req: Request, res: Response) => {
-  try {
-    const { model: modelName, field, value } = req.query;
+// Errors
+import AppError from "../Utils/AppError.ts";
 
-    if (!modelName || !field || !value) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Missing required query params",
-      });
-    }
-
-    // Determine model
-    let model;
-    switch (modelName) {
-      case "Product":
-        model = Product;
-        break;
-      case "Category":
-        model = Category;
-        break;
-      default:
-        return res.status(400).json({
-          status: "fail",
-          message: "Invalid model name",
-        });
-    }
-
-    const slugs = await generateUniqueSlugs(
-      model,
-      field as string,
-      value as string,
-      5
-    );
-
-    // Success logic here
-    res.status(200).json({
-      status: "success",
-      data: slugs,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
+// Helpers
+const resolveModel = (modelName: string) => {
+  switch (modelName) {
+    case "Product":
+      return Product;
+    case "Category":
+      return Category;
+    default:
+      throw new AppError("Invalid model name", 400);
   }
 };
 
-export const checkSlug = async (req: Request, res: Response) => {
+export const suggestSlug = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { model: modelName, field, value } = req.query;
+
     if (!modelName || !field || !value) {
-      return res
-        .status(400)
-        .json({ status: "fail", message: "Missing required query params" });
+      throw new AppError("Missing required query parameters", 400);
     }
 
-    let model;
-    switch (modelName) {
-      case "Product":
-        model = Product;
-        break;
-      case "Category":
-        model = Category;
-        break;
-      default:
-        return res
-          .status(400)
-          .json({ status: "fail", message: "Invalid model name" });
-    }
+    const model = resolveModel(modelName as string);
 
-    const available = await isSlugAvailable(
+    const slugs = await SlugService.suggestSlugs(
       model,
       field as string,
       value as string
     );
 
-    // Success logic here
     res.status(200).json({
       status: "success",
-      data: {
-        available,
-      },
+      data: slugs,
     });
   } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
+    next(error);
+  }
+};
+
+export const checkSlug = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { model: modelName, field, value } = req.query;
+
+    if (!modelName || !field || !value) {
+      throw new AppError("Missing required query parameters", 400);
+    }
+
+    const model = resolveModel(modelName as string);
+
+    const available = await SlugService.checkAvailability(
+      model,
+      field as string,
+      value as string
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: { available },
     });
+  } catch (error) {
+    next(error);
   }
 };

@@ -6,7 +6,10 @@ import {
   getMyReferrals,
   getReferralEarnings,
   getAllReferrals,
-  rewardReferral,
+  getReferralStats,
+  getEligibleReferrals,
+  getReferralById,
+  // rewardReferral,
 } from "../Controllers/referral.controller.ts";
 
 // Middleware
@@ -18,9 +21,12 @@ router.param("userId", userIdParamHandler);
 // Referral details for current user
 router.get("/my-referrals", protect, getMyReferrals);
 router.get("/earnings", protect, getReferralEarnings);
+router.get("/stats", protect, getReferralStats);
+router.get("/eligible", protect, getEligibleReferrals);
+router.get("/:referralId", protect, getReferralById);
 
 // Admin
 router.get("/", protect, authorize("admin"), getAllReferrals);
-router.post("/reward/:userId", protect, authorize("admin"), rewardReferral);
+// router.post("/reward/:userId", protect, authorize("admin"), rewardReferral);
 
 export default router;

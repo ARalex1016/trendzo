@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
 // Services
-import { CouponService } from "../Services/coupon1.service.ts";
+import { CouponService } from "../Services/coupon.service.ts";
 
 // Utils
 import AppError from "../Utils/AppError.ts";

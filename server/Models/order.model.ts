@@ -29,7 +29,9 @@ export interface IOrder extends Document {
     postalCode?: string;
     country?: string;
   };
+  coupon?: Types.ObjectId;
   orderNote?: string;
+  deliveredAt?: Date;
   cancellationDate?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -78,10 +80,14 @@ const orderSchema = new Schema<IOrder>(
       postalCode: String,
       country: String,
     },
+    coupon: {
+      type: Schema.Types.ObjectId,
+      ref: "Coupon",
+    },
     orderNote: { type: String, required: false },
+    deliveredAt: { type: Date },
     cancellationDate: { type: Date },
   },
-
   { timestamps: true }
 );
 

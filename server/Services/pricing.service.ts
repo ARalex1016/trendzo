@@ -1,54 +1,21 @@
-// services/pricing.service.ts
 import { Types } from "mongoose";
-
-// Models
-import Product, { type IProduct } from "./../Models/product.model.ts";
-
-// Utils
+import Product from "../Models/product.model.ts";
 import AppError from "../Utils/AppError.ts";
 
-export interface CalculatedItem {
-  productId: Types.ObjectId;
-  productSnapshot: {
-    name: string;
-    slug?: string;
-    images?: string[];
-  };
-  color: string;
-  size: string;
-  quantity: number;
-  unitPrice: number;
-  subtotal: number;
-}
-
-/**
- * Determine unit price for a product item using variant/size price fallback order:
- *   size.price -> variant.basePrice -> product.basePrice
- */
-export const calculateItemPrice = async (
-  productId: Types.ObjectId,
-  color: string,
-  size: string
-): Promise<number> => {
-  const product = await Product.findById(productId).lean();
-
-  if (!product) throw new AppError("Product not found");
-
-  // Find color variant
-  const variant = (product.variants || []).find((v: any) => v.color === color);
-  if (!variant)
-    throw new AppError(
-      `Variant color "${color}" not found for product ${product._id}`
-    );
-
-  // find size
-  const sizeObj = (variant.sizes || []).find((s: any) => s.size === size);
-  if (!sizeObj)
-    throw new AppError(`Size "${size}" not found in variant ${color}`);
-
-  const price =
-    sizeObj.price ?? variant.basePrice ?? (product as any).basePrice;
-  if (price == null) throw new AppError("No price available for product");
-
-  return price;
+export const PricingService = {
+  /**
+   * Determine the unit price of a product variant/size.
+   * @param variantPrice Price of the selected size (if exists)
+   * @param variantBasePrice Base price of the variant (if exists)
+   * @param productBasePrice Base price of the product
+   */
+  calculateItemPrice(
+    variantPrice?: number,
+    variantBasePrice?: number,
+    productBasePrice?: number
+  ): number {
+    const price = variantPrice ?? variantBasePrice ?? productBasePrice;
+    if (price == null) throw new Error("No price available for product");
+    return price;
+  },
 };

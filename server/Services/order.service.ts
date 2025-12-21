@@ -1,345 +1,352 @@
-// services/order.service.ts
 import mongoose, { Types } from "mongoose";
 
-// Models
-import Order, { type IOrder } from "./../Models/order.model.ts";
-import OrderItem, { type IOrderItem } from "./../Models/order-item.model.ts";
-import Product from "./../Models/product.model.ts";
-import User from "./../Models/user.model.ts";
+// Repository
+import { OrderRepository } from "./../Repositories/order.repository.ts";
+import { OrderItemRepository } from "../Repositories/orderItem.repository.ts";
+import { ProductService } from "./product.service.ts";
+import { PricingService } from "./pricing.service.ts";
+import { ProductRepository } from "./../Repositories/product.repository.ts";
 
-// Services
-import { validateAndConsumeCoupon } from "./coupon.service.ts";
-import { calculateItemPrice } from "./pricing.service.ts";
-import {
-  decrementProductStock,
-  restoreProductStock,
-} from "./product.service.ts";
+// Service
+import { CouponService } from "./../Services/coupon.service.ts";
+import { DeliveryService } from "./../Services/delivery.service.ts";
+import { ReferralService } from "../Services/referral.service.ts";
 
 // Utils
-import AppError from "../Utils/AppError.ts";
+import AppError from "./../Utils/AppError.ts";
 
-type PlaceOrderItemInput = {
-  product: string; // productId string
-  color: string;
-  size: string;
-  quantity: number;
+const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+  placed: ["processing", "cancelled"],
+  processing: ["shipped", "cancelled"],
+  shipped: ["delivered", "returned"],
+  delivered: [],
+  cancelled: [],
+  returned: [],
 };
 
-type PlaceOrderInput = {
-  userId: string;
-  items: PlaceOrderItemInput[];
-  deliveryCharge?: number;
-  paymentMethod: "bank" | "esewa" | "khalti" | "cod";
-  deliveryAddress: any;
-  orderNote?: string;
-  couponCode?: string;
-};
+export const OrderService = {
+  async placeOrder(input: {
+    userId: string;
+    items: { product: string; color: string; size: string; quantity: number }[];
+    paymentMethod: string;
+    deliveryAddress: any;
+    couponCode?: string;
+    orderNote?: string;
+  }) {
+    const session = await mongoose.startSession();
 
-interface GetMyOrdersOptions {
-  userId: string;
-  page?: number;
-  limit?: number;
-  status?: string | undefined; // optional filter
-}
+    try {
+      session.startTransaction();
 
-export const placeOrder = async (payload: PlaceOrderInput) => {
-  const session = await mongoose.startSession();
-  try {
-    let orderResult: any = null;
+      const userId = new Types.ObjectId(input.userId);
 
-    await session.withTransaction(async () => {
-      const userId = new Types.ObjectId(payload.userId);
-
-      // Check if user exists
-      const user = await User.findById(userId).session(session);
-      if (!user) throw new AppError("User not found", 404);
-
-      // Validate coupon (if provided)
-      let couponDoc: any = null;
-      if (payload.couponCode) {
-        try {
-          couponDoc = await validateAndConsumeCoupon(
-            payload.couponCode,
+      // Validate and consume coupon
+      const coupon = input.couponCode
+        ? await CouponService.validateAndConsumeCoupon(
+            input.couponCode,
             userId,
             session
-          );
-        } catch (err) {
-          throw err;
-        }
-      }
+          )
+        : null;
 
-      // Prepare order items
-      const orderItemsToCreate: IOrderItem[] = [];
-      const orderItemSnapshots: any[] = [];
       let itemsTotal = 0;
+      const orderItemIds: Types.ObjectId[] = [];
 
-      for (const it of payload.items) {
-        const productId = new Types.ObjectId(it.product);
+      for (const item of input.items) {
+        // Fetch product from DB
+        const product = await ProductRepository.findById(
+          new Types.ObjectId(item.product)
+        ).lean();
+        if (!product) throw new AppError("Product not found", 404);
 
-        // Get price
-        const unitPrice = await calculateItemPrice(
-          productId,
-          it.color,
-          it.size
+        // Find variant & size
+        const variant = product.variants?.find(
+          (v: any) => v.color === item.color
         );
-        const subtotal = unitPrice * it.quantity;
+        if (!variant)
+          throw new AppError(`Variant "${item.color}" not found`, 400);
+
+        const sizeObj = variant.sizes?.find((s: any) => s.size === item.size);
+        if (!sizeObj) throw new AppError(`Size "${item.size}" not found`, 400);
+
+        // Calculate price using PricingService
+        const unitPrice = PricingService.calculateItemPrice(
+          sizeObj.price,
+          variant.basePrice,
+          product.basePrice
+        );
 
         // Decrement stock
-        const ok = await decrementProductStock(
-          productId,
-          it.color,
-          it.size,
-          it.quantity,
-          session
-        );
-        if (!ok)
-          throw new AppError(
-            `Insufficient stock for product ${it.product} (${it.color}/${it.size})`,
-            400
-          );
-
-        // Create OrderItem doc
-        const orderItemDoc = new OrderItem({
-          product: productId,
-          color: it.color,
-          size: it.size,
-          quantity: it.quantity,
-          price: unitPrice,
-        });
-        await orderItemDoc.save({ session });
-        orderItemsToCreate.push(orderItemDoc);
-
-        // Snapshot for response
-        const productDoc = await Product.findById(productId)
-          .select("name slug variants")
-          .lean()
-          .session(session);
-
-        orderItemSnapshots.push({
-          product: {
-            id: productId,
-            name: productDoc?.name ?? "Product",
-            slug: productDoc?.slug,
-            image:
-              productDoc?.variants?.find((v: any) => v.color === it.color)
-                ?.images?.[0] ??
-              productDoc?.variants?.[0]?.images?.[0] ??
-              null,
-          },
-          color: it.color,
-          size: it.size,
-          quantity: it.quantity,
-          unitPrice,
-          subtotal,
-        });
-
-        itemsTotal += subtotal;
-      }
-
-      // Calculate discount
-      let discountAmount = 0;
-      if (couponDoc) {
-        discountAmount =
-          couponDoc.type === "percentage"
-            ? (itemsTotal * couponDoc.value) / 100
-            : couponDoc.value;
-
-        if (couponDoc.maxDiscount != null) {
-          discountAmount = Math.min(discountAmount, couponDoc.maxDiscount);
-        }
-      }
-
-      const deliveryCharge = payload.deliveryCharge ?? 0;
-      const totalPayable = Math.max(
-        0,
-        itemsTotal - discountAmount + deliveryCharge
-      );
-
-      // Create Order doc
-      const orderDoc = new Order({
-        user: userId,
-        items: orderItemsToCreate.map((oi) => oi._id),
-        totalAmount: totalPayable,
-        discount: discountAmount,
-        deliveryCharge,
-        paymentMethod: payload.paymentMethod,
-        paymentStatus: "pending",
-        status: "placed",
-        deliveryAddress: payload.deliveryAddress,
-        ...(couponDoc ? { coupon: couponDoc._id } : {}),
-        ...(payload.orderNote ? { orderNote: payload.orderNote } : {}),
-      });
-
-      await orderDoc.save({ session });
-
-      // Prepare result
-      orderResult = {
-        order: {
-          id: orderDoc._id,
-          items: orderItemSnapshots,
-          totals: {
-            itemsTotal,
-            discount: discountAmount,
-            deliveryCharge,
-            payable: totalPayable,
-          },
-          payment: {
-            method: payload.paymentMethod,
-            status: orderDoc.paymentStatus,
-          },
-          deliveryAddress: orderDoc.deliveryAddress,
-          ...(orderDoc.orderNote ? { orderNote: orderDoc.orderNote } : {}),
-          createdAt: orderDoc.createdAt,
-        },
-      };
-    });
-
-    return orderResult;
-  } finally {
-    await session.endSession();
-  }
-};
-
-// Cancel order service
-export const cancelOrderService = async (orderId: string, userId?: string) => {
-  const session = await mongoose.startSession();
-
-  try {
-    let canceledOrder: any = null;
-
-    await session.withTransaction(async () => {
-      const orderObjectId = new Types.ObjectId(orderId);
-
-      // Fetch order with items
-      const order = await Order.findById(orderObjectId)
-        .populate("items")
-        .session(session);
-
-      if (!order) throw new AppError("Order not found", 404);
-
-      // Optional: restrict cancellation to order owner
-      if (userId && order.user.toString() !== userId) {
-        throw new AppError("You are not authorized to cancel this order", 403);
-      }
-
-      // Check if order is cancellable
-      if (
-        ["cancelled", "shipped", "delivered", "returned"].includes(order.status)
-      ) {
-        throw new AppError(
-          `Order cannot be cancelled at status: ${order.status}`,
-          400
-        );
-      }
-
-      // Restore stock for each order item
-      const orderItems = await OrderItem.find({
-        _id: { $in: order.items },
-      }).session(session);
-
-      for (const item of orderItems) {
-        await restoreProductStock(
-          item.product as Types.ObjectId,
+        const res = await ProductRepository.decrementStock(
+          new Types.ObjectId(item.product),
           item.color,
           item.size,
           item.quantity,
           session
         );
+
+        if (res.matchedCount === 0) {
+          throw new AppError(
+            `Insufficient stock for product ${product.name} (${item.color}, ${item.size})`,
+            400
+          );
+        }
+
+        // Create order item
+        const orderItem = await OrderItemRepository.create(
+          {
+            product: item.product,
+            color: item.color,
+            size: item.size,
+            quantity: item.quantity,
+            price: unitPrice,
+          },
+          session
+        );
+
+        itemsTotal += unitPrice * item.quantity;
+        orderItemIds.push(orderItem._id);
       }
 
-      // Update order status to cancelled
-      order.status = "cancelled";
-      order.cancellationDate = new Date();
-      await order.save({ session });
+      // Calculate discount
+      const discount = coupon
+        ? Math.min(
+            coupon.type === "percentage"
+              ? (itemsTotal * coupon.value) / 100
+              : coupon.value,
+            coupon.maxDiscount ?? Infinity
+          )
+        : 0;
 
-      canceledOrder = order;
-    });
+      // Calculate delivery charge
+      const deliveryCharge = await DeliveryService.calculateCharge(
+        input.deliveryAddress
+      );
 
-    return canceledOrder;
-  } finally {
-    await session.endSession();
-  }
-};
+      const totalAmount = Math.max(0, itemsTotal - discount + deliveryCharge);
 
-export const getMyOrdersService = async (options: GetMyOrdersOptions) => {
-  const page = options.page && options.page > 0 ? options.page : 1;
-  const limit = options.limit && options.limit > 0 ? options.limit : 10;
-  const skip = (page - 1) * limit;
+      // Create order
+      const order = await OrderRepository.create(
+        {
+          user: userId,
+          items: orderItemIds,
+          totalAmount,
+          discount,
+          deliveryCharge,
+          paymentMethod: input.paymentMethod,
+          paymentStatus: "pending",
+          status: "placed",
+          deliveryAddress: input.deliveryAddress,
+          orderNote: input.orderNote,
+          ...(coupon ? { coupon: coupon._id } : {}),
+        },
+        session
+      );
 
-  const userObjectId = new Types.ObjectId(options.userId);
+      // Try to qualify referral, but DO NOT throw error if it fails
+      try {
+        await ReferralService.qualifyReferral(
+          userId, // invitee
+          order._id, // qualifying order
+          totalAmount, // order amount to check minimum
+          session
+        );
+      } catch (referralErr: any) {
+        console.warn("Referral qualification failed:", referralErr.message);
+        // Optionally: log to monitoring system instead of console.warn
+      }
 
-  // Build filter
-  const filter: any = { user: userObjectId };
-  if (options.status) filter.status = options.status;
+      await session.commitTransaction();
+      return order;
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      session.endSession();
+    }
+  },
 
-  // Fetch total count for pagination
-  const totalOrders = await Order.countDocuments(filter);
+  async cancelOrder(
+    orderId: string | Types.ObjectId,
+    userId: string | Types.ObjectId
+  ) {
+    const session = await mongoose.startSession();
 
-  // Fetch orders with items populated
-  const orders: IOrder[] = await Order.find(filter)
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate({
-      path: "items",
-      model: OrderItem,
-      populate: {
-        path: "product",
-        model: Product,
-        select: "name slug variants",
-      },
-    })
-    .lean();
+    try {
+      let cancelledOrder: any;
 
-  // Transform data for response (snapshot style)
-  const formattedOrders = orders.map((order) => {
-    const itemsSnapshot = (order.items as any[]).map((item) => ({
-      id: item._id,
-      product: {
-        id: item.product?._id,
-        name: item.product?.name ?? "Product",
-        slug: item.product?.slug,
-        image:
-          item.product?.variants?.find((v: any) => v.color === item.color)
-            ?.images?.[0] ??
-          item.product?.variants?.[0]?.images?.[0] ??
-          null,
-      },
-      color: item.color,
-      size: item.size,
-      quantity: item.quantity,
-      unitPrice: item.price,
-      subtotal: item.price * item.quantity,
-    }));
+      await session.withTransaction(async () => {
+        const order = await OrderRepository.findById(
+          new Types.ObjectId(orderId),
+          session
+        );
+        if (!order) throw new AppError("Order not found", 404);
 
-    const itemsTotal = itemsSnapshot.reduce((sum, it) => sum + it.subtotal, 0);
+        if (order.user.toString() !== userId) {
+          throw new AppError("Not authorized", 403);
+        }
+
+        if (!["placed", "processing"].includes(order.status)) {
+          throw new AppError(
+            `Order cannot be cancelled at ${order.status}`,
+            400
+          );
+        }
+
+        const items = await OrderItemRepository.findManyByIds(
+          order.items,
+          session
+        );
+
+        for (const item of items) {
+          await ProductService.restoreStock(
+            item.product,
+            item.color,
+            item.size,
+            item.quantity,
+            session
+          );
+        }
+
+        cancelledOrder = await OrderRepository.updateById(
+          order._id,
+          {
+            status: "cancelled",
+            cancellationDate: new Date(),
+          },
+          session
+        );
+      });
+
+      return cancelledOrder;
+    } finally {
+      await session.endSession();
+    }
+  },
+
+  async getMyOrders({ userId, page = 1, limit = 10, status }: any) {
+    const skip = (page - 1) * limit;
+    const filter = status ? { status } : {};
+
+    const [orders, total] = await Promise.all([
+      OrderRepository.findUserOrders(new Types.ObjectId(userId), filter, {
+        skip,
+        limit,
+      }),
+      OrderRepository.count({
+        user: userId,
+        ...(status ? { status } : {}),
+      }),
+    ]);
 
     return {
-      id: order._id,
-      items: itemsSnapshot,
-      totals: {
-        itemsTotal,
-        discount: order.discount ?? 0,
-        deliveryCharge: order.deliveryCharge ?? 0,
-        payable: order.totalAmount,
+      orders,
+      meta: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
       },
-      payment: {
-        method: order.paymentMethod,
-        status: order.paymentStatus,
-      },
-      status: order.status,
-      deliveryAddress: order.deliveryAddress,
-      orderNote: order.orderNote ?? null,
-      createdAt: order.createdAt,
-      cancellationDate: order.cancellationDate ?? null,
     };
-  });
+  },
 
-  return {
-    totalOrders,
-    page,
-    limit,
-    totalPages: Math.ceil(totalOrders / limit),
-    orders: formattedOrders,
-  };
+  async getSingleOrder(orderId: string | Types.ObjectId, user: any) {
+    const order = await OrderRepository.findById(new Types.ObjectId(orderId));
+    if (!order) throw new AppError("Order not found", 404);
+
+    if (
+      user.role !== "admin" &&
+      order.user.toString() !== user._id.toString()
+    ) {
+      throw new AppError("Not authorized", 403);
+    }
+
+    return order;
+  },
+
+  async getAllOrders({ page = 1, limit = 20, status, userId }: any) {
+    const skip = (page - 1) * limit;
+    const filter: any = {};
+    if (status) filter.status = status;
+    if (userId) filter.user = userId;
+
+    const [orders, total] = await Promise.all([
+      OrderRepository.findAll(filter, { skip, limit }),
+      OrderRepository.count(filter),
+    ]);
+
+    return {
+      orders,
+      meta: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  },
+
+  async markDelivered(orderId: Types.ObjectId) {
+    const session = await mongoose.startSession();
+
+    try {
+      session.startTransaction();
+
+      const deliveredAt = new Date();
+
+      const order = await OrderRepository.markDelivered(
+        orderId,
+        deliveredAt,
+        session
+      );
+
+      // Trigger referral holding logic (if exists)
+      await ReferralService.holdReferral(order.user, new Date());
+
+      await session.commitTransaction();
+      return order;
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      session.endSession();
+    }
+  },
+
+  async updateOrderStatus(
+    orderId: string | Types.ObjectId,
+    nextStatus: string
+  ) {
+    const session = await mongoose.startSession();
+
+    try {
+      let updated: any;
+
+      await session.withTransaction(async () => {
+        const order = await OrderRepository.findById(
+          new Types.ObjectId(orderId),
+          session
+        );
+        if (!order) throw new AppError("Order not found", 404);
+
+        const allowed = ALLOWED_TRANSITIONS[order.status] || [];
+        if (!allowed.includes(nextStatus)) {
+          throw new AppError(
+            `Cannot change status from ${order.status} to ${nextStatus}`,
+            400
+          );
+        }
+
+        updated = await OrderRepository.updateById(
+          order._id,
+          { status: nextStatus },
+          session
+        );
+      });
+
+      return updated;
+    } finally {
+      await session.endSession();
+    }
+  },
 };

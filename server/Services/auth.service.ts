@@ -31,7 +31,7 @@ export const AuthService = {
     email: string;
     password: string;
     phone?: string;
-    role?: "user" | "operator";
+    role?: "customer" | "operator";
     address?: any;
     referralCode?: string;
   }) {
@@ -50,7 +50,7 @@ export const AuthService = {
       email,
       phone,
       password: hashedPassword,
-      role: role || "user",
+      role: role || "customer",
       address,
     });
 

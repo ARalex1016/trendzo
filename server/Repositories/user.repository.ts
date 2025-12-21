@@ -1,5 +1,5 @@
-import User, { type IUser } from "../Models/user.model.ts";
 import { Types } from "mongoose";
+import User, { type IUser } from "../Models/user.model.ts";
 
 export const UserRepository = {
   // -----------------------------------

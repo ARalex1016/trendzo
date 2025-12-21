@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-export type Role = "user" | "operator" | "admin";
+export type Role = "customer" | "operator" | "admin";
 
 export interface IUser extends Document {
   name: string;
@@ -82,6 +82,7 @@ const UserSchema = new Schema<IUser>(
     },
     phone: {
       type: String,
+      unique: true,
       index: true,
     },
     isPhoneVerified: {
@@ -103,8 +104,8 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["user", "operator", "admin"],
-      default: "user",
+      enum: ["customer", "operator", "admin"],
+      default: "customer",
     },
     address: {
       type: AddressSchema,

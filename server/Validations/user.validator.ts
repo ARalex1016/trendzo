@@ -11,7 +11,10 @@ export const registerSchema = z
       .max(20, "Password must be less than 20 characters"),
     confirmPassword: z.string(),
     role: z
-      .enum(["user", "operator"], "Role must be either 'user' or 'operator'")
+      .enum(
+        ["customer", "operator"],
+        "Role must be either 'user' or 'operator'"
+      )
       .optional(), // prevent admin here
     address: z.object({
       label: z.string().optional(),
