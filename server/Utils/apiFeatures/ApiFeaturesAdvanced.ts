@@ -1,5 +1,4 @@
-import type { Query, QueryFilter } from "mongoose";
-
+import type { Query } from "mongoose";
 interface QueryParams {
   search?: string;
   keyword?: string;
@@ -79,10 +78,10 @@ class ApiFeaturesAdvanced<T> {
 
     queryString = queryString.replace(
       /\b(gt|gte|lt|lte)\b/g,
-      (match) => `$${match}`
+      (match) => `$${match}`,
     );
 
-    const parsed: QueryFilter<T> = JSON.parse(queryString);
+    const parsed: Record<string, any> = JSON.parse(queryString);
 
     this.query = this.query.find(parsed);
     return this;
@@ -208,7 +207,7 @@ class ApiFeaturesAdvanced<T> {
     const skip = (page - 1) * limit;
 
     this.totalDocs = await this.query.model.countDocuments(
-      this.query.getFilter()
+      this.query.getFilter(),
     );
 
     this.query = this.query.skip(skip).limit(limit);
