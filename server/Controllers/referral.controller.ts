@@ -18,7 +18,7 @@ export const getMyReferrals = asyncHandler(
       status: "success",
       data: referrals,
     });
-  }
+  },
 );
 
 export const getReferralEarnings = asyncHandler(
@@ -32,7 +32,7 @@ export const getReferralEarnings = asyncHandler(
       status: "success",
       data: { earnings },
     });
-  }
+  },
 );
 
 export const getReferralStats = asyncHandler(
@@ -44,7 +44,7 @@ export const getReferralStats = asyncHandler(
       status: "success",
       data: stats,
     });
-  }
+  },
 );
 
 export const getEligibleReferrals = asyncHandler(
@@ -57,7 +57,7 @@ export const getEligibleReferrals = asyncHandler(
       results: referrals.length,
       data: referrals,
     });
-  }
+  },
 );
 
 export const getReferralById = asyncHandler(
@@ -67,14 +67,14 @@ export const getReferralById = asyncHandler(
     const referral = await ReferralService.getReferralById(
       new Types.ObjectId(req.params.referralId),
       user._id,
-      user.role
+      user.role,
     );
 
     res.status(200).json({
       status: "success",
       data: referral,
     });
-  }
+  },
 );
 
 // Admin
@@ -87,7 +87,7 @@ export const getAllReferrals = asyncHandler(
       status: "success",
       data: referrals,
     });
-  }
+  },
 );
 
 // export const rewardReferral = asyncHandler(

@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
 
 // Utils
 import { asyncHandler } from "../Utils/asyncHandler.ts";
@@ -12,18 +12,17 @@ import type { ICategory } from "../Models/category.model.ts";
 
 export const getAllCategories = asyncHandler(
   async (req: Request, res: Response) => {
-
     const result = await CategoryService.getAll(
-      req.query as Record<string, unknown>
+      req.query as Record<string, unknown>,
     );
-    
+
     res.status(200).json({
       status: "success",
       message: "",
       meta: result.meta,
       data: result.data,
     });
-  }
+  },
 );
 
 export const createCategory = asyncHandler(
@@ -56,7 +55,7 @@ export const createCategory = asyncHandler(
       message: "Category created successfully.",
       data: category,
     });
-  }
+  },
 );
 
 export const updateCategory = asyncHandler(
@@ -70,7 +69,7 @@ export const updateCategory = asyncHandler(
       message: "Category updated successfully.",
       data: updated,
     });
-  }
+  },
 );
 
 export const toggleCategoryStatus = asyncHandler(
@@ -86,7 +85,7 @@ export const toggleCategoryStatus = asyncHandler(
       } successfully.`,
       data: toggled,
     });
-  }
+  },
 );
 
 export const deleteCategory = asyncHandler(
@@ -99,5 +98,5 @@ export const deleteCategory = asyncHandler(
       status: "success",
       message: "Category deleted successfully",
     });
-  }
+  },
 );

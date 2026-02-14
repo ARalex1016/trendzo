@@ -23,7 +23,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   if (!user.isEmailVerified) {
     throw new AppError(
       "You must verify your email address to continue with checkout.",
-      403
+      403,
     );
   }
 
@@ -56,7 +56,7 @@ export const getSingleOrder = asyncHandler(
     const order = await OrderService.getSingleOrder(orderId, req.user);
 
     res.status(200).json({ status: "success", order });
-  }
+  },
 );
 
 export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
@@ -76,7 +76,7 @@ export const getAllOrders = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await OrderService.getAllOrders(req.query);
     res.status(200).json({ status: "success", ...result });
-  }
+  },
 );
 
 export const placeStoreOrder = asyncHandler(
@@ -86,14 +86,14 @@ export const placeStoreOrder = asyncHandler(
     if (user.role !== "admin" && user.role !== "operator") {
       throw new AppError(
         "Only admin and operator can place in-store orders.",
-        403
+        403,
       );
     }
 
     if (!user.isEmailVerified) {
       throw new AppError(
         "You must verify your email address to continue with checkout.",
-        403
+        403,
       );
     }
 
@@ -108,19 +108,21 @@ export const placeStoreOrder = asyncHandler(
       message: "Order placed successfully",
       data: order,
     });
-  }
+  },
 );
 
-export const markOrderDelivered = asyncHandler(async (req, res) => {
-  const orderId = req.targetOrder!._id;
+export const markOrderDelivered = asyncHandler(
+  async (req: Request, res: Response) => {
+    const orderId = req.targetOrder!._id;
 
-  const order = await OrderService.markDelivered(orderId);
+    const order = await OrderService.markDelivered(orderId);
 
-  res.status(200).json({
-    status: "success",
-    data: order,
-  });
-});
+    res.status(200).json({
+      status: "success",
+      data: order,
+    });
+  },
+);
 
 export const updateOrderStatus = asyncHandler(
   async (req: Request, res: Response) => {
@@ -128,7 +130,7 @@ export const updateOrderStatus = asyncHandler(
 
     const order = await OrderService.updateOrderStatus(
       orderId,
-      req.body.status
+      req.body.status,
     );
 
     res.status(200).json({
@@ -136,5 +138,5 @@ export const updateOrderStatus = asyncHandler(
       message: "Order status updated",
       order,
     });
-  }
+  },
 );

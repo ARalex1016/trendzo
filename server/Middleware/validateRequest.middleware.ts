@@ -1,5 +1,5 @@
-import { ZodObject, ZodError, type ZodIssue } from "zod";
 import type { Request, Response, NextFunction } from "express";
+import { ZodObject, ZodError, type ZodIssue } from "zod";
 
 // Utils
 import AppError from "../Utils/AppError.ts";

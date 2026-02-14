@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import type { Request, Response, NextFunction } from "express";
 
 // Utils
@@ -17,7 +16,7 @@ import Review from "../Models/review.model.ts";
 export const userIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { userId } = req.params;
@@ -52,7 +51,7 @@ export const userIdParamHandler = async (
 export const paymentMethodIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { paymentMethodId } = req.params;
@@ -87,7 +86,7 @@ export const paymentMethodIdParamHandler = async (
 export const productSlugParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { slug } = req.params;
@@ -121,7 +120,7 @@ export const productSlugParamHandler = async (
 export const productIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { productId } = req.params;
@@ -160,7 +159,7 @@ export const productIdParamHandler = async (
 export const categoryIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { categoryId } = req.params;
@@ -195,7 +194,7 @@ export const categoryIdParamHandler = async (
 export const couponIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { couponId } = req.params;
@@ -230,7 +229,7 @@ export const couponIdParamHandler = async (
 export const orderIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { orderId } = req.params;
@@ -265,7 +264,7 @@ export const orderIdParamHandler = async (
 export const withdrawalIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { withdrawalId } = req.params;
@@ -300,7 +299,7 @@ export const withdrawalIdParamHandler = async (
 export const reviewIdParamHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { reviewId } = req.params;

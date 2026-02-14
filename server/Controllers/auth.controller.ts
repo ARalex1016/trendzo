@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 
 // Services
@@ -31,7 +31,7 @@ export const registerUser = asyncHandler(
       message: "User registered successfully",
       data: userData,
     });
-  }
+  },
 );
 
 // Register Admin
@@ -48,7 +48,7 @@ export const registerAdmin = asyncHandler(
       message: "Admin created successfully",
       data: adminData,
     });
-  }
+  },
 );
 
 // Login
@@ -76,7 +76,7 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const protect = asyncHandler(
-  async (req: Request, res: Response, next: Function) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies?.token || "";
 
     if (!token) throw new AppError("Authentication required", 401);
@@ -91,16 +91,16 @@ export const protect = asyncHandler(
     req.user = user;
 
     next();
-  }
+  },
 );
 
 export const authorize =
   (...role: string[]) =>
-  (req: Request, res: Response, next: Function) => {
+  (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !role.includes(req.user.role)) {
       throw new AppError(
         "You do not have permission to perform this action!",
-        403
+        403,
       );
     }
 
@@ -109,15 +109,15 @@ export const authorize =
 
 export const refreshAccessToken = asyncHandler(
   async (req: Request, res: Response) => {
-      // Success logic here
-      res.status(200).json({
-        status: "success",
-        message: "",
-      });
-  }
+    // Success logic here
+    res.status(200).json({
+      status: "success",
+      message: "",
+    });
+  },
 );
 
-export const checkAuth = asyncHandler(async(req: Request, res: Response) => {
+export const checkAuth = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
     data: req.user,
@@ -153,9 +153,9 @@ export const forgotPassword = asyncHandler(
       user.email,
       "Reset your password",
       passwordResetTemplate(resetUrl, user.name),
-      "Password Reset"
+      "Password Reset",
     );
-  }
+  },
 );
 
 export const resetPassword = asyncHandler(
@@ -189,7 +189,7 @@ export const resetPassword = asyncHandler(
       message: "Password reset successfully",
       data: userData,
     });
-  }
+  },
 );
 
 // Verification
@@ -232,7 +232,7 @@ export const sendEmailOtp = asyncHandler(
       status: "success",
       message: "Email with OTP sent successfully",
     });
-  }
+  },
 );
 
 export const verifyPhone = asyncHandler(async (req: Request, res: Response) => {
@@ -250,5 +250,5 @@ export const sendPhoneOtp = asyncHandler(
       status: "success",
       message: "",
     });
-  }
+  },
 );
