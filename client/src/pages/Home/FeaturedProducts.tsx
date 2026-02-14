@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 // Components
 import ProductCards from "@/components/Cards/ProductCards";
-import Alert from "@/components/Alert";
 
 // Store
 import useProductStore from "@/store/useProduct";
