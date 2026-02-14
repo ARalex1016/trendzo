@@ -8,6 +8,9 @@ import { env } from "./Config/env.config.ts";
 import router from "./Routes/index.route.ts";
 import { globalErrorHandler } from "./Controllers/errorController.ts";
 
+// Types
+import type { Request, Response } from "express";
+
 const app = express();
 
 // Middlewares
@@ -15,7 +18,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend domain
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 app.use(helmet());
@@ -27,7 +30,7 @@ if (env.NODE_ENV === "development") {
 
 app.use("/api", router);
 
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({
     status: "fail",
     message: `Cannot find ${req.originalUrl} on this server!`,
