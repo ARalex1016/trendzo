@@ -133,7 +133,7 @@ const Products = () => {
       {/* FIlter for Small Devices (Mobile) */}
       {isMobile && (
         <Drawer direction="left">
-          <DrawerTrigger>
+          <DrawerTrigger className="">
             <FilterIcon />
           </DrawerTrigger>
 
