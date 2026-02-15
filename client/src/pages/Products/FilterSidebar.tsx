@@ -194,12 +194,14 @@ const FilterSidebar = ({
       </Accordion>
 
       {/* Action Buttons */}
-      <div className="mt-auto flex flex-row gap-x-2">
-        <Button onClick={resetFilter} variant="outline">
+      <div className="w-full mt-auto flex flex-row gap-x-2">
+        <Button onClick={resetFilter} variant="outline" className="flex-1">
           Reset Filters
         </Button>
 
-        <Button onClick={search}>Search</Button>
+        <Button onClick={search} className="flex-1">
+          Search
+        </Button>
       </div>
     </div>
   );

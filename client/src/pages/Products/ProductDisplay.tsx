@@ -1,6 +1,7 @@
 // Components
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
+import ProductPagePagination from "./ProductPagePagination";
 
 // Store
 import useProductStore from "@/store/useProduct";
@@ -38,6 +39,8 @@ const ProductDisplay = () => {
             return <ProductCardSkeleton key={i} />;
           })}
       </div>
+
+      <ProductPagePagination />
     </div>
   );
 };

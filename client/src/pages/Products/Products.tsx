@@ -8,10 +8,10 @@ import {
   Drawer,
   DrawerContent,
   DrawerClose,
-  // DrawerDescription,
+  DrawerDescription,
   // DrawerFooter,
   // DrawerHeader,
-  // DrawerTitle,
+  DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
@@ -23,7 +23,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortValue } from "./FilterSidebar";
 
 // Icons
-import { FilterIcon, X } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 
 export interface CategoryPros {
   name: string;
@@ -117,7 +117,7 @@ const Products = () => {
   }, []);
 
   return (
-    <section className="w-full min-h-svh flex flex-row gap-x-8 px-side-spacing">
+    <section className="w-full min-h-svh flex flex-row gap-x-8 px-side-spacing relative">
       {/* Filter for Desktop */}
       {!isMobile && (
         <FilterSidebar
@@ -133,8 +133,8 @@ const Products = () => {
       {/* FIlter for Small Devices (Mobile) */}
       {isMobile && (
         <Drawer direction="left">
-          <DrawerTrigger className="">
-            <FilterIcon />
+          <DrawerTrigger className="bg-sidebar-primary p-2 rounded-full shadow-xs shadow-foreground/60 fixed bottom-side-spacing right-side-spacing z-20 hover:bg-sidebar-primary/70 hover:scale-105">
+            <SlidersHorizontal />
           </DrawerTrigger>
 
           <DrawerContent className="w-fit! px-0">
@@ -144,6 +144,10 @@ const Products = () => {
             >
               <X className="h-5 w-5" />
             </DrawerClose>
+
+            <DrawerTitle className="invisible">Filter</DrawerTitle>
+
+            <DrawerDescription className="invisible">Filter</DrawerDescription>
 
             <FilterSidebar
               filter={filter}
