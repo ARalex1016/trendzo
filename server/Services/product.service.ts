@@ -35,7 +35,7 @@ export const ProductService = {
 
     // ✅ THEN SORT, LIMIT, PAGINATE
     features.sort().limitFields();
-    await features.paginate(20);
+    await features.paginate(10);
     return {
       data: await features.query,
       meta: features.meta,

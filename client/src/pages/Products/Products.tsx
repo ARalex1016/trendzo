@@ -43,7 +43,7 @@ const defaultFilterValue: FilterProps = {
 };
 
 const Products = () => {
-  const { getAllProducts } = useProductStore();
+  const { productsResponse, getAllProducts } = useProductStore();
 
   const { state } = useLocation();
 
@@ -106,6 +106,10 @@ const Products = () => {
     if (filter.sortBy) {
       params.append("sortBy", filter.sortBy);
     }
+
+    const limit = isMobile ? "5" : "8";
+
+    params.append("limit", limit);
 
     try {
       await getAllProducts(params.toString());

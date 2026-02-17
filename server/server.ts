@@ -6,7 +6,7 @@ import { connectDB } from "./Config/mongoose.config.ts";
 const startServer = async () => {
   await connectDB();
 
-  app.listen(env.PORT, () => {
+  app.listen(env.PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${env.PORT}`);
   });
 };

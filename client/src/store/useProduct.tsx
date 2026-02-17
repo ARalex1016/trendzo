@@ -18,7 +18,9 @@ const useProductStore = create<ProductStore>((set) => ({
   getAllProducts: async (query?: string) => {
     set({ productsResponse: null });
     try {
-      let res = await axiosInstance.get(`/products${query ? `?${query}` : ""}`);
+      let res = await axiosInstance.get(
+        `/products${query ? `?${query}&` : ""}`,
+      );
 
       set({ productsResponse: res.data });
 

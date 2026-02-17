@@ -22,7 +22,7 @@ export const generateToken = (user: IUser, res: Response) => {
   const token = jwt.sign(
     { id: user._id, role: user.role },
     env.JWT_SECRET as jwt.Secret, // ✅ ensure correct type
-    options
+    options,
   );
 
   //  Set cookie for cross-domain frontend
