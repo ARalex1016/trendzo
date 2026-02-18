@@ -17,11 +17,8 @@ export const ProductService = {
   async getAll(reqQuery: any) {
     let query = ProductRepository.findAll({});
 
-    const features = new ApiFeatures(query, reqQuery)
-      .filter()
-      .search(["name", "slug", "tags", "variants.color"]);
-
-    const filters = buildProductFilterQuery({
+    // await the async filter
+    const filters = await buildProductFilterQuery({
       colors: reqQuery.colors?.split(",") || [],
       sizes: reqQuery.sizes?.split(",") || [],
       categories: reqQuery.categories?.split(",") || [],
@@ -30,12 +27,17 @@ export const ProductService = {
       maxPrice: reqQuery.maxPrice ? Number(reqQuery.maxPrice) : undefined,
     });
 
+    const features = new ApiFeatures(query, reqQuery)
+      .filter()
+      .search(["name", "slug", "tags", "variants.color"]);
+
     // ✅ APPLY PRODUCT FILTERS FIRST
     features.query = features.query.find(filters);
 
     // ✅ THEN SORT, LIMIT, PAGINATE
     features.sort().limitFields();
     await features.paginate(10);
+
     return {
       data: await features.query,
       meta: features.meta,

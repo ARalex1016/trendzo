@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+// Models
+import Category from "../../Models/category.model.ts";
 interface ProductQuery {
   colors?: string[];
   sizes?: string[];
@@ -9,15 +10,18 @@ interface ProductQuery {
   [key: string]: any;
 }
 
-export const buildProductFilterQuery = (query: ProductQuery) => {
+export const buildProductFilterQuery = async (query: ProductQuery) => {
   const filter: any = {};
 
-  // Categories (top-level)
+  // Categories by slug (top-level)
   if (query.categories && query.categories.length > 0) {
-    const categoryIds = query.categories
-      .filter((id) => mongoose.Types.ObjectId.isValid(id))
-      .map((id) => new mongoose.Types.ObjectId(id));
+    // find category IDs from slugs
+    const categoryDocs = await Category.find({
+      slug: { $in: query.categories },
+      isActive: true,
+    }).select("_id");
 
+    const categoryIds = categoryDocs.map((c) => c._id);
     if (categoryIds.length > 0) {
       filter.categories = { $in: categoryIds };
     }

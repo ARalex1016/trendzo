@@ -7,7 +7,7 @@ import CategoryCard from "@/components/Cards/CategoryCard";
 import useCategoryStore from "@/store/useCategory";
 
 const CategoryGrid = () => {
-  const { categories, getAllCategories } = useCategoryStore();
+  const { categoriesResponse, getAllCategories } = useCategoryStore();
 
   useEffect(() => {
     getAllCategories();
@@ -26,8 +26,8 @@ const CategoryGrid = () => {
 
       {/* Category Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-        {!!categories &&
-          categories.map((category, index) => {
+        {!!categoriesResponse &&
+          categoriesResponse.data.map((category, index) => {
             return <CategoryCard key={index} data={category} />;
           })}
       </div>

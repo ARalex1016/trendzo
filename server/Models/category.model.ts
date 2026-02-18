@@ -30,11 +30,11 @@ const categorySchema = new Schema<ICategory>(
     },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Category: Model<ICategory> = mongoose.model<ICategory>(
   "Category",
-  categorySchema
+  categorySchema,
 );
 export default Category;

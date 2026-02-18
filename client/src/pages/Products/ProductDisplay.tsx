@@ -1,13 +1,50 @@
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+
 // Components
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
 import ProductPagePagination from "./ProductPagePagination";
 
+// Hooks
+import { useResponsive } from "@/hooks/use-mobile";
+
 // Store
 import useProductStore from "@/store/useProduct";
 
 const ProductDisplay = () => {
-  const { productsResponse } = useProductStore();
+  const { productsResponse, getAllProducts } = useProductStore();
+  const { breakpoint } = useResponsive();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const fetchAllProducts = async () => {
+    try {
+      var responsivelimit: string;
+
+      if (breakpoint === "xs" || breakpoint === "sm") {
+        responsivelimit = "6";
+      } else if (breakpoint === "md") {
+        responsivelimit = "10";
+      } else {
+        responsivelimit = "20";
+      }
+
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        params.set("limit", responsivelimit);
+        return params;
+      });
+
+      // Always send query string to your store / API
+      await getAllProducts(searchParams.toString());
+    } catch (error) {}
+  };
+
+  // 2️⃣ Fetch when params change
+  useEffect(() => {
+    fetchAllProducts();
+  }, [searchParams.toString()]);
 
   return (
     <div className="w-full py-4">

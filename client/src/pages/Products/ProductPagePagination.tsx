@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router-dom";
+
 // Components
 import {
   Pagination,
@@ -8,6 +10,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useSidebar } from "@/components/ui/sidebar";
+
+// Hooks
+import { useResponsive } from "@/hooks/use-mobile";
 
 // Store
 import useProductStore from "@/store/useProduct";
@@ -17,13 +23,26 @@ import { getPaginationRange } from "@/utils/NumberManager";
 
 const ProductPagePagination = () => {
   const { productsResponse } = useProductStore();
+  const { breakpoint } = useResponsive();
+  const { state: sidebarState } = useSidebar();
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   if (!productsResponse) return null;
 
   const { page: currentPage, pages: totalPages } = productsResponse.meta;
 
-  const isMobile = window.innerWidth < 640;
-  const siblingCount = isMobile ? 1 : 2;
+  var siblingCount: number;
+
+  if (breakpoint === "xs" || breakpoint === "sm") {
+    siblingCount = 1;
+  } else {
+    if (sidebarState === "expanded") {
+      siblingCount = 1;
+    } else {
+      siblingCount = 2;
+    }
+  }
 
   const paginationRange = getPaginationRange(
     currentPage,
@@ -31,13 +50,24 @@ const ProductPagePagination = () => {
     siblingCount,
   );
 
+  const next = () => {
+    currentPage < totalPages &&
+      setSearchParams({ page: String(currentPage + 1) });
+  };
+
+  const prev = () => {
+    currentPage > 1 && setSearchParams({ page: String(currentPage - 1) });
+  };
+
+  const goTo = (page: number) => {
+    page <= totalPages && setSearchParams({ page: String(page) });
+  };
+
   return (
     <Pagination>
-      <PaginationContent className="flex flex-wrap justify-center">
+      <PaginationContent className="flex flex-row flex-wrap justify-center">
         <PaginationItem>
-          <PaginationPrevious
-          // onClick={() => currentPage > 1 && setPage(currentPage - 1)}
-          />
+          <PaginationPrevious onClick={prev} />
         </PaginationItem>
 
         {paginationRange.map((item, index) => {
@@ -53,7 +83,7 @@ const ProductPagePagination = () => {
             <PaginationItem key={index}>
               <PaginationLink
                 isActive={item === currentPage}
-                // onClick={() => setPage(item as number)}
+                onClick={() => goTo(item as number)}
               >
                 {item}
               </PaginationLink>
@@ -62,9 +92,7 @@ const ProductPagePagination = () => {
         })}
 
         <PaginationItem>
-          <PaginationNext
-          // onClick={() => currentPage < totalPages && setPage(currentPage + 1)}
-          />
+          <PaginationNext onClick={next} />
         </PaginationItem>
       </PaginationContent>
     </Pagination>

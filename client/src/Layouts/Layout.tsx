@@ -11,7 +11,7 @@ const Layout = () => {
   // Scroll to top whenever route url changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location]);
+  }, [location.pathname]);
 
   return (
     <div className="flex flex-row w-screen min-h-svh">
