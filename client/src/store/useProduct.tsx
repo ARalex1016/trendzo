@@ -10,6 +10,7 @@ interface ProductStore {
 
   getAllProducts: (query?: string) => Promise<IProductResponse | null>;
   getFeaturedProducts: () => Promise<IProduct[] | null>;
+  getProductBySlug: (slug: string) => Promise<IProduct | null>;
 }
 
 const useProductStore = create<ProductStore>((set) => ({
@@ -35,6 +36,16 @@ const useProductStore = create<ProductStore>((set) => ({
   getFeaturedProducts: async () => {
     try {
       let res = await axiosInstance.get("/products/featured");
+
+      return res.data.data;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  },
+
+  getProductBySlug: async (slug) => {
+    try {
+      let res = await axiosInstance.get(`/products/slug/${slug}`);
 
       return res.data.data;
     } catch (error: any) {

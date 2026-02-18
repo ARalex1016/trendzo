@@ -43,20 +43,20 @@ router.post(
   protect,
   authorize("admin"),
   validateRequest(addProductSchema),
-  addProduct
+  addProduct,
 );
 router.patch("/:productId", protect, authorize("admin"), updateProduct);
 router.patch(
   "/:productId/toggle-active",
   protect,
   authorize("admin"),
-  toggleActive
+  toggleActive,
 );
 router.patch(
   "/:productId/toggle-featured",
   protect,
   authorize("admin"),
-  toggleFeatured
+  toggleFeatured,
 );
 router.delete("/:productId", protect, authorize("admin"), deleteProduct);
 
