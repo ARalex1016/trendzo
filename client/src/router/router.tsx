@@ -7,6 +7,7 @@ import AuthLayout from "@/Layouts/AuthLayout";
 // Pages
 import Home from "@/pages/Home/Home";
 import Products from "@/pages/Products/Products";
+import ProductDetails from "@/pages/ProductDetails/ProductDetails";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "/products",
         element: <Products />,
+      },
+      {
+        path: "/products/:productSlug",
+        element: <ProductDetails />,
       },
       {
         element: <ProtectedRoute />,

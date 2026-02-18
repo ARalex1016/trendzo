@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 // Components
 import { Button } from "../ui/button";
 
@@ -21,10 +23,12 @@ interface ProductCardsPros {
 }
 
 const ProductCards = ({ data, className }: ProductCardsPros) => {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   return (
     <div
+      onClick={() => navigate(`/products/${data.slug}`)}
       className={`w-full bg-card1 rounded-xl overflow-hidden border border-[#2A2A2E] group transition-all duration-500 hover:border-primary hover:shadow-2xl hover:shadow-[#6366F1]/10 hover:-translate-y-2 ${className}`}
     >
       {/* Image Section */}

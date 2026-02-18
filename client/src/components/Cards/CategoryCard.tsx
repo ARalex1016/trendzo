@@ -16,16 +16,7 @@ const CategoryCard = ({ data, className }: CardProps) => {
 
   return (
     <div
-      onClick={() =>
-        navigate("/products", {
-          state: {
-            category: {
-              name: data.name,
-              id: data._id,
-            },
-          },
-        })
-      }
+      onClick={() => navigate(`/products?categories=${data.slug}`)}
       className={`min-w-28 max-w-80 aspect-3/4 rounded-xl overflow-hidden relative group shadow-md hover:shadow-xl ${className}`}
     >
       {/* Image */}
