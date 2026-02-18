@@ -19,7 +19,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://192.168.100.13:5173",
-      "https://trendzon.onrender.com",
+      "https://trendzo.netlify.app",
     ], // your frontend domain
     credentials: true,
   }),
