@@ -1,13 +1,13 @@
 export interface IVariantSize {
   size: string; // e.g. "M", "L", "XL"
-  stock: number; 
-  costPrice: number; 
+  stock: number;
+  costPrice: number;
   sellingPrice: number;
 }
 
 export interface IVariant {
   color: string; // e.g. "Black", "Red"
-  images: string[]; 
+  images: string[];
   sizes: IVariantSize[];
 }
 
@@ -23,10 +23,10 @@ export interface IProduct extends Document {
     warranty?: string;
   };
   variants: IVariant[];
-  baseCostPrice: number; 
-  baseSellingPrice: number; 
+  baseCostPrice: number;
+  baseSellingPrice: number;
   discount?: number;
-  categories: string[]; 
+  categories: string[];
   tags: string[];
   featured: boolean;
   isActive: boolean;

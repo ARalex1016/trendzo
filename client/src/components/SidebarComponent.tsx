@@ -114,13 +114,13 @@ const SidebarComponent = () => {
           {/* <SidebarGroupLabel>Application</SidebarGroupLabel> */}
 
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="flex flex-col gap-y-2">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>
+                    <Link to={item.url} className="flex flex-row items-center">
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span className="text-base">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

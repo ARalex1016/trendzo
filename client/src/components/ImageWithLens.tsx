@@ -1,24 +1,14 @@
-import { useState } from "react";
+import * as React from "react";
 
 // Components
 import { Lens } from "@/components/ui/lens";
 
-interface ImageWithLensProps {
-  src: string;
-}
-
-const ImageWithLens = ({ src }: ImageWithLensProps) => {
-  const [hovering, setHovering] = useState(false);
+const ImageWithLens = ({ src, className }: React.ComponentProps<"img">) => {
+  const [hovering, setHovering] = React.useState(false);
 
   return (
     <Lens hovering={hovering} setHovering={setHovering}>
-      <img
-        src={src}
-        alt="Image"
-        width={500}
-        height={500}
-        className="rounded-2xl"
-      />
+      <img src={src} className={`${className}`} />
     </Lens>
   );
 };
