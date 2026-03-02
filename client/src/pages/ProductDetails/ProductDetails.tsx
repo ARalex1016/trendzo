@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import ImageWithLens from "@/components/ImageWithLens";
 import TrustBadges from "./TrustBadges";
+import DSR_Tab from "./DSR_Tab";
+import Loader from "@/components/Loader";
 
 // Icons
 import { ShoppingCart } from "lucide-react";
@@ -50,11 +52,7 @@ const ProductDetails = () => {
   }, [productSlug]);
 
   if (loading) {
-    return (
-      <section>
-        <p>Loading...</p>
-      </section>
-    );
+    return <Loader text="Fetching product details..." />;
   }
 
   if (!product) {
@@ -67,7 +65,7 @@ const ProductDetails = () => {
 
   return (
     <section className="w-full px-side-spacing py-side-spacing">
-      <div className="w-full grid lg:grid-cols-2 gap-x-10 mb-16">
+      <div className="w-full grid lg:grid-cols-2 gap-x-10 mb-10">
         {/* Image Section */}
         <div className="w-full flex flex-col md:flex-row gap-x-5 gap-y-4">
           {/* Image Group */}
@@ -140,6 +138,8 @@ const ProductDetails = () => {
           <TrustBadges />
         </div>
       </div>
+
+      <DSR_Tab />
     </section>
   );
 };
