@@ -34,14 +34,3 @@ export interface IProduct extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-// export interface IMetaProduct {
-//     status: string;
-//     data: IProduct[];
-//     meta: {
-//         limit: number;
-//         page: number;
-//         pages: number;
-//         total: number;
-//     }
-// }

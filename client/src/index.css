@@ -185,6 +185,14 @@ html {
 
 /* Scroll Bar End */
 
+/* Radius Start */
+
+.rounded-inherit {
+  border-radius: inherit;
+}
+
+/* Radius End */
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

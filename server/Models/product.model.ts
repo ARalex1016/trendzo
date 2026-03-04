@@ -45,7 +45,7 @@ const variantSizeSchema = new Schema<IVariantSize>(
     costPrice: { type: Number, required: true },
     sellingPrice: { type: Number, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const variantSchema = new Schema<IVariant>(
@@ -54,7 +54,7 @@ const variantSchema = new Schema<IVariant>(
     images: [{ type: String, required: true }],
     sizes: [variantSizeSchema],
   },
-  { _id: false }
+  { _id: false },
 );
 
 const productSchema = new Schema<IProduct>(
@@ -123,12 +123,12 @@ const productSchema = new Schema<IProduct>(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Product: Model<IProduct> = mongoose.model<IProduct>(
   "Product",
-  productSchema
+  productSchema,
 );
 
 export default Product;

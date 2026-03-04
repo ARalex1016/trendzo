@@ -107,7 +107,7 @@ const orderSchema = new Schema<IOrder>(
     deliveredAt: { type: Date },
     cancellationDate: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Order: Model<IOrder> = mongoose.model<IOrder>("Order", orderSchema);
