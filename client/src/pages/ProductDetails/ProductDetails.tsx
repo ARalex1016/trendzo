@@ -15,6 +15,7 @@ import type { IProduct } from "@/types/product.type";
 
 const ProductDetails = () => {
   const { getProductBySlug } = useProductStore();
+
   const { productSlug } = useParams();
 
   const [product, setProduct] = useState<IProduct | null>(null);
