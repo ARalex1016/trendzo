@@ -2,7 +2,6 @@ import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
 
 // Layouts
 import Layout from "@/Layouts/Layout";
-import AuthLayout from "@/Layouts/AuthLayout";
 
 // Pages
 import Home from "@/pages/Home/Home";
@@ -30,7 +29,7 @@ const RedirectIfAuthenticated = () => {
 
 const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <Layout showFooter />,
     children: [
       {
         index: true,
@@ -57,7 +56,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    element: <AuthLayout />,
+    element: <Layout showFooter={false} />,
     children: [
       {
         element: <RedirectIfAuthenticated />,

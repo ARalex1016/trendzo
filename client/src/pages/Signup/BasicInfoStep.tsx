@@ -100,6 +100,7 @@ const BasicInfoStep = () => {
                 value={field.value ?? ""}
                 onChange={field.onChange}
                 placeholder="Referral Code"
+                readOnly
               />
               {firstErrorPath === "referralCode" && <FormMessage />}
             </FormItem>

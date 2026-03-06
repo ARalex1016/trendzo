@@ -57,11 +57,12 @@ export const AuthService = {
     // Handle referral
     if (referralCode) {
       const inviter = await UserRepository.getUserByReferralCode(referralCode);
+
       if (inviter) {
         await ReferralService.createReferral(
           inviter._id,
           user._id,
-          referralCode
+          referralCode,
         );
       }
     }

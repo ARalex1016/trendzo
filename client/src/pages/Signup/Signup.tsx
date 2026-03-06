@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 // Icons
-import { Check } from "lucide-react";
+import { Check, LoaderCircle } from "lucide-react";
 
 // Hooks
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -63,6 +63,7 @@ function getValidSignupDraft() {
 
 const Signup = () => {
   const { registerUser } = useAuthStore();
+
   const navigate = useNavigate();
 
   const [isRegistering, setIsRegistering] = useState(false);
@@ -95,6 +96,8 @@ const Signup = () => {
   const { step, currentStepIndex, isFirstStep, isLastStep, next, back } =
     useMultiStepForm({ steps, initialStep: initialStepIndex });
 
+  const referral = localStorage.getItem("ref") ?? undefined;
+
   const methods = useForm<UserRegisterType>({
     resolver: zodResolver(isLastStep ? registerSchema : step.schema) as any,
     mode: "onBlur",
@@ -104,6 +107,7 @@ const Signup = () => {
     shouldFocusError: true, // ✅ Focus first invalid field
     defaultValues: {
       address: { country: "Nepal" },
+      referralCode: draft?.data?.referralCode ?? referral,
       ...(draft?.data || {}),
     },
   });
@@ -112,7 +116,7 @@ const Signup = () => {
 
   const handleNext = async () => {
     const currentStepFields = Object.keys(
-      steps[currentStepIndex].schema.shape
+      steps[currentStepIndex].schema.shape,
     ) as (keyof UserRegisterType)[];
 
     const isValid = await methods.trigger(currentStepFields);
@@ -129,6 +133,8 @@ const Signup = () => {
 
       // ✅ Clear persisted draft
       localStorage.removeItem("signup-draft");
+
+      localStorage.removeItem("ref");
 
       // ✅ Optional: reset form state
       methods.reset();
@@ -169,8 +175,8 @@ const Signup = () => {
               const bgColor = isCompleted
                 ? "bg-blue-700"
                 : isCurrent
-                ? "bg-blue-600"
-                : "bg-muted";
+                  ? "bg-blue-600"
+                  : "bg-muted";
 
               return (
                 <React.Fragment key={step.id}>

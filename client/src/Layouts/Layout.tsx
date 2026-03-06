@@ -1,12 +1,26 @@
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 
 // Components
 import SidebarComponent from "@/components/SidebarComponent";
 import Header from "@/components/Header";
 
-const Layout = () => {
+interface LayoutProps {
+  showFooter?: boolean;
+}
+
+const Layout = ({ showFooter = true }: LayoutProps) => {
   const location = useLocation();
+  const [params] = useSearchParams();
+
+  // If have referral, set to localStorage
+  useEffect(() => {
+    const ref = params.get("ref");
+
+    if (ref && !localStorage.getItem("ref")) {
+      localStorage.setItem("ref", ref);
+    }
+  }, [params]);
 
   // Scroll to top whenever route url changes
   useEffect(() => {
@@ -28,9 +42,11 @@ const Layout = () => {
         </main>
 
         {/* Footer */}
-        <footer className="shrink-0 h-12 bg-background border-t flex items-center justify-center text-sm">
-          Footer
-        </footer>
+        {showFooter && (
+          <footer className="shrink-0 h-12 bg-background border-t flex items-center justify-center text-sm">
+            Footer
+          </footer>
+        )}
       </div>
     </div>
   );

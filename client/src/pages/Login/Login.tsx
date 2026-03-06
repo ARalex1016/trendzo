@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +15,7 @@ import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import PasswordInput from "@/components/ui/password";
+import { Spinner } from "@/components/ui/spinner";
 
 // Validation
 import { loginSchema, type UserLoginType } from "@/validations/user.validator";
@@ -29,8 +31,10 @@ import useAuthStore from "@/store/useAuthStore";
 --------------------------------------------- */
 const LoginForm = ({
   onSubmit,
+  loading,
 }: {
   onSubmit: (data: UserLoginType) => void;
+  loading: boolean;
 }) => {
   const methods = useFormContext<UserLoginType>();
   const { firstErrorPath } = useFirstStepError<UserLoginType>();
@@ -74,8 +78,10 @@ const LoginForm = ({
       />
 
       <div className="col-span-2">
-        <Button type="submit" className="w-full">
-          Log in
+        <Button type="submit" disabled={loading} className="w-full">
+          <span>Log in</span>
+
+          {loading && <Spinner />}
         </Button>
       </div>
     </form>
@@ -89,6 +95,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const methods = useForm<UserLoginType>({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
@@ -98,11 +106,16 @@ const Login = () => {
   });
 
   const onSubmit = async (data: UserLoginType) => {
+    setIsLoggingIn(true);
+
     try {
       await login(data);
 
       navigate("/products");
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -116,7 +129,7 @@ const Login = () => {
 
         <CardContent>
           <FormProvider {...methods}>
-            <LoginForm onSubmit={onSubmit} />
+            <LoginForm onSubmit={onSubmit} loading={isLoggingIn} />
           </FormProvider>
         </CardContent>
 
