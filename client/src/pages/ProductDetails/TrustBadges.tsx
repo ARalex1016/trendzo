@@ -21,7 +21,7 @@ const trustBadges = [
     description: "100% Authentic",
   },
   {
-    id: 1,
+    id: 3,
     icon: RotateCcw,
     name: "Easy Returns",
     description: "7-Day Policy",

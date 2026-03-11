@@ -6,10 +6,17 @@ import router from "./router/router";
 import { ThemeProvider } from "./components/theme-provider";
 import { SidebarProvider } from "./components/ui/sidebar";
 
-// Store
+// Hooks
+// import { useAppInit } from "./hooks/useAppInit";
 import useAuthStore from "./store/useAuthStore";
 
 function App() {
+  // const { loading } = useAppInit();
+
+  // if (loading) {
+  //   return <main className="w-svw h-svh bg-yellow-400"></main>;
+  // }
+
   const { checkAuth } = useAuthStore();
 
   useEffect(() => {

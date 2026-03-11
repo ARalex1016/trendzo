@@ -37,7 +37,7 @@ export const OrderRepository = {
       coupon?: Types.ObjectId;
       orderNote?: string;
     },
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     const order = new Order(data);
     if (session) order.$session(session);
@@ -57,7 +57,7 @@ export const OrderRepository = {
     userId: Types.ObjectId,
     filter: any,
     pagination: { skip: number; limit: number },
-    session?: any
+    session?: any,
   ) {
     return Order.find({ user: userId, ...filter })
       .sort({ createdAt: -1 })
@@ -90,19 +90,19 @@ export const OrderRepository = {
     orderId: Types.ObjectId,
     status: string,
     extra: any = {},
-    session?: any
+    session?: any,
   ) {
     return Order.findByIdAndUpdate(
       orderId,
       { status, ...extra },
-      { new: true, session }
+      { new: true, session },
     );
   },
 
   async markDelivered(
     orderId: Types.ObjectId,
     deliveredAt: Date,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<IOrder> {
     const order = await Order.findOneAndUpdate(
       {
@@ -116,13 +116,13 @@ export const OrderRepository = {
       {
         new: true,
         session: session ?? null,
-      }
+      },
     );
 
     if (!order) {
       throw new AppError(
         "Order not found or cannot be marked as delivered",
-        400
+        400,
       );
     }
 
@@ -132,7 +132,7 @@ export const OrderRepository = {
   findByUser(
     userId: Types.ObjectId,
     filter: any,
-    pagination: { skip: number; limit: number }
+    pagination: { skip: number; limit: number },
   ) {
     return Order.find({ user: userId, ...filter })
       .sort({ createdAt: -1 })
@@ -163,7 +163,7 @@ export const OrderRepository = {
 
   countUserOrders(userId: Types.ObjectId, filter: any = {}, session?: any) {
     return Order.countDocuments({ user: userId, ...filter }).session(
-      session ?? null
+      session ?? null,
     );
   },
 };

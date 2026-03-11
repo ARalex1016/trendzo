@@ -18,7 +18,7 @@ const useCategoryStore = create<CategoryStore>((set) => ({
 
     try {
       let response = await axiosInstance.get(
-        `/categories${query ? `?${query}` : ""}`,
+        `/v1/categories${query ? `?${query}` : ""}`,
       );
 
       set({ categoriesResponse: response.data });

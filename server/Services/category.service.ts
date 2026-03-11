@@ -73,7 +73,7 @@ const CategoryService = {
     target: ICategory,
     payload: Partial<
       ICategory & { slug?: string; parentCategory?: string | null }
-    >
+    >,
   ) {
     // name uniqueness
     if (payload.name && payload.name.trim() !== target.name) {
@@ -84,7 +84,7 @@ const CategoryService = {
       if (exists)
         throw new AppError(
           "Another category with this name already exists.",
-          400
+          400,
         );
       target.name = payload.name.trim();
     }
@@ -102,7 +102,7 @@ const CategoryService = {
       if (existing)
         throw new AppError(
           "Another category with this slug already exists.",
-          400
+          400,
         );
       target.slug = slugified;
     } else if (payload.name) {
@@ -143,13 +143,13 @@ const CategoryService = {
           if (String(cursor.parentCategory) === String(target._id)) {
             throw new AppError(
               "Parent category would create a cycle with this category.",
-              400
+              400,
             );
           }
           // fetch next ancestor
           // eslint-disable-next-line no-await-in-loop
           cursor = (await CategoryRepository.findById(
-            String(cursor.parentCategory)
+            String(cursor.parentCategory),
           )) as ICategory | null;
           if (!cursor) break;
         }

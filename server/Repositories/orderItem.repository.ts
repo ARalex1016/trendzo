@@ -7,16 +7,30 @@ export const OrderItemRepository = {
   create(
     data: {
       product: Types.ObjectId;
-      color: string;
-      size: string;
+      productName: string;
+      productImage: string;
+
+      color: {
+        id: Types.ObjectId;
+        name: string;
+        hexCode: string;
+      };
+
+      size: {
+        id: Types.ObjectId;
+        name: string;
+      };
+
       quantity: number;
+
       costPrice: number;
       sellingPrice: number;
+
       totalCost: number;
       totalPrice: number;
       profit: number;
     },
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     const item = new OrderItem(data);
     if (session) item.$session(session);

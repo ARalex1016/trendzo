@@ -8,6 +8,8 @@ import User from "../Models/user.model.ts";
 import PaymentMethod from "../Models/payment-method.model.ts";
 import Product from "../Models/product.model.ts";
 import Category from "../Models/category.model.ts";
+import Size from "../Models/size.model.ts";
+import Color from "../Models/color.model.ts";
 import Coupon from "../Models/coupon.model.ts";
 import Order from "../Models/order.model.ts";
 import Withdrawal from "../Models/withdraw.model.ts";
@@ -133,11 +135,7 @@ export const productIdParamHandler = async (
       });
     }
 
-    console.log(productId);
-
     const product = await Product.findById(productId);
-
-    console.log(product);
 
     if (!product) {
       return res.status(404).json({
@@ -322,6 +320,66 @@ export const reviewIdParamHandler = async (
     }
 
     req.targetReview = review;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+};
+
+export const sizeIdParamHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { sizeId } = req.params;
+
+    if (!sizeId || !isValidObjectId(sizeId)) {
+      return res
+        .status(400)
+        .json({ status: "fail", message: "Invalid size ID" });
+    }
+
+    const size = await Size.findById(sizeId);
+
+    if (!size)
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Size not found" });
+
+    req.targetSize = size;
+    next();
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Internal server error" });
+  }
+};
+
+export const colorIdParamHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { colorId } = req.params;
+
+    if (!colorId || !isValidObjectId(colorId)) {
+      return res
+        .status(400)
+        .json({ status: "fail", message: "Invalid color ID" });
+    }
+
+    const color = await Color.findById(colorId);
+
+    if (!color)
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Color not found" });
+
+    req.targetColor = color;
+
     next();
   } catch (error) {
     res.status(500).json({

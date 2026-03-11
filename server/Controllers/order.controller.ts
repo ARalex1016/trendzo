@@ -7,15 +7,6 @@ import { OrderService } from "../Services/order.service.ts";
 import { asyncHandler } from "../Utils/asyncHandler.ts";
 import AppError from "../Utils/AppError.ts";
 
-// const allowedStatuses: OrderStatus[] = [
-//   "placed",
-//   "processing",
-//   "shipped",
-//   "delivered",
-//   "cancelled",
-//   "returned",
-// ];
-
 // USER ROUTES
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const user = req.user!;

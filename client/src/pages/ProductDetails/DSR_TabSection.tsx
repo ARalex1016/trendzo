@@ -6,8 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import type { IProduct } from "@/types/product.type";
 
 interface DSR_TabSectionProps {
-  description: string;
-  specifications: IProduct["specifications"];
+  description?: string;
+  specifications?: IProduct["specifications"];
 }
 
 interface ContainerProps {
@@ -59,27 +59,33 @@ const DSR_TabSection = ({
       </TabsList>
 
       {/* Description */}
-      <TabsContent value="description">
-        <Container title="Product Description">
-          <p className="text-sm text-foreground/60 font-medium">
-            {description}
-          </p>
-        </Container>
-      </TabsContent>
+      {description && (
+        <TabsContent value="description">
+          <Container title="Product Description">
+            <p className="text-sm text-foreground/60 font-medium">
+              {description}
+            </p>
+          </Container>
+        </TabsContent>
+      )}
 
       {/* Specification */}
       <TabsContent value="specification">
         <Container title="Specification">
-          <Table label="Material" value={specifications.material || null} />
+          {specifications && (
+            <>
+              <Table label="Material" value={specifications.material || null} />
 
-          <Table label="Weight" value={specifications.weight || null} />
+              <Table label="Weight" value={specifications.weight || null} />
 
-          <Table
-            label="Country of Origin"
-            value={specifications.countryOfOrigin || null}
-          />
+              <Table
+                label="Country of Origin"
+                value={specifications.countryOfOrigin || null}
+              />
 
-          <Table label="Warranty" value={specifications.warranty || null} />
+              <Table label="Warranty" value={specifications.warranty || null} />
+            </>
+          )}
         </Container>
       </TabsContent>
 

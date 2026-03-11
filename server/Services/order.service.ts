@@ -1,40 +1,52 @@
 import mongoose, { Types } from "mongoose";
 
-// Repository
-import { OrderRepository } from "./../Repositories/order.repository.ts";
-import { OrderItemRepository } from "../Repositories/orderItem.repository.ts";
-import { ProductService } from "./product.service.ts";
-import { PricingService } from "./pricing.service.ts";
-import { ProductRepository } from "./../Repositories/product.repository.ts";
-
 // Service
+import { PricingService } from "./pricing.service.ts";
+import ProductService from "./product.service.ts";
 import { CouponService } from "./../Services/coupon.service.ts";
 import { DeliveryService } from "./../Services/delivery.service.ts";
 import { ReferralService } from "../Services/referral.service.ts";
 
+// Repository
+import { OrderRepository } from "./../Repositories/order.repository.ts";
+import { OrderItemRepository } from "../Repositories/orderItem.repository.ts";
+import ProductRepository from "./../Repositories/product.repository.ts";
+import ColorRepository from "../Repositories/color.repository.ts";
+import SizeRepository from "../Repositories/size.repository.ts";
+
 // Types
-import type { PaymentMethod } from "../Models/order.model.ts";
+import type { PaymentMethod, OrderStatus } from "../Models/order.model.ts";
 
 // Utils
 import AppError from "./../Utils/AppError.ts";
 
-const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-  placed: ["processing", "cancelled"],
-  processing: ["shipped", "cancelled"],
-  shipped: ["delivered", "returned"],
-  delivered: [],
-  cancelled: [],
-  returned: [],
+export const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  pending: ["confirmed", "cancelled"], // customer placed order → admin confirms or customer cancels
+  confirmed: ["shipped", "cancelled"], // admin verified → courier ships or customer cancels
+  shipped: ["delivered", "returned"], // courier picked up → delivered or returned
+  delivered: ["returned", "refunded"], // delivered → returned or refunded
+  cancelled: [], // final state
+  returned: ["refunded"], // returned → refunded
+  refunded: [], // final state
 };
 
 export const OrderService = {
   async placeOrder(input: {
     userId?: string;
     cashierId?: string;
-    items: { product: string; color: string; size: string; quantity: number }[];
+
+    items: {
+      product: string;
+      color: string;
+      size: string;
+      quantity: number;
+    }[];
+
     paymentMethod: PaymentMethod;
     deliveryAddress: any;
+
     orderType: "online" | "in_store";
+
     couponCode?: string;
     orderNote?: string;
   }) {
@@ -43,111 +55,142 @@ export const OrderService = {
     try {
       session.startTransaction();
 
+      if (!input.items || input.items.length === 0) {
+        throw new AppError("Order must contain at least one item", 400);
+      }
+
       let userId: Types.ObjectId | undefined;
       let cashierId: Types.ObjectId | undefined;
 
       if (input.orderType === "online" && input.userId) {
         userId = new Types.ObjectId(input.userId);
-      } else if (input.orderType === "in_store" && input.cashierId) {
+      }
+
+      if (input.orderType === "in_store" && input.cashierId) {
         cashierId = new Types.ObjectId(input.cashierId);
       }
 
-      // Validate and consume coupon
+      // COUPON VALIDATION
       const coupon = input.couponCode
         ? await CouponService.validateAndConsumeCoupon(
             input.couponCode,
             input.orderType === "online" ? userId! : cashierId!,
             input.orderType,
-            session
+            session,
           )
         : null;
 
       let totalSelling = 0;
       let totalCost = 0;
+
       const orderItemIds: Types.ObjectId[] = [];
 
       for (const item of input.items) {
-        // Fetch product from DB
         const product = await ProductRepository.findById(
-          new Types.ObjectId(item.product)
+          new Types.ObjectId(item.product),
         ).lean();
+
         if (!product) throw new AppError("Product not found", 404);
 
         if (!product.isActive)
           throw new AppError("Product is not available", 400);
 
-        // Find variant & size
-        const variant = product.variants?.find(
-          (v: any) => v.color === item.color
+        // FIND INVENTORY RECORD
+        const inventory = product.inventory.find(
+          (i: any) =>
+            i.color.toString() === item.color &&
+            i.size.toString() === item.size,
         );
-        if (!variant)
-          throw new AppError(`Variant "${item.color}" not found`, 400);
 
-        const sizeObj = variant.sizes?.find((s: any) => s.size === item.size);
-        if (!sizeObj) throw new AppError(`Size "${item.size}" not found`, 400);
+        if (!inventory) throw new AppError("Product variant not found", 400);
 
-        // Calculate price using PricingService
+        if (inventory.stock < item.quantity)
+          throw new AppError("Insufficient stock", 400);
+
+        // LOAD COLOR
+        const color = await ColorRepository.findById(item.color);
+
+        if (!color) throw new AppError("Color not found", 404);
+
+        // LOAD SIZE
+        const size = await SizeRepository.findById(item.size);
+
+        if (!size) throw new AppError("Size not found", 404);
+
+        // PRICE CALCULATION
         const sellingPrice = PricingService.calculateItemPrice(
-          sizeObj.sellingPrice,
-          undefined,
-          product.baseSellingPrice ?? 0
+          product.baseSellingPrice,
+          product.discount,
         );
 
-        const costPrice = sizeObj.costPrice; // must exist in Product
+        const costPrice = product.baseCostPrice;
 
         const itemTotalCost = costPrice * item.quantity;
         const itemTotalPrice = sellingPrice * item.quantity;
+
         const profit = itemTotalPrice - itemTotalCost;
 
-        // Decrement stock
+        // DECREMENT STOCK
         const res = await ProductRepository.decrementStock(
           product._id,
-          item.color,
-          item.size,
+          new Types.ObjectId(item.color),
+          new Types.ObjectId(item.size),
           item.quantity,
-          session
+          session,
         );
 
-        if (res.matchedCount === 0) {
-          throw new AppError(
-            `Insufficient stock for product ${product.name} (${item.color}, ${item.size})`,
-            400
-          );
+        if (res.modifiedCount === 0) {
+          throw new AppError("Stock update failed", 400);
         }
 
-        // Create order item
+        // CREATE ORDER ITEM SNAPSHOT
         const orderItem = await OrderItemRepository.create(
           {
             product: product._id,
-            color: item.color,
-            size: item.size,
+
+            productName: product.name,
+            productImage: product.images?.[0] ?? "",
+
+            color: {
+              id: color._id,
+              name: color.name,
+              hexCode: color.hexCode,
+            },
+
+            size: {
+              id: size._id,
+              name: size.name,
+            },
+
             quantity: item.quantity,
+
             costPrice,
             sellingPrice,
+
             totalCost: itemTotalCost,
             totalPrice: itemTotalPrice,
             profit,
           },
-          session
+          session,
         );
 
         totalSelling += itemTotalPrice;
         totalCost += itemTotalCost;
+
         orderItemIds.push(orderItem._id);
       }
 
-      // Calculate discount
+      // DISCOUNT CALCULATION
       const discount = coupon
         ? Math.min(
             coupon.type === "percentage"
               ? (totalSelling * coupon.value) / 100
               : coupon.value,
-            coupon.maxDiscount ?? Infinity
+            coupon.maxDiscount ?? Infinity,
           )
         : 0;
 
-      // Calculate delivery charge
-
+      // DELIVERY CHARGE
       const deliveryCharge =
         input.orderType === "in_store"
           ? 0
@@ -159,56 +202,62 @@ export const OrderService = {
 
       const orderData: any = {
         items: orderItemIds,
+
         orderType: input.orderType,
+
         totalAmount,
         totalCost,
         totalProfit,
+
         discount,
         deliveryCharge,
+
         paymentMethod: input.paymentMethod,
         orderNote: input.orderNote,
       };
 
       if (userId) orderData.user = userId;
       if (cashierId) orderData.cashier = cashierId;
+
       if (coupon) orderData.coupon = coupon._id;
+
+      // ADDRESS
       if (input.orderType === "in_store") {
         orderData.deliveryAddress = {
           name: "In-Store",
           phone: "N/A",
+          email: "N/A",
           address: "N/A",
           city: "N/A",
           postalCode: "N/A",
           country: "N/A",
         };
-      } else if (!!input.deliveryAddress?.name) {
+      } else {
         orderData.deliveryAddress = input.deliveryAddress;
       }
-      if (input.orderType === "online") {
-        orderData.paymentStatus = "pending";
-      } else if (input.orderType === "in_store") {
-        orderData.paymentStatus = "completed";
-      }
 
-      // Create order
+      // PAYMENT STATUS
+      orderData.paymentStatus =
+        input.orderType === "online" ? "pending" : "completed";
+
       const order = await OrderRepository.create(orderData, session);
 
-      // Try to qualify referral, but DO NOT throw error if it fails
+      // REFERRAL SYSTEM
       if (input.orderType === "online" && userId) {
         try {
           await ReferralService.qualifyReferral(
-            userId, // invitee
-            order._id, // qualifying order
-            totalAmount, // order amount to check minimum
-            session
+            userId,
+            order._id,
+            totalAmount,
+            session,
           );
-        } catch (referralErr: any) {
-          console.warn("Referral qualification failed:", referralErr.message);
-          // Optionally: log to monitoring system instead of console.warn
+        } catch (err: any) {
+          console.warn("Referral qualification failed:", err.message);
         }
       }
 
       await session.commitTransaction();
+
       return order;
     } catch (err) {
       await session.abortTransaction();
@@ -220,7 +269,7 @@ export const OrderService = {
 
   async cancelOrder(
     orderId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ) {
     const session = await mongoose.startSession();
 
@@ -230,7 +279,7 @@ export const OrderService = {
       await session.withTransaction(async () => {
         const order = await OrderRepository.findById(
           new Types.ObjectId(orderId),
-          session
+          session,
         );
         if (!order) throw new AppError("Order not found", 404);
 
@@ -238,25 +287,25 @@ export const OrderService = {
           throw new AppError("Not authorized", 403);
         }
 
-        if (!["placed", "processing"].includes(order.status)) {
+        if (!["pending"].includes(order.status)) {
           throw new AppError(
             `Order cannot be cancelled at ${order.status}`,
-            400
+            400,
           );
         }
 
         const items = await OrderItemRepository.findManyByIds(
           order.items,
-          session
+          session,
         );
 
         for (const item of items) {
           await ProductService.restoreStock(
-            item.product,
-            item.color,
-            item.size,
+            new Types.ObjectId(item.product.id),
+            new Types.ObjectId(item.color.id),
+            new Types.ObjectId(item.size.id),
             item.quantity,
-            session
+            session,
           );
         }
 
@@ -266,7 +315,7 @@ export const OrderService = {
             status: "cancelled",
             cancellationDate: new Date(),
           },
-          session
+          session,
         );
       });
 
@@ -349,7 +398,7 @@ export const OrderService = {
       const order = await OrderRepository.markDelivered(
         orderId,
         deliveredAt,
-        session
+        session,
       );
 
       // Trigger referral holding logic (if exists)
@@ -367,7 +416,7 @@ export const OrderService = {
 
   async updateOrderStatus(
     orderId: string | Types.ObjectId,
-    nextStatus: string
+    nextStatus: OrderStatus,
   ) {
     const session = await mongoose.startSession();
 
@@ -377,7 +426,7 @@ export const OrderService = {
       await session.withTransaction(async () => {
         const order = await OrderRepository.findById(
           new Types.ObjectId(orderId),
-          session
+          session,
         );
         if (!order) throw new AppError("Order not found", 404);
 
@@ -385,14 +434,14 @@ export const OrderService = {
         if (!allowed.includes(nextStatus)) {
           throw new AppError(
             `Cannot change status from ${order.status} to ${nextStatus}`,
-            400
+            400,
           );
         }
 
         updated = await OrderRepository.updateById(
           order._id,
           { status: nextStatus },
-          session
+          session,
         );
       });
 

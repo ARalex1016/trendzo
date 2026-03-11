@@ -55,9 +55,7 @@ const ProductDetails = () => {
   return (
     <section className="w-full px-side-spacing py-side-spacing">
       <div className="w-full grid lg:grid-cols-2 gap-x-10 gap-y-8 mb-10">
-        <ImageSection
-          images={product.variants.flatMap((variant) => variant.images)}
-        />
+        <ImageSection images={product.images} />
 
         <DetailsSection product={product} />
       </div>

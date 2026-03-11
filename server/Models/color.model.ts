@@ -11,7 +11,7 @@ export interface IColor extends Document {
 const colorSchema = new Schema<IColor>(
   {
     name: { type: String, required: true },
-    slug: { type: String, unique: true },
+    slug: { type: String, unique: true, required: true },
     hexCode: { type: String, required: true },
     rgb: { type: String },
     isActive: { type: Boolean, default: true },

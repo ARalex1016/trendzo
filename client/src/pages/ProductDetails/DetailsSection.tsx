@@ -28,12 +28,6 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
     quantity: 1,
   });
 
-  const colors = product.variants.flatMap((variant) => variant.color);
-
-  const sizes = product.variants.flatMap((variant) =>
-    variant.sizes.map((variant_size) => variant_size.size),
-  );
-
   const handleShare = async () => {
     try {
       const url = new URL(window.location.href);
@@ -59,7 +53,7 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
 
       {/* Price */}
       <p className="text-2xl text-foreground font-bold">
-        <span>NPR</span> {product.variants[0].sizes[0].sellingPrice}
+        <span>NPR</span> {product.baseSellingPrice}
       </p>
 
       {/* Description */}
@@ -73,16 +67,17 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
         </p>
 
         <div className="flex flex-row gap-x-2">
-          {colors.map((color) => {
+          {product.colors.map((color) => {
             return (
               <div
+                key={color}
                 onClick={() =>
                   setSelectedVariant((pre) => ({
                     ...pre,
                     color,
                   }))
                 }
-                className={`size-10 rounded-full bg-foreground border bg-${color} ${color === selectedVariant.color ? "border-2 border-primary" : "border-border"}`}
+                // className={`size-10 rounded-full bg-foreground border bg-${color} ${color === selectedVariant.color ? "border-2 border-primary" : "border-border"}`}
               ></div>
             );
           })}
@@ -96,9 +91,10 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
         </p>
 
         <div className="flex flex-row gap-x-2">
-          {sizes.map((size) => {
+          {product.sizes.map((size) => {
             return (
               <div
+                key={size}
                 onClick={() =>
                   setSelectedVariant((pre) => ({
                     ...pre,
@@ -107,7 +103,7 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
                 }
                 className={`w-16 rounded-lg border flex justify-center items-center py-2 ${size === selectedVariant.size ? "bg-primary border-foreground" : "bg-background1 border-border"}`}
               >
-                {size}
+                {/* {size} */}
               </div>
             );
           })}

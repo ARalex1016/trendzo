@@ -34,7 +34,7 @@ const useAuthStore = create<AuthStore>((set) => ({
     set({ user: null, isAuthenticated: false });
 
     try {
-      const response = await axiosInstance.post("/auth/register", userData);
+      const response = await axiosInstance.post("/v1/auth/register", userData);
 
       Alert({
         title: "Successful",
@@ -64,7 +64,7 @@ const useAuthStore = create<AuthStore>((set) => ({
     set({ user: null, isAuthenticated: false });
 
     try {
-      const response = await axiosInstance.post("/auth/login", userData);
+      const response = await axiosInstance.post("/v1/auth/login", userData);
 
       Alert({
         title: "Successful",
@@ -94,7 +94,7 @@ const useAuthStore = create<AuthStore>((set) => ({
     set({ isCheckingAuth: true });
 
     try {
-      const res = await axiosInstance.post("/auth/check-auth");
+      const res = await axiosInstance.post("/v1/auth/check-auth");
 
       set({
         user: res.data.data,
@@ -110,7 +110,7 @@ const useAuthStore = create<AuthStore>((set) => ({
   logout: async () => {
     set({ isAuthenticated: true });
     try {
-      await axiosInstance.post("/auth/logout");
+      await axiosInstance.post("/v1/auth/logout");
 
       Alert({
         title: "Logged out",

@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 // Icons
-import { Check, LoaderCircle } from "lucide-react";
+import { Check } from "lucide-react";
 
 // Hooks
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";

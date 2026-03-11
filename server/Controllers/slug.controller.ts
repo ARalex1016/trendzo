@@ -25,7 +25,7 @@ const resolveModel = (modelName: string) => {
 export const suggestSlug = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { model: modelName, field, value } = req.query;
@@ -39,7 +39,7 @@ export const suggestSlug = async (
     const slugs = await SlugService.suggestSlugs(
       model,
       field as string,
-      value as string
+      value as string,
     );
 
     res.status(200).json({
@@ -54,7 +54,7 @@ export const suggestSlug = async (
 export const checkSlug = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { model: modelName, field, value } = req.query;
@@ -68,7 +68,7 @@ export const checkSlug = async (
     const available = await SlugService.checkAvailability(
       model,
       field as string,
-      value as string
+      value as string,
     );
 
     res.status(200).json({

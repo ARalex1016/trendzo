@@ -1,61 +1,72 @@
 import mongoose, { Schema, Document, Types, Model } from "mongoose";
 
-export interface IVariantSize {
-  size: string; // e.g. "M", "L", "XL"
-  stock: number; // stock for this size
-  // Prices
-  costPrice: number; // ORIGINAL price (for profit calculation)
-  sellingPrice: number; // What customer pays
-}
-
-export interface IVariant {
-  color: string; // e.g. "Black", "Red"
-  images: string[]; // images for this specific color
-  sizes: IVariantSize[]; // size list for this color
+export interface IInventory {
+  color: Types.ObjectId;
+  size: Types.ObjectId;
+  stock: number;
 }
 
 export interface IProduct extends Document {
   name: string;
   slug: string;
+
   description: string;
+
   specifications: {
     weight?: number;
     material?: string;
     countryOfOrigin?: string;
     warranty?: string;
   };
-  variants: IVariant[];
-  baseCostPrice: number; // fallback price if no variant price
-  baseSellingPrice: number; // fallback price if no variant price
+
+  // Base images (same for all variants)
+  images: string[];
+
+  // Price only at base level
+  baseCostPrice: number;
+  baseSellingPrice: number;
   discount?: number;
-  categories: Types.ObjectId[]; // ObjectId[]
+
+  // Available options
+  colors: Types.ObjectId[];
+  sizes: Types.ObjectId[];
+
+  // Inventory for each combination
+  inventory: IInventory[];
+
+  categories: Types.ObjectId[];
   tags: string[];
+
   featured: boolean;
   isActive: boolean;
-  createdBy: Types.ObjectId; // admin or operator (ObjectId)
+
+  createdBy: Types.ObjectId;
+
   createdAt: Date;
   updatedAt: Date;
 }
 
-const variantSizeSchema = new Schema<IVariantSize>(
+const inventorySchema = new Schema<IInventory>(
   {
-    size: { type: String, required: true },
-    stock: { type: Number, default: 0 },
-
-    costPrice: { type: Number, required: true },
-    sellingPrice: { type: Number, required: true },
+    color: {
+      type: Schema.Types.ObjectId,
+      ref: "Color",
+      required: true,
+    },
+    size: {
+      type: Schema.Types.ObjectId,
+      ref: "Size",
+      required: true,
+    },
+    stock: {
+      type: Number,
+      default: 0,
+    },
   },
   { _id: false },
 );
 
-const variantSchema = new Schema<IVariant>(
-  {
-    color: { type: String, required: true },
-    images: [{ type: String, required: true }],
-    sizes: [variantSizeSchema],
-  },
-  { _id: false },
-);
+inventorySchema.index({ color: 1, size: 1 }, { unique: true });
 
 const productSchema = new Schema<IProduct>(
   {
@@ -65,37 +76,69 @@ const productSchema = new Schema<IProduct>(
       trim: true,
       index: true,
     },
+
     slug: {
       type: String,
+      required: true,
       unique: true,
       index: true,
     },
+
     description: {
       type: String,
       required: true,
     },
+
     specifications: {
       weight: Number,
       material: String,
       countryOfOrigin: String,
       warranty: String,
     },
-    variants: {
-      type: [variantSchema],
-      default: [],
-    },
+
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+
     baseCostPrice: {
       type: Number,
       required: true,
     },
+
     baseSellingPrice: {
       type: Number,
       required: true,
     },
+
     discount: {
       type: Number,
       default: 0,
     },
+
+    colors: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Color",
+        required: true,
+      },
+    ],
+
+    sizes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Size",
+        required: true,
+      },
+    ],
+
+    inventory: {
+      type: [inventorySchema],
+      default: [],
+    },
+
     categories: [
       {
         type: Schema.Types.ObjectId,
@@ -103,20 +146,20 @@ const productSchema = new Schema<IProduct>(
         required: true,
       },
     ],
-    tags: [
-      {
-        type: String,
-      },
-    ],
+
+    tags: [String],
+
     featured: {
       type: Boolean,
       default: false,
     },
+
     isActive: {
       type: Boolean,
       default: true,
       index: true,
     },
+
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

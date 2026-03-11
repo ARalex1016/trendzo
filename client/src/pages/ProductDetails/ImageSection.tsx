@@ -37,6 +37,7 @@ const ImageSection = ({ images }: ImageSection) => {
               key={img}
               src={img}
               alt={`Image${i}`}
+              loading="lazy"
               onClick={() => setSelectedImage(img)}
               className={`size-16 md:size-20 aspect-square bg-foreground rounded-lg object-cover transition-all duration-200 ${activeImage && "scale-110"}`}
             />

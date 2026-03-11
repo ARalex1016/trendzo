@@ -2,6 +2,8 @@ import type { IUser } from "../Models/user.model.ts";
 import type { IPaymentMethod } from "../Models/payment-method.model.ts";
 import type { IProduct } from "../Models/product.model.ts";
 import type { ICategory } from "../Models/category.model.ts";
+import type { ISize } from "../Models/size.model.ts";
+import type { IColor } from "../Models/color.model.ts";
 import type { ICoupon } from "../Models/coupon.model.ts";
 import type { IOrder } from "../Models/order.model.ts";
 import type { IWithdrawal } from "../Models/withdraw.model.ts";
@@ -19,6 +21,8 @@ declare global {
       targetOrder?: IOrder;
       targetWithdrawal?: IWithdrawal;
       targetReview?: IReview;
+      targetSize?: ISize;
+      targetColor?: IColor;
     }
   }
 }

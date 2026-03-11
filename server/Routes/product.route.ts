@@ -22,7 +22,10 @@ import { protect, authorize } from "../Controllers/auth.controller.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
 // Validation Schemas
-import { addProductSchema } from "../Validations/product.validator.ts";
+import {
+  addProductSchema,
+  updateProductSchema,
+} from "../Validations/product.validator.ts";
 
 const router = express.Router();
 
@@ -45,7 +48,13 @@ router.post(
   validateRequest(addProductSchema),
   addProduct,
 );
-router.patch("/:productId", protect, authorize("admin"), updateProduct);
+router.patch(
+  "/:productId",
+  protect,
+  authorize("admin"),
+  validateRequest(updateProductSchema),
+  updateProduct,
+);
 router.patch(
   "/:productId/toggle-active",
   protect,

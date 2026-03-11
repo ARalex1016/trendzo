@@ -32,7 +32,7 @@ const CategoryRepository = {
   async findOne(
     filter: CategoryFilter,
     projection: Record<string, unknown> | null = null,
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<ICategory | null> {
     return Category.findOne(filter, projection, options);
   },
@@ -63,11 +63,11 @@ const CategoryRepository = {
    * List categories with filtering, sorting, field limiting, pagination
    */
   async list(
-    queryParams: Record<string, unknown>
+    queryParams: Record<string, unknown>,
   ): Promise<ICatalogListResult<ICategory>> {
     const features = new ApiFeatures<ICategory>(
       Category.find(),
-      queryParams as any
+      queryParams as any,
     )
       .filter()
       .sort()

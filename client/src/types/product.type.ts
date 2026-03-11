@@ -1,36 +1,49 @@
-export interface IVariantSize {
-  size: string; // e.g. "M", "L", "XL"
+export interface IInventory {
+  color: string; // ObjectId of Color
+  size: string; // ObjectId of Size
   stock: number;
-  costPrice: number;
-  sellingPrice: number;
 }
 
-export interface IVariant {
-  color: string; // e.g. "Black", "Red"
-  images: string[];
-  sizes: IVariantSize[];
+export interface IProductSpecifications {
+  weight?: number;
+  material?: string;
+  countryOfOrigin?: string;
+  warranty?: string;
 }
 
-export interface IProduct extends Document {
+export interface IProduct {
   _id: string;
+
   name: string;
   slug: string;
+
   description: string;
-  specifications: {
-    weight?: number;
-    material?: string;
-    countryOfOrigin?: string;
-    warranty?: string;
-  };
-  variants: IVariant[];
+
+  specifications?: IProductSpecifications;
+
+  // Base images (same for all variants)
+  images: string[];
+
+  // Base price
   baseCostPrice: number;
   baseSellingPrice: number;
   discount?: number;
-  categories: string[];
+
+  // Available options
+  colors: string[]; // Color ObjectIds
+  sizes: string[]; // Size ObjectIds
+
+  // Inventory combinations
+  inventory: IInventory[];
+
+  categories: string[]; // Category ObjectIds
   tags: string[];
+
   featured: boolean;
   isActive: boolean;
-  createdBy: string; // admin or operator (ObjectId)
-  createdAt: Date;
-  updatedAt: Date;
+
+  createdBy: string; // User ObjectId
+
+  createdAt: string;
+  updatedAt: string;
 }

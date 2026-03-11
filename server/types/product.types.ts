@@ -1,13 +1,14 @@
-// types/product.input.ts (recommended)
-export interface VariantInput {
-  color: string;
-  images: string[];
-  sizes: {
-    size: string;
-    stock?: number;
-    costPrice?: number;
-    sellingPrice?: number;
-  }[];
+export interface InventoryInput {
+  color: string; // Color ObjectId
+  size: string; // Size ObjectId
+  stock: number;
+}
+
+export interface ProductSpecificationsInput {
+  weight?: number;
+  material?: string;
+  countryOfOrigin?: string;
+  warranty?: string;
 }
 
 export interface CreateProductInput {
@@ -15,21 +16,25 @@ export interface CreateProductInput {
   slug: string;
   description: string;
 
+  images: string[];
+
   baseCostPrice: number;
   baseSellingPrice: number;
 
   discount?: number;
 
-  specifications?: {
-    weight?: number;
-    material?: string;
-    countryOfOrigin?: string;
-    warranty?: string;
-  };
+  specifications?: ProductSpecificationsInput;
 
-  variants?: VariantInput[];
+  colors: string[]; // Color ObjectIds
+  sizes: string[]; // Size ObjectIds
+
+  inventory: InventoryInput[];
 
   categories: string[];
+
   tags?: string[];
+
   featured?: boolean;
+
+  isActive?: boolean;
 }

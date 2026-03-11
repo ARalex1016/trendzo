@@ -1,12 +1,12 @@
 import AppError from "../Utils/AppError.ts";
 
-import type { IVariant } from "../Models/product.model.ts";
+import type { IVariant } from "../Models/product1.model.ts";
 import type { VariantInput } from "../types/product.types.ts";
 
 export const normalizeVariants = (
   variants: VariantInput[],
   baseCostPrice: number,
-  baseSellingPrice: number
+  baseSellingPrice: number,
 ): IVariant[] => {
   return variants.map((variant) => {
     if (!variant.color) {
@@ -20,7 +20,7 @@ export const normalizeVariants = (
       if (costPrice > sellingPrice) {
         throw new AppError(
           `Cost price cannot exceed selling price (${variant.color} - ${sz.size})`,
-          400
+          400,
         );
       }
 

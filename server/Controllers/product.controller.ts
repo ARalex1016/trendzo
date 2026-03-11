@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 
 // Services
-import { ProductService } from "../Services/product.service.ts";
+import ProductService from "../Services/product.service.ts";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   const result = await ProductService.getAll(req.query);

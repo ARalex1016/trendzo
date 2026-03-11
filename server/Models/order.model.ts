@@ -3,12 +3,13 @@ import mongoose, { Schema, Document, Types, Model } from "mongoose";
 export type OrderType = "online" | "in_store";
 
 export type OrderStatus =
-  | "placed"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | "returned";
+  | "pending" // customer placed order              // by System
+  | "confirmed" // admin verified order             // by Admin
+  | "shipped" // courier picked up package          // by Admin
+  | "delivered" // courier delivered package        // by Courier/Admin
+  | "cancelled" // order cancelled before delivery  // by Admin/Customer
+  | "returned" // customer returned product         // by Admin
+  | "refunded"; // money returned to customer       // by Admin
 
 export type PaymentStatus = "pending" | "completed" | "failed";
 
@@ -71,7 +72,7 @@ const orderSchema = new Schema<IOrder>(
     deliveryCharge: { type: Number, default: 0 },
     paymentMethod: {
       type: String,
-      enum: ["bank", "esewa", "khalti", "cod"],
+      enum: ["bank", "esewa", "khalti", "cod", "cash"],
       required: true,
     },
     paymentStatus: {
@@ -82,18 +83,20 @@ const orderSchema = new Schema<IOrder>(
     status: {
       type: String,
       enum: [
-        "placed",
-        "processing",
+        "pending",
+        "confirmed",
         "shipped",
         "delivered",
         "cancelled",
         "returned",
+        "refunded",
       ],
-      default: "placed",
+      default: "pending",
     },
     deliveryAddress: {
       name: { type: String, required: true },
       phone: { type: String, required: true },
+      email: { type: String, required: true },
       address: { type: String, required: true },
       city: String,
       postalCode: String,

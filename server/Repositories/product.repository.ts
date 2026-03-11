@@ -3,7 +3,10 @@ import { Types, type ClientSession } from "mongoose";
 // Models
 import Product, { type IProduct } from "../Models/product.model.ts";
 
-export const ProductRepository = {
+const ProductRepository = {
+  /* ------------------------------------------------ */
+  /* READ */
+  /* ------------------------------------------------ */
   findAll(query: any) {
     return Product.find(query);
   },
@@ -30,6 +33,9 @@ export const ProductRepository = {
       .lean();
   },
 
+  /* ------------------------------------------------ */
+  /* WRITE */
+  /* ------------------------------------------------ */
   create(data: Partial<IProduct>) {
     return Product.create(data);
   },
@@ -38,7 +44,7 @@ export const ProductRepository = {
     return Product.findByIdAndUpdate(
       id,
       { $set: updates },
-      { new: true, runValidators: true, context: "query" }
+      { new: true, runValidators: true, context: "query" },
     );
   },
 
@@ -46,64 +52,67 @@ export const ProductRepository = {
     return Product.findByIdAndDelete(id);
   },
 
+  /* ------------------------------------------------ */
+  /* INVENTORY */
+  /* ------------------------------------------------ */
   decrementStock(
     productId: Types.ObjectId,
-    color: string,
-    size: string,
+    colorId: Types.ObjectId,
+    sizeId: Types.ObjectId,
     qty: number,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
-    const query = {
-      _id: productId,
-      "variants.color": color,
-      "variants.sizes": {
-        $elemMatch: {
-          size,
-          stock: { $gte: qty },
+    const options: any = {
+      arrayFilters: [
+        {
+          "i.color": colorId,
+          "i.size": sizeId,
+          "i.stock": { $gte: qty }, // prevent negative stock
         },
-      },
+      ],
     };
 
-    const update = {
-      $inc: {
-        "variants.$[v].sizes.$[s].stock": -qty,
-      },
-    };
-
-    const options: any = {
-      arrayFilters: [{ "v.color": color }, { "s.size": size }],
-    };
-
-    if (session) {
-      options.session = session;
-    }
-
-    return Product.updateOne(query, update, options);
-  },
-
-  restoreStock(
-    productId: Types.ObjectId,
-    color: string,
-    size: string,
-    qty: number,
-    session?: ClientSession
-  ) {
-    const options: any = {
-      arrayFilters: [{ "v.color": color }, { "s.size": size }],
-    };
-
-    if (session) {
-      options.session = session;
-    }
+    if (session) options.session = session;
 
     return Product.updateOne(
       { _id: productId },
       {
         $inc: {
-          "variants.$[v].sizes.$[s].stock": qty,
+          "inventory.$[i].stock": -qty,
         },
       },
-      options
+      options,
+    );
+  },
+
+  restoreStock(
+    productId: Types.ObjectId,
+    colorId: Types.ObjectId,
+    sizeId: Types.ObjectId,
+    qty: number,
+    session?: ClientSession,
+  ) {
+    const options: any = {
+      arrayFilters: [
+        {
+          "i.color": colorId,
+          "i.size": sizeId,
+        },
+      ],
+    };
+
+    if (session) options.session = session;
+
+    return Product.updateOne(
+      { _id: productId },
+      {
+        $inc: {
+          "inventory.$[i].stock": qty,
+        },
+      },
+      options,
     );
   },
 };
+
+export default ProductRepository;

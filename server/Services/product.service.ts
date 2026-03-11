@@ -1,19 +1,20 @@
 import mongoose, { Types } from "mongoose";
 
 // Repository
-import { ProductRepository } from "../Repositories/product.repository.ts";
+import ProductRepository from "../Repositories/product.repository.ts";
 
 // Utils
 import ApiFeatures from "../Utils/apiFeatures/ApiFeatures.ts";
 import { buildProductFilterQuery } from "../Utils/apiFeatures/ProductFilters.ts";
-import { normalizeVariants } from "../Utils/productManagement.ts";
+import { validateInventory } from "../Utils/validateInventory.ts";
 import { isValidObjectId } from "../Utils/mongoose.management.ts";
 import AppError from "../Utils/AppError.ts";
 
 // Types
 import type { CreateProductInput } from "../types/product.types.ts";
+import type { IProduct, IInventory } from "../Models/product.model.ts";
 
-export const ProductService = {
+const ProductService = {
   async getAll(reqQuery: any) {
     let query = ProductRepository.findAll({});
 
@@ -29,7 +30,7 @@ export const ProductService = {
 
     const features = new ApiFeatures(query, reqQuery)
       .filter()
-      .search(["name", "slug", "tags", "variants.color"]);
+      .search(["name", "slug", "tags"]);
 
     // ✅ APPLY PRODUCT FILTERS FIRST
     features.query = features.query.find(filters);
@@ -80,7 +81,7 @@ export const ProductService = {
 
     const searchQuery = {
       $and: regexes.map((r) => ({
-        $or: [{ name: r }, { "variants.color": r }, { tags: r }],
+        $or: [{ name: r }, { tags: r }],
       })),
     };
 
@@ -96,6 +97,7 @@ export const ProductService = {
       throw new AppError("Base cost price cannot exceed selling price", 400);
     }
 
+    // Categories
     const uniqueCategories = [...new Set(data.categories)];
 
     const categories = uniqueCategories.map((id) => {
@@ -105,29 +107,135 @@ export const ProductService = {
       return new mongoose.Types.ObjectId(id);
     });
 
-    const variants = normalizeVariants(
-      data.variants ?? [],
-      data.baseCostPrice,
-      data.baseSellingPrice,
+    // Colors
+    const uniqueColors = [...new Set(data.colors)];
+
+    const colors = uniqueColors.map((id) => {
+      if (!isValidObjectId(id)) {
+        throw new AppError(`Invalid color id: ${id}`, 400);
+      }
+
+      return new mongoose.Types.ObjectId(id);
+    });
+
+    // Sizes
+    const uniqueSizes = [...new Set(data.sizes)];
+
+    const sizes = uniqueSizes.map((id) => {
+      if (!isValidObjectId(id)) {
+        throw new AppError(`Invalid size id: ${id}`, 400);
+      }
+
+      return new mongoose.Types.ObjectId(id);
+    });
+
+    // Inventory
+    const inventory = validateInventory(
+      data.colors,
+      data.sizes,
+      data.inventory,
     );
 
     return ProductRepository.create({
-      ...data,
-      variants,
+      name: data.name,
+      slug: data.slug,
+      description: data.description,
+
+      images: data.images,
+
+      baseCostPrice: data.baseCostPrice,
+      baseSellingPrice: data.baseSellingPrice,
+      discount: data.discount ?? 0,
+
+      ...(data.specifications && { specifications: data.specifications }),
+
+      colors,
+      sizes,
+      inventory,
+
       categories,
+      tags: data.tags ?? [],
+
+      featured: data.featured ?? false,
+      isActive: data.isActive ?? true,
+
       createdBy: creatorId,
     });
   },
 
-  async update(productId: Types.ObjectId, updates: any) {
+  async update(
+    productId: Types.ObjectId,
+    updates: Partial<CreateProductInput>,
+  ) {
+    const updateData: Partial<IProduct> = {};
+
+    // Slug uniqueness check
     if (updates.slug) {
       const existing = await ProductRepository.findBySlug(updates.slug);
+
       if (existing && existing._id.toString() !== productId.toString()) {
         throw new AppError("Slug already exists", 400);
       }
+      updateData.slug = updates.slug;
     }
 
-    const updated = await ProductRepository.updateById(productId, updates);
+    // Name
+    if (updates.name) updateData.name = updates.name;
+    if (updates.description) updateData.description = updates.description;
+    if (updates.images) updateData.images = updates.images;
+    if (updates.baseCostPrice !== undefined)
+      updateData.baseCostPrice = updates.baseCostPrice;
+    if (updates.baseSellingPrice !== undefined)
+      updateData.baseSellingPrice = updates.baseSellingPrice;
+    if (updates.discount !== undefined) updateData.discount = updates.discount;
+    if (updates.specifications)
+      updateData.specifications = updates.specifications;
+    if (updates.featured !== undefined) updateData.featured = updates.featured;
+    if (updates.isActive !== undefined) updateData.isActive = updates.isActive;
+
+    // Categories
+    if (updates.categories) {
+      const uniqueCategories = [...new Set(updates.categories)];
+      updateData.categories = uniqueCategories.map(
+        (id) => new mongoose.Types.ObjectId(id),
+      );
+    }
+
+    // Colors
+    if (updates.colors) {
+      const uniqueColors = [...new Set(updates.colors)];
+      updateData.colors = uniqueColors.map(
+        (id) => new mongoose.Types.ObjectId(id),
+      );
+    }
+
+    // Sizes
+    if (updates.sizes) {
+      const uniqueSizes = [...new Set(updates.sizes)];
+      updateData.sizes = uniqueSizes.map(
+        (id) => new mongoose.Types.ObjectId(id),
+      );
+    }
+
+    // Inventory
+    if (updates.inventory) {
+      const product = await ProductRepository.findById(productId);
+      if (!product) throw new AppError("Product not found", 404);
+
+      const colors =
+        updateData.colors ?? product.colors.map((c) => c.toString());
+      const sizes = updateData.sizes ?? product.sizes.map((s) => s.toString());
+
+      updateData.inventory = validateInventory(
+        colors,
+        sizes,
+        updates.inventory,
+      ) as IInventory[];
+    }
+
+    // Finally, update
+    const updated = await ProductRepository.updateById(productId, updateData);
+
     if (!updated) throw new AppError("Product not found", 404);
 
     return updated;
@@ -160,15 +268,19 @@ export const ProductService = {
 
   async decrementStock(
     productId: Types.ObjectId,
-    color: string,
-    size: string,
+    colorId: Types.ObjectId,
+    sizeId: Types.ObjectId,
     qty: number,
     session?: any,
   ) {
+    if (qty <= 0) {
+      throw new AppError("Invalid quantity", 400);
+    }
+
     const res = await ProductRepository.decrementStock(
       productId,
-      color,
-      size,
+      colorId,
+      sizeId,
       qty,
       session,
     );
@@ -182,11 +294,13 @@ export const ProductService = {
 
   async restoreStock(
     productId: Types.ObjectId,
-    color: string,
-    size: string,
+    color: Types.ObjectId,
+    size: Types.ObjectId,
     qty: number,
     session?: any,
   ) {
     await ProductRepository.restoreStock(productId, color, size, qty, session);
   },
 };
+
+export default ProductService;

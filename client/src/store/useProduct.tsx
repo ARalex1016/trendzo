@@ -18,11 +18,17 @@ const useProductStore = create<ProductStore>((set) => ({
 
   getAllProducts: async (query?: string) => {
     set({ productsResponse: null });
-
     try {
       let res = await axiosInstance.get(
-        `/products${query ? `?${query}&` : ""}`,
+        `/v1/products${query ? `?${query}&` : ""}`,
       );
+
+      // const data = await res.data;
+      // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
+      // const sizeInKB = (sizeInBytes / 1024).toFixed(2);
+
+      // console.log("Response size:", sizeInBytes, "bytes");
+      // console.log("Response size:", sizeInKB, "KB");
 
       set({ productsResponse: res.data });
 
@@ -35,7 +41,7 @@ const useProductStore = create<ProductStore>((set) => ({
 
   getFeaturedProducts: async () => {
     try {
-      let res = await axiosInstance.get("/products/featured");
+      let res = await axiosInstance.get("/v1/products/featured");
 
       return res.data.data;
     } catch (error: any) {
@@ -45,7 +51,7 @@ const useProductStore = create<ProductStore>((set) => ({
 
   getProductBySlug: async (slug) => {
     try {
-      let res = await axiosInstance.get(`/products/slug/${slug}`);
+      let res = await axiosInstance.get(`/v1/products/slug/${slug}`);
 
       return res.data.data;
     } catch (error: any) {
