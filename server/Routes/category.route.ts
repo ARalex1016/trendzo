@@ -10,7 +10,7 @@ import {
 } from "../Controllers/category.controller.ts";
 
 // Middleware
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { categoryIdParamHandler } from "../Middleware/param.middleware.ts";
 
 const router = express.Router();
@@ -27,7 +27,7 @@ router.patch(
   "/:categoryId/toggle",
   protect,
   authorize("admin"),
-  toggleCategoryStatus
+  toggleCategoryStatus,
 );
 router.delete("/:categoryId", protect, authorize("admin"), deleteCategory);
 

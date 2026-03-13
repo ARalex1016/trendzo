@@ -1,5 +1,7 @@
+// Types
 import type { ICategory } from "./category.type";
 import type { IProduct } from "./product.type";
+import type { ICoupon } from "./coupon.type";
 
 export interface Meta {
   page: number;
@@ -8,16 +10,20 @@ export interface Meta {
   pages: number;
 }
 
-export interface IProductResponse {
+export interface ApiResponse<T> {
   status: string;
   message: string;
-  meta: Meta;
-  data: IProduct[];
+  meta?: Meta;
+  data: T;
 }
 
-export interface ICategoryResponse {
-  status: string;
+export interface ApiErrorResponse {
+  status: "fail" | "error";
   message: string;
-  meta: Meta;
-  data: ICategory[];
+  statusCode?: number;
+  errors?: Record<string, string[]>;
 }
+
+export type IProductResponse = ApiResponse<IProduct[]>;
+export type ICategoryResponse = ApiResponse<ICategory[]>;
+export type ICouponResponse = ApiResponse<ICoupon>;

@@ -7,8 +7,9 @@ const ProductRepository = {
   /* ------------------------------------------------ */
   /* READ */
   /* ------------------------------------------------ */
-  findAll(query: any) {
-    return Product.find(query);
+  findAll(query: any, selectFields?: string) {
+    const findQuery = Product.find(query);
+    return selectFields ? findQuery.select(selectFields) : findQuery;
   },
 
   findFeatured(query: any) {

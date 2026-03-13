@@ -10,7 +10,7 @@ import {
 } from "./../Controllers/withdrawal.controller.ts";
 
 // Middlewares
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { withdrawalIdParamHandler } from "../Middleware/param.middleware.ts";
 
 const router = express.Router();
@@ -28,7 +28,7 @@ router.post(
   "/approve/:withdrawalId",
   protect,
   authorize("admin"),
-  updateStatus
+  updateStatus,
 );
 
 export default router;

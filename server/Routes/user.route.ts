@@ -9,7 +9,7 @@ import {
 } from "../Controllers/user.controller.ts";
 
 // Middlewares
-import { authorize, protect } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { userIdParamHandler } from "../Middleware/param.middleware.ts";
 
 const router = express.Router();

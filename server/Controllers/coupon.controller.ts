@@ -9,7 +9,7 @@ import AppError from "../Utils/AppError.ts";
 export const createCoupon = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const coupon = await CouponService.createCoupon(req.body, req.user!._id);
@@ -24,7 +24,7 @@ export const createCoupon = async (
 export const getAllCoupons = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const coupons = await CouponService.getAllCoupons(req.query);
@@ -39,7 +39,7 @@ export const getAllCoupons = async (
 export const getCouponById = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const coupon = req.targetCoupon!;
@@ -53,7 +53,7 @@ export const getCouponById = async (
 export const updateCoupon = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const couponId = req.targetCoupon!._id;
@@ -71,7 +71,7 @@ export const updateCoupon = async (
 export const toggleCouponStatus = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const couponId = req.targetCoupon!._id;
@@ -91,7 +91,7 @@ export const toggleCouponStatus = async (
 export const deleteCoupon = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const couponId = req.targetCoupon!._id;
@@ -106,7 +106,7 @@ export const deleteCoupon = async (
 export const validateCoupon = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (!req.body.code) {
@@ -125,7 +125,7 @@ export const validateCoupon = async (
 export const applyCoupon = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const result = await CouponService.applyCoupon(req.body);

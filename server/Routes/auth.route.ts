@@ -17,7 +17,7 @@ import {
 } from "./../Controllers/auth.controller.ts";
 
 // Middleware
-import { protect } from "./../Controllers/auth.controller.ts";
+import { protect } from "../Middleware/auth.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
 // Validation Schemas

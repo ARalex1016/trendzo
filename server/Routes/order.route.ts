@@ -13,7 +13,7 @@ import {
 } from "../Controllers/order.controller.ts";
 
 // Middlrewares
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 import { orderIdParamHandler } from "../Middleware/param.middleware.ts";
 
@@ -33,14 +33,14 @@ router.post(
   protect,
   authorize("customer"),
   validateRequest(placeOrderSchema),
-  placeOrder
+  placeOrder,
 );
 router.get("/my-orders", protect, authorize("customer"), getMyOrders);
 router.get(
   "/:orderId",
   protect,
   authorize("customer", "operator", "admin"),
-  getSingleOrder
+  getSingleOrder,
 );
 router.patch("/cancel/:orderId", protect, authorize("customer"), cancelOrder);
 
@@ -51,19 +51,19 @@ router.post(
   protect,
   authorize("operator", "admin"),
   validateRequest(placeStoreOrderSchema),
-  placeStoreOrder
+  placeStoreOrder,
 );
 router.patch(
   "/:orderId/deliver",
   protect,
   authorize("admin"),
-  markOrderDelivered
+  markOrderDelivered,
 );
 router.patch(
   "/status/:orderId",
   protect,
   authorize("operator", "admin"),
-  updateOrderStatus
+  updateOrderStatus,
 );
 
 export default router;

@@ -75,38 +75,6 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
     .json({ status: "success", message: "Logged out successfully" });
 });
 
-export const protect = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies?.token || "";
-
-    if (!token) throw new AppError("Authentication required", 401);
-
-    const decoded = verifyToken(token) as { id: string };
-
-    const user = await AuthService.getUserById(new Types.ObjectId(decoded.id));
-
-    if (!user) throw new AppError("User not found", 401);
-
-    // Attach user to request object
-    req.user = user;
-
-    next();
-  },
-);
-
-export const authorize =
-  (...role: string[]) =>
-  (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !role.includes(req.user.role)) {
-      throw new AppError(
-        "You do not have permission to perform this action!",
-        403,
-      );
-    }
-
-    next();
-  };
-
 export const refreshAccessToken = asyncHandler(
   async (req: Request, res: Response) => {
     // Success logic here

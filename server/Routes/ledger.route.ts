@@ -8,7 +8,7 @@ import {
 } from "./../Controllers/ledger.controller.ts";
 
 // Middlewares
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { userIdParamHandler } from "../Middleware/param.middleware.ts";
 
 const router = express.Router();

@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 
 // Services
 import ProductService from "../Services/product.service.ts";
+import SizeService from "../Services/size.service.ts";
+import ColorService from "../Services/color.service.ts";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   const result = await ProductService.getAll(req.query);
@@ -25,9 +27,19 @@ export const getFeaturedProducts = async (req: Request, res: Response) => {
 };
 
 export const getProduct = async (req: Request, res: Response) => {
+  const product = req.targetProduct!;
+
+  const sizes = await Promise.all(
+    product?.sizes.map((sizeId) => SizeService.getSizeById(sizeId)),
+  );
+
+  const colors = await Promise.all(
+    product?.colors.map((colorId) => ColorService.getColorById(colorId)),
+  );
+
   res.status(200).json({
     status: "success",
-    data: req.targetProduct,
+    data: { ...product.toObject(), sizes, colors },
   });
 };
 

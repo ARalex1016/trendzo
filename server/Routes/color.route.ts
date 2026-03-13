@@ -9,8 +9,8 @@ import {
 } from "../Controllers/color.controller.ts";
 
 // Middleware
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { colorIdParamHandler } from "../Middleware/param.middleware.ts";
-import { protect, authorize } from "../Controllers/auth.controller.ts";
 
 const router = express.Router();
 

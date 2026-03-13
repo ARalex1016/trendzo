@@ -56,6 +56,7 @@ const orderItemSchema = new Schema<IOrderItem>(
     costPrice: { type: Number, required: true },
     sellingPrice: { type: Number, required: true },
     totalCost: { type: Number, required: true },
+
     totalPrice: { type: Number, required: true },
     profit: { type: Number, required: true },
   },

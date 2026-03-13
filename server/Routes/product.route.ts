@@ -18,7 +18,7 @@ import {
   productSlugParamHandler,
   productIdParamHandler,
 } from "../Middleware/param.middleware.ts";
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
 // Validation Schemas

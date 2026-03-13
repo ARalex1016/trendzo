@@ -13,7 +13,7 @@ import {
 } from "../Controllers/referral.controller.ts";
 
 // Middleware
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { userIdParamHandler } from "../Middleware/param.middleware.ts";
 
 router.param("userId", userIdParamHandler);

@@ -16,7 +16,10 @@ import type { IProduct, IInventory } from "../Models/product.model.ts";
 
 const ProductService = {
   async getAll(reqQuery: any) {
-    let query = ProductRepository.findAll({});
+    const fields =
+      "_id name slug thumbnail images baseSellingPrice discount categories tags isActive featured createdAt";
+
+    let query = ProductRepository.findAll({}, fields);
 
     // await the async filter
     const filters = await buildProductFilterQuery({
@@ -39,8 +42,25 @@ const ProductService = {
     features.sort().limitFields();
     await features.paginate(10);
 
+    const data = await features.query;
+
+    // Map thumbnail fallback
+    const limitedData = data.map((p: any) => ({
+      _id: p._id,
+      name: p.name,
+      slug: p.slug,
+      thumbnail: p.thumbnail || p.images[0] || null,
+      baseSellingPrice: p.baseSellingPrice,
+      discount: p.discount,
+      categories: p.categories,
+      tags: p.tags,
+      isActive: p.isActive,
+      featured: p.featured,
+      createdAt: p.createdAt,
+    }));
+
     return {
-      data: await features.query,
+      data: limitedData,
       meta: features.meta,
     };
   },
@@ -142,6 +162,7 @@ const ProductService = {
       description: data.description,
 
       images: data.images,
+      thumbnail: (data.thumbnail || data.images[0] || "") as string,
 
       baseCostPrice: data.baseCostPrice,
       baseSellingPrice: data.baseSellingPrice,

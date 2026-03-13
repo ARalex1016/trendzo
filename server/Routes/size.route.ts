@@ -10,7 +10,7 @@ import {
 } from "../Controllers/size.controller.ts";
 
 // Middeware
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { sizeIdParamHandler } from "../Middleware/param.middleware.ts";
 
 const router = express.Router();

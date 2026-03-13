@@ -13,7 +13,7 @@ import {
 } from "../Controllers/coupon.controller.ts";
 
 // Middlewares
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { couponIdParamHandler } from "../Middleware/param.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
@@ -30,18 +30,18 @@ const router = express.Router();
 router.param("couponId", couponIdParamHandler);
 
 // Apply coupon
-router.get(
+router.post(
   "/validate",
   protect,
   validateRequest(validateCouponParamsSchema),
-  validateCoupon
+  validateCoupon,
 );
 router.post(
   "/apply",
   protect,
   authorize("user"),
   validateRequest(applyCouponBodySchema),
-  applyCoupon
+  applyCoupon,
 );
 
 // Admin
@@ -52,20 +52,20 @@ router.post(
   protect,
   authorize("admin"),
   validateRequest(createCouponSchema),
-  createCoupon
+  createCoupon,
 );
 router.patch(
   "/:couponId",
   protect,
   authorize("admin"),
   validateRequest(updateCouponSchema),
-  updateCoupon
+  updateCoupon,
 );
 router.patch(
   "/:couponId/status",
   protect,
   authorize("admin"),
-  toggleCouponStatus
+  toggleCouponStatus,
 );
 router.delete("/:couponId", protect, authorize("admin"), deleteCoupon);
 

@@ -17,6 +17,7 @@ export interface CreateProductInput {
   description: string;
 
   images: string[];
+  thumbnail: string;
 
   baseCostPrice: number;
   baseSellingPrice: number;
@@ -37,4 +38,6 @@ export interface CreateProductInput {
   featured?: boolean;
 
   isActive?: boolean;
+
+  createdBy?: string;
 }

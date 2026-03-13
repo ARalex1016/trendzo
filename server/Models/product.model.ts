@@ -21,6 +21,7 @@ export interface IProduct extends Document {
 
   // Base images (same for all variants)
   images: string[];
+  thumbnail?: string;
 
   // Price only at base level
   baseCostPrice: number;
@@ -66,8 +67,6 @@ const inventorySchema = new Schema<IInventory>(
   { _id: false },
 );
 
-inventorySchema.index({ color: 1, size: 1 }, { unique: true });
-
 const productSchema = new Schema<IProduct>(
   {
     name: {
@@ -102,6 +101,11 @@ const productSchema = new Schema<IProduct>(
         required: true,
       },
     ],
+
+    thumbnail: {
+      type: String,
+      required: true,
+    },
 
     baseCostPrice: {
       type: Number,

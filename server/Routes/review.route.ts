@@ -10,7 +10,7 @@ import {
 } from "../Controllers/review.controller.ts";
 
 // Middlewares
-import { protect, authorize } from "../Controllers/auth.controller.ts";
+import { protect, authorize } from "../Middleware/auth.middleware.ts";
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.put(
   "/:reviewId/status",
   protect,
   authorize("admin"),
-  updateReviewStatus
+  updateReviewStatus,
 );
 router.delete("/:reviewId", protect, authorize("admin"), deleteReview);
 
