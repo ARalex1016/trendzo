@@ -11,6 +11,10 @@ interface SummaryItemProps {
   value: string | number;
 }
 
+interface OrderSummaryProps {
+  oncheckOut: () => void;
+}
+
 const SummaryItem = ({ title, value }: SummaryItemProps) => {
   if (!value) return;
 
@@ -37,7 +41,7 @@ const SummaryTotal = ({ title, value }: SummaryItemProps) => {
   );
 };
 
-const OrderSummary = () => {
+const OrderSummary = ({ oncheckOut }: OrderSummaryProps) => {
   const { cart } = useCartStore();
 
   return (

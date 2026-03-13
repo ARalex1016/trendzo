@@ -1,3 +1,4 @@
+import type React from "react";
 import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
 
 // Layouts
@@ -22,10 +23,18 @@ const ProtectedRoute = () => {
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-const RedirectIfAuthenticated = () => {
+const RedirectIfAuthenticated = ({
+  children,
+}: {
+  children?: React.ReactNode;
+}) => {
   const { isAuthenticated } = useAuthStore();
 
-  return isAuthenticated ? <Navigate to="/home" replace /> : <Outlet />;
+  return isAuthenticated ? (
+    <Navigate to="/products" replace />
+  ) : (
+    children || <Outlet />
+  );
 };
 
 const router = createBrowserRouter([
@@ -46,10 +55,6 @@ const router = createBrowserRouter([
         element: <ProductDetails />,
       },
       {
-        path: "/cart",
-        element: <Cart />,
-      },
-      {
         element: <ProtectedRoute />,
         children: [
           {
@@ -64,8 +69,16 @@ const router = createBrowserRouter([
     element: <Layout showFooter={false} />,
     children: [
       {
+        path: "/cart",
+        element: <Cart />,
+      },
+      {
         element: <RedirectIfAuthenticated />,
         children: [
+          {
+            path: "/cart",
+            element: <Cart />,
+          },
           {
             path: "/login",
             element: <Login />,
