@@ -15,6 +15,8 @@ export const useAppInit = () => {
       try {
         await checkAuth();
 
+        setLoading(false);
+
         await getAttributes();
 
         // if (user) {
@@ -22,7 +24,6 @@ export const useAppInit = () => {
         // }
       } catch (error) {
         console.error("App init failed:", error);
-      } finally {
         setLoading(false);
       }
     };

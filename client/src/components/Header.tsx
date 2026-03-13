@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CartButton } from "./CartButtons";
 
 // Store
 import useAuthStore from "@/store/useAuthStore";
@@ -30,7 +31,9 @@ const Header = () => {
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
+        <CartButton />
+
         <ThemeTrigger />
 
         {/* Profile */}

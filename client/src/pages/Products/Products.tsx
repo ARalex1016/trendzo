@@ -26,7 +26,7 @@ const Products = () => {
       {/* Filter for Desktop */}
       {!isMobile && <FilterSidebar />}
 
-      {/* FIlter for Small Devices (Mobile) */}
+      {/* Filter for Small Devices (Mobile) */}
       {isMobile && (
         <Drawer direction="left">
           <DrawerTrigger className="bg-sidebar-primary p-2 rounded-full shadow-xs shadow-foreground/60 fixed bottom-side-spacing right-side-spacing z-20 hover:bg-sidebar-primary/70 hover:scale-105">

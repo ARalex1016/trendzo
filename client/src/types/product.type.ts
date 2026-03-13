@@ -1,3 +1,7 @@
+// Types
+import type { IColor } from "./color.type";
+import type { ISize } from "./size.types";
+
 export interface IInventory {
   color: string; // ObjectId of Color
   size: string; // ObjectId of Size
@@ -23,6 +27,7 @@ export interface IProduct {
 
   // Base images (same for all variants)
   images: string[];
+  thumbnail: string;
 
   // Base price
   baseCostPrice: number;
@@ -30,8 +35,8 @@ export interface IProduct {
   discount?: number;
 
   // Available options
-  colors: string[]; // Color ObjectIds
-  sizes: string[]; // Size ObjectIds
+  colors: IColor[]; // Color ObjectIds
+  sizes: ISize[]; // Size ObjectIds
 
   // Inventory combinations
   inventory: IInventory[];

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 // Components
+import { Title, BaseText } from "@/components/Text";
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
 import ProductPagePagination from "./ProductPagePagination";
@@ -10,7 +11,7 @@ import ProductPagePagination from "./ProductPagePagination";
 import { useResponsive } from "@/hooks/use-mobile";
 
 // Store
-import useProductStore from "@/store/useProduct";
+import useProductStore from "@/store/useProductStore";
 
 const ProductDisplay = () => {
   const { productsResponse, getAllProducts } = useProductStore();
@@ -50,13 +51,13 @@ const ProductDisplay = () => {
     <div className="w-full py-4">
       {/* Product Header */}
       <div>
-        <h2 className="text-xl font-semibold">All Products</h2>
+        <Title text="All Products" />
 
         {productsResponse && productsResponse?.meta?.total && (
-          <p className="text-foreground/60">
+          <BaseText>
             Showing {productsResponse.data.length} of{" "}
             {productsResponse.meta.total} products
-          </p>
+          </BaseText>
         )}
 
         {!productsResponse && (

@@ -8,7 +8,7 @@ import DSR_TabSection from "./DSR_TabSection";
 import Loader from "@/components/Loader";
 
 // Store
-import useProductStore from "@/store/useProduct";
+import useProductStore from "@/store/useProductStore";
 
 // Types
 import type { IProduct } from "@/types/product.type";

@@ -7,6 +7,7 @@ import Layout from "@/Layouts/Layout";
 import Home from "@/pages/Home/Home";
 import Products from "@/pages/Products/Products";
 import ProductDetails from "@/pages/ProductDetails/ProductDetails";
+import Cart from "@/pages/Cart/cart";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "/products/:productSlug",
         element: <ProductDetails />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
       },
       {
         element: <ProtectedRoute />,

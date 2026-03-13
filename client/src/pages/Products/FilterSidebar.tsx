@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 // Store
-import useCategoryStore from "@/store/useCategory";
+import useCategoryStore from "@/store/useCategoryStore";
 
 // Hooks
 import { useResponsive } from "@/hooks/use-mobile";

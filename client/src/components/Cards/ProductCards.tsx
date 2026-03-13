@@ -14,6 +14,9 @@ import { formatNepaliAmount } from "@/utils/NumberManager";
 // Store
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Icons
+import { Star } from "lucide-react";
+
 // Types
 import type { IProduct } from "@/types/product.type";
 
@@ -35,7 +38,7 @@ const ProductCards = ({ data, className }: ProductCardsPros) => {
       <div className="w-full aspect-3/4 overflow-hidden relative">
         {/* Image */}
         <img
-          src={data.images[0]}
+          src={data.thumbnail}
           alt={`${data.name} Image`}
           loading="lazy"
           className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -62,7 +65,13 @@ const ProductCards = ({ data, className }: ProductCardsPros) => {
       </div>
 
       {/* Detail Section */}
-      <div className="flex flex-col gap-y-2 px-3 xs:px-4 py-4">
+      <div className="relative flex flex-col gap-y-2 px-3 xs:px-4 py-4">
+        {data.featured && (
+          <div className="absolute top-4 right-4">
+            <Star style={{ fill: "gold", stroke: "gold" }} />
+          </div>
+        )}
+
         <div className="flex flex-col gap-y-1">
           {/* Category */}
           <p className="text-xs text-primary line-clamp-1">Shoes</p>

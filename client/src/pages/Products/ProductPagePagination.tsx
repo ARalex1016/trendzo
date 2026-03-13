@@ -16,7 +16,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useResponsive } from "@/hooks/use-mobile";
 
 // Store
-import useProductStore from "@/store/useProduct";
+import useProductStore from "@/store/useProductStore";
 
 // Utils
 import { getPaginationRange } from "@/utils/NumberManager";

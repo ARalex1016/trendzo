@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import ProductCards from "@/components/Cards/ProductCards";
 
 // Store
-import useProductStore from "@/store/useProduct";
+import useProductStore from "@/store/useProductStore";
 
 // Types
 import type { IProduct } from "@/types/product.type";

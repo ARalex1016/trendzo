@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import CategoryCard from "@/components/Cards/CategoryCard";
 
 // Store
-import useCategoryStore from "@/store/useCategory";
+import useCategoryStore from "@/store/useCategoryStore";
 
 const CategoryGrid = () => {
   const { categoriesResponse, getAllCategories } = useCategoryStore();
