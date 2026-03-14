@@ -87,12 +87,8 @@ const ProductService = {
     return product;
   },
 
-  async getSuggestions(rawQuery: string) {
+  async getSuggestions(rawQuery: string, limit = 10) {
     const query = rawQuery.trim();
-
-    if (!query || query.length < 2) {
-      throw new AppError("Query too short", 400);
-    }
 
     // Split words for multi-keyword search
     const words = query.split(" ").filter(Boolean);
@@ -105,7 +101,7 @@ const ProductService = {
       })),
     };
 
-    return ProductRepository.findAutoSuggestions(searchQuery, 10);
+    return ProductRepository.findAutoSuggestions(searchQuery, limit);
   },
 
   async create(data: CreateProductInput, creatorId: Types.ObjectId) {

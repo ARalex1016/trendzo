@@ -8,6 +8,7 @@ import Category from "../Models/category.model.ts";
 import { SlugService } from "../Services/slug.service.ts";
 
 // Errors
+import { asyncHandler } from "../Utils/asyncHandler.ts";
 import AppError from "../Utils/AppError.ts";
 
 // Helpers
@@ -22,12 +23,8 @@ const resolveModel = (modelName: string) => {
   }
 };
 
-export const suggestSlug = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
+export const suggestSlug = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { model: modelName, field, value } = req.query;
 
     if (!modelName || !field || !value) {
@@ -46,17 +43,11 @@ export const suggestSlug = async (
       status: "success",
       data: slugs,
     });
-  } catch (error) {
-    next(error);
-  }
-};
+  },
+);
 
-export const checkSlug = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
+export const checkSlug = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const { model: modelName, field, value } = req.query;
 
     if (!modelName || !field || !value) {
@@ -75,7 +66,5 @@ export const checkSlug = async (
       status: "success",
       data: { available },
     });
-  } catch (error) {
-    next(error);
-  }
-};
+  },
+);

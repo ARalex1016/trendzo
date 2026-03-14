@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 // Components
 import { Title, BaseText } from "@/components/Text";
+import SearchBox from "./SearchBox";
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
 import ProductPagePagination from "./ProductPagePagination";
@@ -50,19 +51,23 @@ const ProductDisplay = () => {
   return (
     <div className="w-full py-4">
       {/* Product Header */}
-      <div>
-        <Title text="All Products" />
+      <div className="w-full flex flex-col lg:flex-row justify-between items-center gap-x-5 gap-y-2">
+        <div className="order-2 lg:order-1 w-full">
+          <Title text="All Products" />
 
-        {productsResponse && productsResponse?.meta?.total && (
-          <BaseText>
-            Showing {productsResponse.data.length} of{" "}
-            {productsResponse.meta.total} products
-          </BaseText>
-        )}
+          {productsResponse && productsResponse?.meta?.total && (
+            <BaseText>
+              Showing {productsResponse.data.length} of{" "}
+              {productsResponse.meta.total} products
+            </BaseText>
+          )}
 
-        {!productsResponse && (
-          <p className="text-foreground/60">Loading products...</p>
-        )}
+          {!productsResponse && (
+            <p className="text-foreground/60">Loading products...</p>
+          )}
+        </div>
+
+        <SearchBox className="order-1 lg:order-2 w-full" />
       </div>
 
       {/* Main Product Display Section */}

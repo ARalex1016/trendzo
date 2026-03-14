@@ -5,28 +5,35 @@ import ProductService from "../Services/product.service.ts";
 import SizeService from "../Services/size.service.ts";
 import ColorService from "../Services/color.service.ts";
 
-export const getAllProducts = async (req: Request, res: Response) => {
-  const result = await ProductService.getAll(req.query);
+// Utils
+import { asyncHandler } from "../Utils/asyncHandler.ts";
 
-  res.status(200).json({
-    status: "success",
-    message: "Products retrieved successfully",
-    meta: result.meta,
-    data: result.data,
-  });
-};
+export const getAllProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await ProductService.getAll(req.query);
 
-export const getFeaturedProducts = async (req: Request, res: Response) => {
-  const result = await ProductService.getFeatured(req.query);
+    res.status(200).json({
+      status: "success",
+      message: "Products retrieved successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  },
+);
 
-  res.status(200).json({
-    status: "success",
-    data: result.data,
-    meta: result.meta,
-  });
-};
+export const getFeaturedProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await ProductService.getFeatured(req.query);
 
-export const getProduct = async (req: Request, res: Response) => {
+    res.status(200).json({
+      status: "success",
+      data: result.data,
+      meta: result.meta,
+    });
+  },
+);
+
+export const getProduct = asyncHandler(async (req: Request, res: Response) => {
   const product = req.targetProduct!;
 
   const sizes = await Promise.all(
@@ -41,20 +48,29 @@ export const getProduct = async (req: Request, res: Response) => {
     status: "success",
     data: { ...product.toObject(), sizes, colors },
   });
-};
+});
 
-export const getAutoSuggestions = async (req: Request, res: Response) => {
-  const suggestions = await ProductService.getSuggestions(
-    String(req.query.q ?? ""),
-  );
+export const getAutoSuggestions = asyncHandler(
+  async (req: Request, res: Response) => {
+    const query = String(req.query.q ?? "").trim();
 
-  res.status(200).json({
-    status: "success",
-    data: suggestions,
-  });
-};
+    if (!query || query.length < 1) {
+      return res.status(200).json({
+        status: "success",
+        data: [],
+      });
+    }
 
-export const addProduct = async (req: Request, res: Response) => {
+    const suggestions = await ProductService.getSuggestions(query, 10);
+
+    res.status(200).json({
+      status: "success",
+      data: suggestions,
+    });
+  },
+);
+
+export const addProduct = asyncHandler(async (req: Request, res: Response) => {
   const product = await ProductService.create(req.body, req.user!._id);
 
   res.status(201).json({
@@ -62,41 +78,54 @@ export const addProduct = async (req: Request, res: Response) => {
     message: "Product created successfully",
     data: product,
   });
-};
+});
 
-export const updateProduct = async (req: Request, res: Response) => {
-  const updated = await ProductService.update(req.targetProduct!._id, req.body);
+export const updateProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const updated = await ProductService.update(
+      req.targetProduct!._id,
+      req.body,
+    );
 
-  res.status(200).json({
-    status: "success",
-    message: "Product updated successfully",
-    data: updated,
-  });
-};
+    res.status(200).json({
+      status: "success",
+      message: "Product updated successfully",
+      data: updated,
+    });
+  },
+);
 
-export const toggleActive = async (req: Request, res: Response) => {
-  const isActive = await ProductService.toggleActive(req.targetProduct!._id);
+export const toggleActive = asyncHandler(
+  async (req: Request, res: Response) => {
+    const isActive = await ProductService.toggleActive(req.targetProduct!._id);
 
-  res.status(200).json({
-    status: "success",
-    message: `Product is now ${isActive ? "Activated" : "Deactiavted"}`,
-  });
-};
+    res.status(200).json({
+      status: "success",
+      message: `Product is now ${isActive ? "Activated" : "Deactiavted"}`,
+    });
+  },
+);
 
-export const toggleFeatured = async (req: Request, res: Response) => {
-  const featured = await ProductService.toggleFeatured(req.targetProduct!._id);
+export const toggleFeatured = asyncHandler(
+  async (req: Request, res: Response) => {
+    const featured = await ProductService.toggleFeatured(
+      req.targetProduct!._id,
+    );
 
-  res.status(200).json({
-    status: "success",
-    message: `Product is now ${featured ? "Featured" : "Not Featured"}`,
-  });
-};
+    res.status(200).json({
+      status: "success",
+      message: `Product is now ${featured ? "Featured" : "Not Featured"}`,
+    });
+  },
+);
 
-export const deleteProduct = async (req: Request, res: Response) => {
-  await ProductService.delete(req.targetProduct!._id);
+export const deleteProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    await ProductService.delete(req.targetProduct!._id);
 
-  res.status(200).json({
-    status: "success",
-    message: "Product deleted successfully",
-  });
-};
+    res.status(200).json({
+      status: "success",
+      message: "Product deleted successfully",
+    });
+  },
+);

@@ -87,6 +87,8 @@ const FilterSidebar = () => {
     Filter_Width = "288px";
   }
 
+  let padding_top = 16;
+
   const handlePriceChange = (value: number[]) => {
     setFilter((pre) => ({
       ...pre,
@@ -157,7 +159,8 @@ const FilterSidebar = () => {
       className="self-start bg-sidebar rounded-xl border border-border sticky top-menu-height flex flex-col gap-y-2 px-6 py-5"
       style={{
         width: Filter_Width,
-        height: "calc(100svh - var(--menu-height))",
+        height: `calc(100svh - var(--menu-height) - ${padding_top * 2}px)`,
+        top: `calc(var(--menu-height) + ${padding_top}px)`,
       }}
     >
       <h3 className="text-sm text-sidebar-foreground/80">Filters</h3>
@@ -236,16 +239,20 @@ const FilterSidebar = () => {
                 );
               })}
 
-            {categoriesRes && categoriesRes?.meta.pages > 1 && (
+            {categoriesRes?.meta && categoriesRes?.meta.pages > 1 && (
               <p
-                onClick={() => fetchAllCategories(categoriesRes.meta.limit + 5)}
+                onClick={() => {
+                  if (categoriesRes?.meta?.limit) {
+                    fetchAllCategories(categoriesRes?.meta?.limit + 5);
+                  }
+                }}
                 className="text-xs font-medium underline text-sidebar-foreground/80 hover:text-sidebar-foreground/60"
               >
                 See more
               </p>
             )}
 
-            {categoriesRes && categoriesRes?.meta.pages === 1 && (
+            {categoriesRes?.meta && categoriesRes?.meta.pages === 1 && (
               <p
                 onClick={() => fetchAllCategories(5)}
                 className="text-xs font-medium underline text-sidebar-foreground/80 hover:text-sidebar-foreground/60"

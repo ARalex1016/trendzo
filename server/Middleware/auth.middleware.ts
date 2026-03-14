@@ -30,7 +30,7 @@ export const protect = asyncHandler(
 );
 
 // Just check if user is logged in or not
-export const checkUser = asyncHandler(
+export const optionalAuth = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies?.token || "";
 

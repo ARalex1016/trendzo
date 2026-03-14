@@ -65,7 +65,9 @@ const OrderSummary = ({ oncheckOut }: OrderSummaryProps) => {
 
       <SummaryTotal title="Total" value={`Rs ${cart?.totals.total}`} />
 
-      <Button className="py-6!">Proceed to Checkout</Button>
+      <Button onClick={oncheckOut} className="py-6!">
+        Proceed to Checkout
+      </Button>
 
       {/* Payment Methods */}
       {/* <div>
