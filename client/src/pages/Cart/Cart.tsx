@@ -3,6 +3,7 @@ import { Title, BaseText } from "@/components/Text";
 import CartList from "./CartList";
 import OrderSummary from "./OrderSummary";
 import MobileCheckoutBar from "./MobileCheckoutBar";
+import CartEmpty from "./CartEmpty";
 
 // Store
 import useCartStore from "@/store/useCartStore";
@@ -11,7 +12,7 @@ const Cart = () => {
   const { cart } = useCartStore();
 
   if (!cart || cart?.items?.length === 0) {
-    return <p>Your cart is empty</p>;
+    return <CartEmpty />;
   }
 
   const handleCheckout = () => {};
