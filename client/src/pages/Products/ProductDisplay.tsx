@@ -21,9 +21,11 @@ const ProductDisplay = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [fetchingProducts, setFetchingProducts] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
 
   const fetchAllProducts = async () => {
     setFetchingProducts(true);
+    setError(false);
 
     try {
       var responsivelimit: string;
@@ -44,7 +46,9 @@ const ProductDisplay = () => {
 
       // Always send query string to your store / API
       await getAllProducts(searchParams.toString());
+      setError(false);
     } catch (error) {
+      setError(true);
     } finally {
       setFetchingProducts(false);
     }
@@ -88,6 +92,17 @@ const ProductDisplay = () => {
           Array.from({ length: 4 }).map((_, i) => {
             return <ProductCardSkeleton key={i} />;
           })}
+
+        {error && (
+          <div className="w-full col-span-full flex flex-col justify-center items-center py-20">
+            <h2 className="text-lg font-semibold text-red-600">
+              Something went wrong 😢
+            </h2>
+            <p className="text-gray-500 mt-2">
+              We couldn't load the products. Please try again later.
+            </p>
+          </div>
+        )}
       </div>
 
       <ProductPagePagination />

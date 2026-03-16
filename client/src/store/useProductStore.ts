@@ -36,6 +36,7 @@ const useProductStore = create<ProductStore>((set) => ({
       return res.data;
     } catch (error: any) {
       set({ productsResponse: null });
+
       throw new Error(error.message);
     }
   },
