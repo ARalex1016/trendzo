@@ -18,7 +18,7 @@ import useProductStore from "@/store/useProductStore";
 import type { ISuggestion } from "@/types/product.type";
 
 const SearchBox = ({ className }: { className?: string }) => {
-  const { getAutoSuggestions, getAllProducts } = useProductStore();
+  const { getAutoSuggestions } = useProductStore();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -28,18 +28,22 @@ const SearchBox = ({ className }: { className?: string }) => {
   const fetchAutoSuggestion = async (query: string) => {
     try {
       if (!query.trim()) {
-        return setSuggestions([]);
+        setSuggestions([]);
+        return;
       }
 
       let res = await getAutoSuggestions(query);
 
       setSuggestions(res ?? []);
-    } catch (error) {}
+    } catch (error) {
+      setSuggestions([]);
+    }
   };
 
   const handleSearch = (slug: string) => {
-    searchParams.set("slug", slug);
-    setSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams);
+    params.set("slug", slug);
+    setSearchParams(params);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,8 +60,9 @@ const SearchBox = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     if (!query.trim()) {
-      searchParams.delete("slug");
-      setSearchParams(searchParams);
+      const params = new URLSearchParams(searchParams);
+      params.delete("slug");
+      setSearchParams(params);
     }
 
     const timer = setTimeout(() => {
@@ -76,22 +81,24 @@ const SearchBox = ({ className }: { className?: string }) => {
           onChange={handleSearchChange}
           className="w-full"
         />
-        <ComboboxContent>
-          <ComboboxEmpty>No items found.</ComboboxEmpty>
+        {suggestions.length > 0 && (
+          <ComboboxContent>
+            <ComboboxEmpty>No items found.</ComboboxEmpty>
 
-          <ComboboxList>
-            {(suggestion) => (
-              <ComboboxItem
-                key={suggestion.slug}
-                value={suggestion.name}
-                // onSelect={() => handleSuggestionSelect(suggestion)}
-                onClick={() => handleSuggestionSelect(suggestion)}
-              >
-                {suggestion.name}
-              </ComboboxItem>
-            )}
-          </ComboboxList>
-        </ComboboxContent>
+            <ComboboxList>
+              {(suggestion) => (
+                <ComboboxItem
+                  key={suggestion.slug}
+                  value={suggestion.name}
+                  // onSelect={() => handleSuggestionSelect(suggestion)}
+                  onClick={() => handleSuggestionSelect(suggestion)}
+                >
+                  {suggestion.name}
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          </ComboboxContent>
+        )}
       </Combobox>
     </div>
   );
