@@ -13,6 +13,7 @@ function App() {
 
   if (loading) {
     // return <main className="w-svw h-svh bg-yellow-400"></main>;
+    return;
   }
 
   return (
