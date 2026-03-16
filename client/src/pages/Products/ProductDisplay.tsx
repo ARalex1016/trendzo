@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 // Components
 import { Title, BaseText } from "@/components/Text";
-// import SearchBox from "./SearchBox";
+import SearchBox from "./SearchBox";
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
 import ProductPagePagination from "./ProductPagePagination";
@@ -20,7 +20,11 @@ const ProductDisplay = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const [fetchingProducts, setFetchingProducts] = useState<boolean>(false);
+
   const fetchAllProducts = async () => {
+    setFetchingProducts(true);
+
     try {
       var responsivelimit: string;
 
@@ -40,7 +44,10 @@ const ProductDisplay = () => {
 
       // Always send query string to your store / API
       await getAllProducts(searchParams.toString());
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setFetchingProducts(false);
+    }
   };
 
   // 2️⃣ Fetch when params change
@@ -62,12 +69,12 @@ const ProductDisplay = () => {
             </BaseText>
           )}
 
-          {!productsResponse && (
+          {fetchingProducts && (
             <p className="text-foreground/60">Loading products...</p>
           )}
         </div>
 
-        {/* <SearchBox className="order-1 lg:order-2 w-full" /> */}
+        <SearchBox className="order-1 lg:order-2 w-full" />
       </div>
 
       {/* Main Product Display Section */}
@@ -77,7 +84,7 @@ const ProductDisplay = () => {
             return <ProductCards key={product._id} data={product} />;
           })}
 
-        {!productsResponse &&
+        {fetchingProducts &&
           Array.from({ length: 4 }).map((_, i) => {
             return <ProductCardSkeleton key={i} />;
           })}

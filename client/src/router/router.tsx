@@ -8,7 +8,7 @@ import Layout from "@/Layouts/Layout";
 import Home from "@/pages/Home/Home";
 import Products from "@/pages/Products/Products";
 import ProductDetails from "@/pages/ProductDetails/ProductDetails";
-// import Cart from "@/pages/Cart/Cart";
+import Cart from "@/pages/Cart/Cart";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
@@ -68,10 +68,10 @@ const router = createBrowserRouter([
   {
     element: <Layout showFooter={false} />,
     children: [
-      // {
-      //   path: "/cart",
-      //   element: <Cart />,
-      // },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
       {
         element: <RedirectIfAuthenticated />,
         children: [

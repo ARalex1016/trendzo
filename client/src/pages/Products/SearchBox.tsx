@@ -24,6 +24,7 @@ const SearchBox = ({ className }: { className?: string }) => {
 
   const [query, setQuery] = useState<string>("");
   const [suggestions, setSuggestions] = useState<ISuggestion[]>([]);
+  const [skipFetch, setSkipFetch] = useState(false); // <-- new flag
 
   const fetchAutoSuggestion = async (query: string) => {
     try {
@@ -55,14 +56,23 @@ const SearchBox = ({ className }: { className?: string }) => {
   const handleSuggestionSelect = (suggestion: ISuggestion) => {
     setQuery(suggestion.name);
     handleSearch(suggestion.slug);
+
     setSuggestions([]);
+    setSkipFetch(true); // <-- skip next fetch
   };
 
   useEffect(() => {
+    if (skipFetch) {
+      setSkipFetch(false); // reset flag
+      return; // skip fetching
+    }
+
     if (!query.trim()) {
       const params = new URLSearchParams(searchParams);
       params.delete("slug");
       setSearchParams(params);
+      setSuggestions([]);
+      return;
     }
 
     const timer = setTimeout(() => {
