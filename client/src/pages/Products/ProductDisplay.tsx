@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 // Components
 import { Title, BaseText } from "@/components/Text";
-import SearchBox from "./SearchBox";
+// import SearchBox from "./SearchBox";
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
 import ProductPagePagination from "./ProductPagePagination";
@@ -67,7 +67,7 @@ const ProductDisplay = () => {
           )}
         </div>
 
-        <SearchBox className="order-1 lg:order-2 w-full" />
+        {/* <SearchBox className="order-1 lg:order-2 w-full" /> */}
       </div>
 
       {/* Main Product Display Section */}
