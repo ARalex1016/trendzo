@@ -8,13 +8,20 @@ import { calculateTotals } from "@/utils/NumberManager";
 import type { ICart, ICartItem } from "@/types/cart.type";
 
 interface CartStore {
-  cart: ICart | null;
+  cart: ICart;
 
   addToCart: (item: ICartItem) => void;
   removeFromCart: (index: number) => void;
   updateQuantity: (index: number, quantity: number) => void;
   clearCart: () => void;
 }
+
+const emptyCart = {
+  items: [],
+  totals: calculateTotals([]),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
 
 const useCartStore = create<CartStore>()(
   persist(
@@ -42,7 +49,7 @@ const useCartStore = create<CartStore>()(
       };
 
       return {
-        cart: null,
+        cart: emptyCart,
 
         addToCart: (newItem) =>
           updateCartItems((items) => {
@@ -77,7 +84,7 @@ const useCartStore = create<CartStore>()(
 
         clearCart: () =>
           set({
-            cart: null,
+            cart: emptyCart,
           }),
       };
     },
