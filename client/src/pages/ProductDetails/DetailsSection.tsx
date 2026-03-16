@@ -10,7 +10,7 @@ import { ShoppingCart, Share2 } from "lucide-react";
 
 // Store
 import useAuthStore from "@/store/useAuthStore";
-import useCartStore from "@/store/useCartStore";
+// import useCartStore from "@/store/useCartStore";
 
 // Types
 import type { IProduct } from "@/types/product.type";
@@ -22,7 +22,7 @@ interface DetailsSectionProps {
 
 const DetailsSection = ({ product }: DetailsSectionProps) => {
   const { user } = useAuthStore();
-  const { addToCart } = useCartStore();
+  // const { addToCart } = useCartStore();
 
   const [selectedVariant, setSelectedVariant] = useState<ICartItem>({
     product: product._id,
@@ -72,7 +72,7 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
       return;
     }
 
-    addToCart(selectedVariant);
+    // addToCart(selectedVariant);
   };
 
   // Updating Subtotal
