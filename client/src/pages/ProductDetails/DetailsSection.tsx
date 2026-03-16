@@ -104,7 +104,7 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
         </p>
 
         <div className="flex flex-row gap-x-2">
-          {product.colors.map((color) => {
+          {product?.colors?.map((color) => {
             return (
               <div
                 key={color._id}
@@ -133,7 +133,7 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
         </p>
 
         <div className="flex flex-row gap-x-2">
-          {product.sizes.map((size) => {
+          {product?.sizes?.map((size) => {
             return (
               <div
                 key={size._id}

@@ -124,7 +124,7 @@ const FilterSidebar = () => {
     const params = new URLSearchParams();
 
     if (filter.categories?.length) {
-      const categoryIds = filter.categories.map((c) => c.slug).join(",");
+      const categoryIds = filter?.categories?.map((c) => c.slug).join(",");
       params.append("categories", categoryIds);
     }
 
@@ -213,7 +213,7 @@ const FilterSidebar = () => {
 
           <AccordionContent className="max-h-44 overflow-y-auto no-scrollbar flex flex-col items-start gap-y-2 px-2 py-2">
             {categoriesRes &&
-              categoriesRes.data.map((category) => {
+              categoriesRes?.data?.map((category) => {
                 return (
                   <div key={category._id} className="flex flex-row gap-x-1">
                     <input

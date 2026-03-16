@@ -168,7 +168,7 @@ const Signup = () => {
 
           {/* Stepper */}
           <div className="flex items-center w-full gap-1 my-5">
-            {steps.map((step, index) => {
+            {steps?.map((step, index) => {
               const isCompleted = currentStepIndex > index;
               const isCurrent = currentStepIndex === index;
 

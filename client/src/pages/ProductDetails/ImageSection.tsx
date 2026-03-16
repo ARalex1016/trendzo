@@ -29,7 +29,7 @@ const ImageSection = ({ images }: ImageSection) => {
 
       {/* Image Group */}
       <div className="flex flex-row gap-x-2 gap-y-4 rounded-lg overflow-x-auto no-scrollbar">
-        {images.map((img, i) => {
+        {images?.map((img, i) => {
           const activeImage = img === selectedImage;
 
           return (

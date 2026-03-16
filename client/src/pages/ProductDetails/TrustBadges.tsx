@@ -47,7 +47,7 @@ const IconContainer = ({
 const TrustBadges = () => {
   return (
     <div className="w-full flex flex-row justify-around">
-      {trustBadges.map((badge) => {
+      {trustBadges?.map((badge) => {
         return (
           <IconContainer
             key={badge.id}

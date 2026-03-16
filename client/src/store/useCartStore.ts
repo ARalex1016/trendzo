@@ -1,11 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Utils
-import { calculateTotals } from "@/utils/NumberManager";
-
 // Types
-import type { ICart, ICartItem } from "@/types/cart.type";
+import type { ICart, ICartItem, CartTotals } from "@/types/cart.type";
 
 interface CartStore {
   cart: ICart;
@@ -16,9 +13,36 @@ interface CartStore {
   clearCart: () => void;
 }
 
-const emptyCart = {
-  items: [],
+export const calculateTotals = (items: ICartItem[]): CartTotals => {
+  const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const subtotal = items.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
+
+  const discount = 0;
+  const deliveryCharge = 0;
+  const tax = 0;
+
+  const total = subtotal - discount + deliveryCharge + tax;
+
+  return {
+    itemsCount,
+    subtotal,
+    discount,
+    deliveryCharge,
+    tax,
+    total,
+  };
+};
+
+const emptyCart: ICart = {
+  items: [], // no items in the cart
+  coupon: undefined, // no coupon applied
+
   totals: calculateTotals([]),
+
+  expiresAt: undefined, // no expiration set yet
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

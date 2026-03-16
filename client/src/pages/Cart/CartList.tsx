@@ -9,10 +9,10 @@ const CartList = () => {
 
   return (
     <div className="col-span-2 flex flex-col gap-y-4">
-      {cart &&
-        cart?.items.map((item, i) => {
-          return <CartItem key={i} item={item} index={i} />;
-        })}
+      {cart?.items?.length > 0 &&
+        cart.items.map((item, i) => (
+          <CartItem key={`${item.product}-${i}`} item={item} index={i} />
+        ))}
     </div>
   );
 };

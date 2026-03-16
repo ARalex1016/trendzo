@@ -5,14 +5,14 @@ import type { ICoupon } from "./coupon.type";
 
 export interface Meta {
   page: number;
-  limit: number;
-  total: number;
+  limit?: number;
+  total?: number;
   pages: number;
 }
 
 export interface ApiResponse<T> {
   status: string;
-  message: string;
+  message?: string;
   meta?: Meta;
   data: T;
 }

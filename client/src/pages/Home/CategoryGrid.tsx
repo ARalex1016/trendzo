@@ -1,17 +1,11 @@
-import { useEffect } from "react";
-
 // Components
 import CategoryCard from "@/components/Cards/CategoryCard";
 
 // Store
-import useCategoryStore from "@/store/useCategoryStore";
+import useAttributeStore from "@/store/useAttributeStore";
 
 const CategoryGrid = () => {
-  const { categoriesResponse, getAllCategories } = useCategoryStore();
-
-  useEffect(() => {
-    getAllCategories();
-  }, []);
+  const { attributes } = useAttributeStore();
 
   return (
     <section className="w-full min-h-svh bg-background flex flex-col justify-center gap-y-10 px-side-spacing py-10">
@@ -26,10 +20,9 @@ const CategoryGrid = () => {
 
       {/* Category Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-        {!!categoriesResponse &&
-          categoriesResponse.data.map((category, index) => {
-            return <CategoryCard key={index} data={category} />;
-          })}
+        {attributes?.categories?.data?.map((category) => {
+          return <CategoryCard key={category._id} data={category} />;
+        })}
       </div>
     </section>
   );

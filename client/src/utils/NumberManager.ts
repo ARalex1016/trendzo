@@ -1,6 +1,3 @@
-// Types
-import type { ICartItem, CartTotals } from "@/types/cart.type";
-
 /**
  * Formats a number into Nepali/Indian numbering system
  * Example: 10000000 => 1,00,00,000
@@ -108,27 +105,4 @@ export const getPaginationRange = (
   }
 
   return pages;
-};
-
-export const calculateTotals = (items: ICartItem[]): CartTotals => {
-  const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
-
-  const subtotal = items.reduce((sum, item) => {
-    return sum + item.price * item.quantity;
-  }, 0);
-
-  const discount = 0;
-  const deliveryCharge = 0;
-  const tax = 0;
-
-  const total = subtotal - discount + deliveryCharge + tax;
-
-  return {
-    itemsCount,
-    subtotal,
-    discount,
-    deliveryCharge,
-    tax,
-    total,
-  };
 };

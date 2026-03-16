@@ -73,7 +73,7 @@ const ProductDisplay = () => {
       {/* Main Product Display Section */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-6 py-4">
         {productsResponse &&
-          productsResponse.data.map((product) => {
+          productsResponse.data?.map((product) => {
             return <ProductCards key={product._id} data={product} />;
           })}
 

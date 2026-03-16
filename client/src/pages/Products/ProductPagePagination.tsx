@@ -28,7 +28,7 @@ const ProductPagePagination = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  if (!productsResponse) return null;
+  if (!productsResponse?.meta) return null;
 
   const { page: currentPage, pages: totalPages } = productsResponse.meta;
 
@@ -70,7 +70,7 @@ const ProductPagePagination = () => {
           <PaginationPrevious onClick={prev} />
         </PaginationItem>
 
-        {paginationRange.map((item, index) => {
+        {paginationRange?.map((item, index) => {
           if (item === "ellipsis-left" || item === "ellipsis-right") {
             return (
               <PaginationItem key={index}>

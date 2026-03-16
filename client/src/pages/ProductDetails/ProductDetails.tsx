@@ -12,7 +12,6 @@ import useProductStore from "@/store/useProductStore";
 
 // Types
 import type { IProduct } from "@/types/product.type";
-
 const ProductDetails = () => {
   const { getProductBySlug } = useProductStore();
 
