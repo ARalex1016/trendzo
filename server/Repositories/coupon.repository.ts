@@ -17,7 +17,7 @@ export const CouponRepository = {
     excludeId?: Types.ObjectId,
     fields?: string[],
   ): Promise<ICoupon | null> {
-    const query: any = { code };
+    const query: Record<string, unknown> = { code };
 
     if (excludeId) {
       query._id = { $ne: excludeId };
@@ -33,7 +33,7 @@ export const CouponRepository = {
     return mongooseQuery.exec();
   },
 
-  async findAll(filter: any = {}) {
+  async findAll(filter: Record<string, unknown> = {}) {
     return Coupon.find(filter).sort({ createdAt: -1 });
   },
 

@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model, type HydratedDocument } from "mongoose";
 
-export interface ICoupon extends Document {
+export interface ICoupon {
   code: string;
   type: "percentage" | "fixed";
   value: number;
@@ -15,6 +15,8 @@ export interface ICoupon extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type CouponDocument = HydratedDocument<ICoupon>;
 
 const couponSchema = new Schema<ICoupon>(
   {
