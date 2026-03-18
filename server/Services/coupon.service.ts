@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import type { ICoupon } from "../Models/coupon.model.ts";
+import type { CouponDocument, ICoupon } from "../Models/coupon.model.ts";
 
 // Repository
 import { CouponRepository } from "../Repositories/coupon.repository.ts";
@@ -151,7 +151,7 @@ export const CouponService = {
     userId: Types.ObjectId,
     orderType: "online" | "in_store",
     session: any,
-  ): Promise<ICoupon> {
+  ): Promise<CouponDocument> {
     const coupon = await CouponRepository.findByCodeWithSession(
       couponCode,
       session,
