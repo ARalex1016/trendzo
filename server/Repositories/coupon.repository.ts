@@ -16,7 +16,7 @@ export const CouponRepository = {
     code: string,
     excludeId?: Types.ObjectId,
     fields?: string[],
-  ) {
+  ): Promise<ICoupon | null> {
     const query: any = { code };
 
     if (excludeId) {
@@ -30,7 +30,7 @@ export const CouponRepository = {
       mongooseQuery = mongooseQuery.select(fields.join(" "));
     }
 
-    return mongooseQuery;
+    return mongooseQuery.exec();
   },
 
   async findAll(filter: any = {}) {
