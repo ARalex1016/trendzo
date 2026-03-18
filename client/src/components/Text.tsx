@@ -1,9 +1,21 @@
 import type React from "react";
 
-export const Title = ({ text }: { text: string }) => {
-  return <h2 className="text-xl font-semibold">{text}</h2>;
+interface BaseTextProps {
+  className?: string;
+}
+
+interface TitleProps extends BaseTextProps {
+  text: string;
+}
+
+interface BaseTextComponentProps extends BaseTextProps {
+  children: React.ReactNode; // ✅ required
+}
+
+export const Title = ({ text, className }: TitleProps) => {
+  return <h2 className={`text-xl font-semibold ${className}`}>{text}</h2>;
 };
 
-export const BaseText = ({ children }: { children: React.ReactNode }) => {
-  return <p className="text-foreground/60">{children}</p>;
+export const BaseText = ({ children, className }: BaseTextComponentProps) => {
+  return <p className={`text-foreground/60 ${className}`}>{children}</p>;
 };

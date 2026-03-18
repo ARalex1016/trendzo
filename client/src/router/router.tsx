@@ -9,6 +9,7 @@ import Home from "@/pages/Home/Home";
 import Products from "@/pages/Products/Products";
 import ProductDetails from "@/pages/ProductDetails/ProductDetails";
 import Cart from "@/pages/Cart/Cart";
+import CheckOut from "@/pages/CheckOut/CheckOut";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
@@ -39,7 +40,7 @@ const RedirectIfAuthenticated = ({
 
 const router = createBrowserRouter([
   {
-    element: <Layout showFooter />,
+    element: <Layout showFooter />, // Layout with Footer
     children: [
       {
         index: true,
@@ -55,7 +56,7 @@ const router = createBrowserRouter([
         element: <ProductDetails />,
       },
       {
-        element: <ProtectedRoute />,
+        element: <ProtectedRoute />, // Only for Authenticated Users
         children: [
           {
             path: "/profile",
@@ -66,14 +67,22 @@ const router = createBrowserRouter([
     ],
   },
   {
-    element: <Layout showFooter={false} />,
+    element: <Layout showFooter={false} />, // Layout without Footer
     children: [
+      {
+        path: "/checkout",
+        element: <CheckOut />,
+      },
       {
         path: "/cart",
         element: <Cart />,
       },
       {
-        element: <RedirectIfAuthenticated />,
+        path: "*",
+        element: <NotFound />,
+      },
+      {
+        element: <RedirectIfAuthenticated />, // Only for Non- Authenticated Users
         children: [
           {
             path: "/login",
@@ -82,10 +91,6 @@ const router = createBrowserRouter([
           {
             path: "/signup",
             element: <Signup />,
-          },
-          {
-            path: "*",
-            element: <NotFound />,
           },
         ],
       },

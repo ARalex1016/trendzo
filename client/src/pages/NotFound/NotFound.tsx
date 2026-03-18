@@ -19,7 +19,7 @@ const NotFound = () => {
 
           <div className="flex justify-center gap-3">
             <Button asChild>
-              <Link to="/">Go Home</Link>
+              <Link to="/products">Start Shopping</Link>
             </Button>
 
             <Button variant="outline" asChild>

@@ -36,6 +36,7 @@ export interface IOrder extends Document {
   deliveryAddress: {
     name: string;
     phone: string;
+    email: string;
     address: string;
     city: string;
     postalCode?: string;

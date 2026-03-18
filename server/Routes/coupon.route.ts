@@ -13,7 +13,11 @@ import {
 } from "../Controllers/coupon.controller.ts";
 
 // Middlewares
-import { protect, authorize } from "../Middleware/auth.middleware.ts";
+import {
+  protect,
+  optionalAuth,
+  authorize,
+} from "../Middleware/auth.middleware.ts";
 import { couponIdParamHandler } from "../Middleware/param.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
@@ -32,7 +36,7 @@ router.param("couponId", couponIdParamHandler);
 // Apply coupon
 router.post(
   "/validate",
-  protect,
+  optionalAuth,
   validateRequest(validateCouponParamsSchema),
   validateCoupon,
 );

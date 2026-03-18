@@ -47,7 +47,7 @@ const AddressSchema = new Schema(
     country: { type: String, default: "Nepal" },
     postalCode: String,
   },
-  { _id: true }
+  { _id: true },
 );
 
 const UserSchema = new Schema<IUser>(
@@ -129,7 +129,7 @@ const UserSchema = new Schema<IUser>(
       default: [],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);

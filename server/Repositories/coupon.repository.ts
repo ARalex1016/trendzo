@@ -12,10 +12,25 @@ export const CouponRepository = {
     return Coupon.findById(id);
   },
 
-  async findByCode(code: string, excludeId?: Types.ObjectId) {
+  async findByCode(
+    code: string,
+    excludeId?: Types.ObjectId,
+    fields?: string[],
+  ) {
     const query: any = { code };
-    if (excludeId) query._id = { $ne: excludeId };
-    return Coupon.findOne(query);
+
+    if (excludeId) {
+      query._id = { $ne: excludeId };
+    }
+
+    let mongooseQuery = Coupon.findOne(query);
+
+    // Apply field selection if provided
+    if (fields && fields.length > 0) {
+      mongooseQuery = mongooseQuery.select(fields.join(" "));
+    }
+
+    return mongooseQuery;
   },
 
   async findAll(filter: any = {}) {
@@ -42,7 +57,7 @@ export const CouponRepository = {
     return Coupon.findByIdAndUpdate(
       couponId,
       { $inc: { usedCount: 1 } },
-      { new: true, session }
+      { new: true, session },
     );
   },
 };

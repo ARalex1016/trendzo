@@ -9,6 +9,9 @@ import { OrderRepository } from "../Repositories/order.repository.ts";
 import AppError from "../Utils/AppError.ts";
 import { capitalizeString } from "../Utils/stringManager.ts";
 
+// Types
+import type { IUser } from "../Models/user.model.ts";
+
 export const CouponService = {
   async isCouponCodeTaken(code: string, excludeId?: Types.ObjectId) {
     const existing = await CouponRepository.findByCode(code, excludeId);
@@ -61,13 +64,47 @@ export const CouponService = {
     await CouponRepository.deleteById(id);
   },
 
-  async validateCoupon(code: string) {
-    const coupon = await CouponRepository.findByCode(code);
+  async validateCoupon(code: string, user?: IUser) {
+    const coupon = await CouponRepository.findByCode(code, undefined, [
+      "applicableUsers",
+      "code",
+      "discount",
+      "minPurchase",
+      "maxDiscount",
+      "status",
+      "type",
+      "usageLimit",
+      "usedCount",
+      "value",
+      "expiryDate",
+      "createdAt",
+      "-_id",
+    ]);
+
     if (!coupon) throw new AppError("Invalid coupon code", 404);
+
     if (coupon.status !== "active")
       throw new AppError("Coupon is inactive", 400);
+
     if (coupon.expiryDate < new Date())
       throw new AppError("Coupon has expired", 400);
+
+    if (coupon.applicableUsers === "firstTime") {
+      if (!user) return;
+
+      if (user) {
+        let isFirstTimeCustomer = await OrderRepository.isFirstTimeCustomer(
+          user?._id,
+        );
+
+        if (!isFirstTimeCustomer) {
+          throw new AppError(
+            "This coupon is only valid for first-time users.",
+            400,
+          );
+        }
+      }
+    }
 
     return coupon;
   },
@@ -75,10 +112,14 @@ export const CouponService = {
   async applyCoupon({ code, totalAmount, isFirstTimeUser }: any) {
     const coupon = await this.validateCoupon(code);
 
+    if (!coupon) {
+      throw new AppError("Invalid coupon code", 400);
+    }
+
     if (coupon.minPurchase && totalAmount < coupon.minPurchase) {
       throw new AppError(
         `Minimum purchase should be NPR ${coupon.minPurchase}`,
-        400
+        400,
       );
     }
 
@@ -110,11 +151,11 @@ export const CouponService = {
     couponCode: string,
     userId: Types.ObjectId,
     orderType: "online" | "in_store",
-    session: any
+    session: any,
   ): Promise<ICoupon> {
     const coupon = await CouponRepository.findByCodeWithSession(
       couponCode,
-      session
+      session,
     );
     if (!coupon) throw new AppError("Coupon not found", 404);
     if (coupon.status !== "active") throw new AppError("Coupon inactive", 400);
@@ -127,7 +168,7 @@ export const CouponService = {
       if (orderType === "online") {
         const previousOrders = await OrderRepository.countUserOrders(
           userId,
-          session
+          session,
         );
 
         if (previousOrders > 0)

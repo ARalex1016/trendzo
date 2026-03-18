@@ -1,0 +1,59 @@
+import { z } from "zod";
+
+export const loginStepSchema = z.object({
+  login: z.object({
+    fullName: z
+      .string()
+      .min(2, "Full name must be at least 2 characters")
+      .max(100, "Full name is too long"),
+    phone: z
+      .string()
+      .min(5, "Phone number is too short")
+      .max(20, "Phone number is too long"),
+    email: z.string().email("Invalid email address"),
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .max(100, "Password is too long"),
+  }),
+});
+
+export const addressStepSchema = z.object({
+  address: z.object({
+    label: z.string().max(30, "Label is too long").optional(),
+    name: z.string().min(2, "Recipient name is required"),
+    phone: z
+      .string()
+      .min(5, "Phone number is too short")
+      .max(20, "Phone number is too long"),
+    email: z.string().email("Invalid email address"),
+    street: z.string().min(5, "Street address is too short"),
+    city: z.string().min(2, "City is too short"),
+    state: z.string().min(2, "State is too short"),
+    country: z.string().optional(),
+    postalCode: z.string().min(2, "Postal code is required"),
+  }),
+});
+
+export const paymentStepSchema = z.object({
+  paymentMethod: z.enum(["bank", "esewa", "khalti", "cod"]),
+  orderNote: z
+    .string()
+    .max(500, "Order note cannot exceed 500 characters")
+    .optional()
+    .or(z.literal("")),
+  couponCode: z
+    .string()
+    .max(50, "Coupon code is too long")
+    .optional()
+    .or(z.literal("")),
+});
+
+export const checkoutSchema = loginStepSchema
+  .merge(addressStepSchema)
+  .merge(paymentStepSchema);
+
+export type LoginStepSchemaType = z.infer<typeof loginStepSchema>;
+export type AddressStepSchemaType = z.infer<typeof addressStepSchema>;
+export type PaymentStepSchemaType = z.infer<typeof paymentStepSchema>;
+export type CheckoutSchemaType = z.infer<typeof checkoutSchema>;

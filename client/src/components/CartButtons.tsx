@@ -2,16 +2,16 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 // Components
 import { Button } from "./ui/button";
-// import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 // Store
-// import useCartStore from "@/store/useCartStore";
+import useCartStore from "@/store/useCartStore";
 
 // Icons
 import { ShoppingCart } from "lucide-react";
 
 export const CartButton = () => {
-  // const { cart } = useCartStore();
+  const { cart } = useCartStore();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,15 +27,15 @@ export const CartButton = () => {
         <ShoppingCart className="h-4 w-4" />
       </Button>
 
-      {/* {cart && ( */}
-      {/* <Badge className="absolute -top-2 -right-2 size-5.5"> */}
-      {/* Items Total Count */}
-      {/* {cart?.totals.itemsCount > 9 ? "+9" : cart?.totals.itemsCount} */}
+      {cart?.totals.itemsCount !== 0 && (
+        <Badge className="absolute -top-2 -right-2 size-5.5">
+          {/* Items Total Count */}
+          {cart?.totals.itemsCount > 9 ? "+9" : cart?.totals.itemsCount}
 
-      {/* Items Count */}
-      {/* {cart?.items.length > 9 ? "+9" : cart?.items.length} */}
-      {/* </Badge> */}
-      {/* )} */}
+          {/* Items Count */}
+          {/* {cart?.items.length > 9 ? "+9" : cart?.items.length} */}
+        </Badge>
+      )}
     </div>
   );
 };

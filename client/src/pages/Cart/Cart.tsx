@@ -1,21 +1,27 @@
+import { useNavigate } from "react-router-dom";
+
 // Components
 import { Title, BaseText } from "@/components/Text";
 import CartList from "./CartList";
 import OrderSummary from "./OrderSummary";
 import MobileCheckoutBar from "./MobileCheckoutBar";
-import CartEmpty from "./CartEmpty";
+import EmptyCart from "./EmptyCart";
 
 // Store
 import useCartStore from "@/store/useCartStore";
 
 const Cart = () => {
+  const navigate = useNavigate();
+
   const { cart } = useCartStore();
 
   if (!cart || cart?.items?.length === 0) {
-    return <CartEmpty />;
+    return <EmptyCart />;
   }
 
-  const handleCheckout = () => {};
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <section className="w-full m-auto min-h-svh flex flex-col gap-x-8 px-side-spacing py-4 relative pb-20">
@@ -23,7 +29,7 @@ const Cart = () => {
 
       <BaseText>{cart?.items.length} items in your cart</BaseText>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-6">
         <CartList />
 
         <OrderSummary oncheckOut={handleCheckout} />

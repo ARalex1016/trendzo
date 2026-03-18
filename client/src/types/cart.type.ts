@@ -5,6 +5,18 @@ import type { ISize } from "./size.types";
 export type CartColor = Pick<IColor, "_id" | "name" | "hexCode">;
 export type CartSize = Pick<ISize, "_id" | "name">;
 
+export interface AppliedCoupon {
+  code: string;
+
+  type: "percentage" | "fixed";
+  value: number;
+
+  minPurchase: number;
+  maxDiscount?: number;
+
+  discountAmount: number;
+}
+
 export interface ICartItem {
   product: string; // productId
 
@@ -42,7 +54,7 @@ export interface CartTotals {
 export interface ICart {
   items: ICartItem[];
 
-  coupon?: string;
+  coupon?: AppliedCoupon;
 
   totals: CartTotals;
 

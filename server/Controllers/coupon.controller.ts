@@ -70,11 +70,14 @@ export const deleteCoupon = asyncHandler(
 
 export const validateCoupon = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    let user = req?.user;
+
     if (!req.body.code) {
       throw new AppError("Invalid code", 400);
     }
 
-    const coupon = await CouponService.validateCoupon(req.body.code);
+    const coupon = await CouponService.validateCoupon(req.body.code, user);
+
     res
       .status(200)
       .json({ status: "success", message: "Coupon valid", data: coupon });

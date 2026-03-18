@@ -166,4 +166,12 @@ export const OrderRepository = {
       session ?? null,
     );
   },
+
+  async isFirstTimeCustomer(userId: Types.ObjectId): Promise<boolean> {
+    const exists = await Order.exists({
+      user: userId,
+    });
+
+    return !exists;
+  },
 };

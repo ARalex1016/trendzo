@@ -1,10 +1,12 @@
 // Components
-import CouponCode from "./CouponCode";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 // Store
 import useCartStore from "@/store/useCartStore";
+
+// Icons
+import { ShoppingBag } from "lucide-react";
 
 interface SummaryItemProps {
   title: string;
@@ -14,6 +16,7 @@ interface SummaryItemProps {
 
 interface OrderSummaryProps {
   oncheckOut: () => void;
+  className?: string;
 }
 
 const SummaryItem = ({ title, value, className }: SummaryItemProps) => {
@@ -42,16 +45,17 @@ const SummaryTotal = ({ title, value }: SummaryItemProps) => {
   );
 };
 
-const OrderSummary = ({ oncheckOut }: OrderSummaryProps) => {
+const OrderSummary = ({ oncheckOut, className }: OrderSummaryProps) => {
   const { cart } = useCartStore();
 
   return (
-    <div className="w-full h-fit lg:col-span-1 bg-background1 border rounded-xl flex flex-col gap-y-3 p-6 lg:sticky lg:top-menu-height">
-      <p className="font-medium">Order Summary</p>
-
-      <CouponCode />
-
-      <Separator />
+    <div
+      className={`w-full h-fit col-span-1 bg-background1 border rounded-xl flex flex-col gap-y-3 p-6 sticky top-menu-height ${className}`}
+    >
+      <div className="flex flex-row gap-x-1">
+        <ShoppingBag />
+        <p className="font-medium">Order Summary</p>
+      </div>
 
       <SummaryItem title="Subtotal" value={`Rs ${cart?.totals.subtotal}`} />
 
@@ -75,7 +79,7 @@ const OrderSummary = ({ oncheckOut }: OrderSummaryProps) => {
       <SummaryTotal title="Total" value={`Rs ${cart?.totals.total}`} />
 
       <Button onClick={oncheckOut} className="py-6!">
-        Proceed to Checkout
+        Place order
       </Button>
 
       {/* Payment Methods */}

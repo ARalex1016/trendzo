@@ -7,7 +7,7 @@ import type { ApiErrorResponse } from "@/types/response.type";
 import type { ICoupon } from "@/types/coupon.type";
 
 interface CouponStore {
-  validateCoupon: (code: string) => Promise<ICoupon | AxiosError>;
+  validateCoupon: (code: string) => Promise<ICoupon>;
 }
 
 const useCouponStore = create<CouponStore>(() => ({

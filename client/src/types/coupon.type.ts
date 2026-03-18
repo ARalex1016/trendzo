@@ -1,7 +1,7 @@
 export type ICode = string;
 
 export interface ICoupon {
-  _id: string;
+  _id?: string;
   code: ICode;
   type: "percentage" | "fixed";
   value: number;
@@ -12,7 +12,7 @@ export interface ICoupon {
   usageLimit?: number | null;
   usedCount: number;
   status: "active" | "inactive";
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
