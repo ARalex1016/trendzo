@@ -9,7 +9,7 @@ export const createCouponSchema = z.object({
 
   maxDiscount: z.number().optional(),
 
-  applicableUsers: z.enum(["all", "firstTime", "referred"]).default("all"),
+  applicableUsers: z.enum(["all", "firstTime"]).default("all"),
 
   expiryDate: z.coerce.date({ message: "Invalid expiry date format" }),
 
@@ -33,3 +33,6 @@ export const applyCouponBodySchema = z.object({
   isReferredUser: z.boolean().optional(),
   isFirstTimeUser: z.boolean().optional(),
 });
+
+export type CreateCouponBodyInput = z.input<typeof createCouponSchema>;
+export type CreateCouponBodyParsed = z.output<typeof createCouponSchema>;

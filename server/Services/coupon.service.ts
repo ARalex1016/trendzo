@@ -68,7 +68,6 @@ export const CouponService = {
     const coupon = await CouponRepository.findByCode(code, undefined, [
       "applicableUsers",
       "code",
-      "discount",
       "minPurchase",
       "maxDiscount",
       "status",
