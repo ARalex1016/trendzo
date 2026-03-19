@@ -10,16 +10,11 @@ import { asyncHandler } from "../Utils/asyncHandler.ts";
 
 export const getAttributes = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log("---------- Request came ------------");
-    console.log(1);
-
     const sizes = await SizeService.listSizes();
     const colors = await ColorService.getAllColors();
     const categories = await CategoryService.getAll(
       req.query as Record<string, unknown>,
     );
-
-    console.log(2);
 
     res.status(200).json({
       status: "success",
