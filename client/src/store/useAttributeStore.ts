@@ -31,7 +31,7 @@ const useAttributeStore = create<AttributeStore>((set) => ({
     try {
       let res = await axiosInstance.get("/v1/attributes");
       console.log(2);
-      console.log(res.data.data);
+      console.log(res);
 
       set({ attributes: res.data.data });
     } catch (error: unknown) {
