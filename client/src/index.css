@@ -94,7 +94,7 @@
   --spacing-side-spacing: var(--side-spacing);
 
   /* Break points */
-  --breakpoint-xs: 390px;
+  --breakpoint-xs: 420px;
 }
 
 .dark {

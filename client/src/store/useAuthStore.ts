@@ -109,6 +109,7 @@ const useAuthStore = create<AuthStore>((set) => ({
 
   logout: async () => {
     set({ isAuthenticated: true });
+
     try {
       await axiosInstance.post("/v1/auth/logout");
 

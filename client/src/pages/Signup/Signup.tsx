@@ -161,7 +161,7 @@ const Signup = () => {
   }, [methods, currentStepIndex]);
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center px-side-spacing">
       <Card className="w-full max-w-sm gap-0">
         <CardHeader>
           <CardTitle className="text-center">Create a new account</CardTitle>

@@ -101,6 +101,7 @@ const BasicInfoStep = () => {
                 onChange={field.onChange}
                 placeholder="Referral Code"
                 readOnly
+                className="text-xs"
               />
               {firstErrorPath === "referralCode" && <FormMessage />}
             </FormItem>

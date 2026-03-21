@@ -23,6 +23,10 @@ import { getInitials } from "@/utils/StringManager";
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
 
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <header className="h-menu-height shrink-0 bg-background/80 flex items-center justify-between px-side-spacing border-b backdrop-blur-md sticky top-0 z-50">
       {/* Left */}
@@ -60,7 +64,7 @@ const Header = () => {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem variant="destructive" onClick={logout}>
+              <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                 <LogOut />
                 Log out
               </DropdownMenuItem>

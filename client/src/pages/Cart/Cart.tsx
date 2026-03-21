@@ -37,6 +37,7 @@ const Cart = () => {
 
       <MobileCheckoutBar
         total={cart.totals.total}
+        discount={cart.totals.discount}
         oncheckOut={handleCheckout}
       />
     </section>
