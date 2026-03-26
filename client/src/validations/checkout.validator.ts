@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const loginStepSchema = z.object({
-  login: z.object({
+export const userStepSchema = z.object({
+  user: z.object({
     fullName: z
       .string()
       .min(2, "Full name must be at least 2 characters")
@@ -19,20 +19,18 @@ export const loginStepSchema = z.object({
 });
 
 export const addressStepSchema = z.object({
-  address: z.object({
-    label: z.string().max(30, "Label is too long").optional(),
-    name: z.string().min(2, "Recipient name is required"),
-    phone: z
-      .string()
-      .min(5, "Phone number is too short")
-      .max(20, "Phone number is too long"),
-    email: z.string().email("Invalid email address"),
-    street: z.string().min(5, "Street address is too short"),
-    city: z.string().min(2, "City is too short"),
-    state: z.string().min(2, "State is too short"),
-    country: z.string().optional(),
-    postalCode: z.string().min(2, "Postal code is required"),
-  }),
+  label: z.string().max(30, "Label is too long").optional(),
+  name: z.string().min(2, "Recipient name is required"),
+  phone: z
+    .string()
+    .min(5, "Phone number is too short")
+    .max(20, "Phone number is too long"),
+  email: z.string().email("Invalid email address"),
+  street: z.string().min(5, "Street address is too short"),
+  city: z.string().min(2, "City is too short"),
+  state: z.string().min(2, "State is too short"),
+  country: z.string().optional(),
+  postalCode: z.string().min(2, "Postal code is required"),
 });
 
 export const paymentStepSchema = z.object({
@@ -49,11 +47,17 @@ export const paymentStepSchema = z.object({
     .or(z.literal("")),
 });
 
-export const checkoutSchema = loginStepSchema
-  .merge(addressStepSchema)
-  .merge(paymentStepSchema);
+export const checkoutSchema = z.object({
+  user: userStepSchema.shape.user,
+  address: addressStepSchema,
+  paymentMethod: paymentStepSchema.shape.paymentMethod,
+  orderNote: paymentStepSchema.shape.orderNote,
+  couponCode: paymentStepSchema.shape.couponCode,
+  selectedAddressId: z.string().optional(),
+  addressMode: z.enum(["saved", "new"]).default("saved"),
+});
 
-export type LoginStepSchemaType = z.infer<typeof loginStepSchema>;
+export type UserStepSchemaType = z.infer<typeof userStepSchema>;
 export type AddressStepSchemaType = z.infer<typeof addressStepSchema>;
 export type PaymentStepSchemaType = z.infer<typeof paymentStepSchema>;
 export type CheckoutSchemaType = z.infer<typeof checkoutSchema>;

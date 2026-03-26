@@ -89,7 +89,7 @@ const Signup = () => {
 
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const draft = getValidSignupDraft();
+  const draft = React.useMemo(() => getValidSignupDraft(), []);
 
   const initialStepIndex = draft?.stepIndex >= 0 ? draft.stepIndex : 0;
 
@@ -229,7 +229,7 @@ const Signup = () => {
                     disabled={isRegistering}
                     // className="px-5"
                   >
-                    Pre
+                    Prev
                   </Button>
                 )}
 

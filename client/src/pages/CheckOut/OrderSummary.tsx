@@ -18,7 +18,8 @@ interface SummaryItemProps {
 }
 
 interface OrderSummaryProps {
-  oncheckOut: () => void;
+  onCheckout: () => void;
+  disabled?: boolean;
   className?: string;
 }
 
@@ -82,7 +83,11 @@ const OrderItem = ({ item }: { item: ICartItem }) => {
   );
 };
 
-const OrderSummary = ({ oncheckOut, className }: OrderSummaryProps) => {
+const OrderSummary = ({
+  onCheckout,
+  disabled,
+  className,
+}: OrderSummaryProps) => {
   const { cart } = useCartStore();
 
   return (
@@ -123,7 +128,7 @@ const OrderSummary = ({ oncheckOut, className }: OrderSummaryProps) => {
 
       <SummaryTotal title="Total" value={`Rs ${cart?.totals.total}`} />
 
-      <Button onClick={oncheckOut} className="py-6!">
+      <Button disabled={disabled} onClick={onCheckout} className="py-6!">
         Place order
       </Button>
 

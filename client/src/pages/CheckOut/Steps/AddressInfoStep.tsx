@@ -1,5 +1,359 @@
+import { useFormContext } from "react-hook-form";
+
+// Components
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { InputFieldWithLabelNIcon } from "@/components/InputFields";
+import { Button } from "@/components/ui/button";
+
+// Icons
+import {
+  MapPin,
+  Check,
+  User,
+  Phone,
+  Mail,
+  Home,
+  Building2,
+  Globe,
+  Hash,
+  Plus,
+} from "lucide-react";
+
+// Types
+import type { CheckoutSchemaType } from "@/validations/checkout.validator";
+
+type SavedAddress = {
+  id: string;
+  label?: string;
+  name: string;
+  phone: string;
+  email: string;
+  street: string;
+  city: string;
+  state: string;
+  country?: string;
+  postalCode: string;
+};
+
+const addresses: SavedAddress[] = [
+  {
+    id: "home",
+    label: "Home",
+    name: "Aslam",
+    phone: "+977 9873821",
+    email: "aslam@gmail.com",
+    street: "Starda D18",
+    city: "Constanta",
+    state: "Constanta",
+    country: "Romania",
+    postalCode: "9808722",
+  },
+  {
+    id: "office",
+    label: "Office",
+    name: "Aslam",
+    phone: "+977 9873821",
+    email: "aslam@gmail.com",
+    street: "Street B12",
+    city: "Bucharest",
+    state: "Bucharest",
+    country: "Romania",
+    postalCode: "123456",
+  },
+  {
+    id: "other",
+    label: "Other",
+    name: "Aslam",
+    phone: "+977 9873821",
+    email: "aslam@gmail.com",
+    street: "Street C10",
+    city: "Cluj",
+    state: "Cluj",
+    country: "Romania",
+    postalCode: "654321",
+  },
+];
+
 const AddressInfoStep = () => {
-  return <div>AddressInfoStep</div>;
+  const form = useFormContext<CheckoutSchemaType>();
+
+  const selectedAddressId = form.watch("selectedAddressId");
+  const addressMode = form.watch("addressMode");
+
+  const handleSelectAddress = (address: SavedAddress) => {
+    form.setValue("selectedAddressId", address.id, { shouldValidate: true });
+    form.setValue("addressMode", "saved");
+    form.setValue(
+      "address",
+      {
+        label: address.label ?? "",
+        name: address.name,
+        phone: address.phone,
+        email: address.email,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        country: address.country ?? "",
+        postalCode: address.postalCode,
+      },
+      { shouldValidate: true, shouldDirty: true },
+    );
+  };
+
+  const handleAddNewAddress = () => {
+    form.setValue("addressMode", "new");
+    form.setValue("selectedAddressId", undefined);
+    form.setValue(
+      "address",
+      {
+        label: "",
+        name: "",
+        phone: "",
+        email: "",
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+        postalCode: "",
+      },
+      { shouldValidate: true, shouldDirty: true },
+    );
+  };
+
+  return (
+    <Form {...form}>
+      <div className="w-full flex flex-col gap-y-4 py-4">
+        {addresses.map((address, index) => {
+          const isSelected =
+            addressMode === "saved" && selectedAddressId === address.id;
+
+          return (
+            <label
+              key={address.id}
+              htmlFor={`address-${index}`}
+              className={`w-full rounded-lg border flex flex-col gap-y-1 px-3 py-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] relative ${
+                isSelected
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-accent"
+              }`}
+            >
+              <input
+                id={`address-${index}`}
+                type="radio"
+                checked={isSelected}
+                onChange={() => handleSelectAddress(address)}
+                className="sr-only"
+              />
+
+              <div
+                className={`size-5 flex shrink-0 items-center justify-center rounded-full border transition absolute top-4 right-3 ${
+                  isSelected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "invisible"
+                }`}
+              >
+                {isSelected && <Check size={"15px"} />}
+              </div>
+
+              <div className="flex flex-row items-center gap-x-2">
+                <MapPin size={"16px"} className="text-primary" />
+
+                <p className="text-base text-foreground font-medium">
+                  {address.name}
+                </p>
+
+                <span className="text-sm bg-primary/70 rounded-md px-2">
+                  {address.label}
+                </span>
+              </div>
+
+              <p className="text-sm text-foreground/70">
+                {address.street}, {address.city}
+              </p>
+
+              <p className="text-sm text-foreground/70">
+                {address.state} - {address.postalCode}
+              </p>
+
+              <p className="text-sm text-foreground/70">
+                {address.phone}, {address.email}
+              </p>
+            </label>
+          );
+        })}
+
+        {addressMode !== "new" && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleAddNewAddress}
+            className="p-5 border-dashed hover:scale-[101%]"
+          >
+            <Plus />
+
+            <span>Add New Address</span>
+          </Button>
+        )}
+
+        {addressMode === "new" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t">
+            <FormField
+              control={form.control}
+              name="address.label"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Label"
+                    Icon={MapPin}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="Home / Office / Other"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.name"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Recipient Name"
+                    Icon={User}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="Enter recipient name"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.phone"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Phone Number"
+                    Icon={Phone}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="+977 9841234567"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.email"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Email Address"
+                    Icon={Mail}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="your@email.com"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.street"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Street Address"
+                    Icon={Home}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="Street / Area / House No."
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.city"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="City"
+                    Icon={Building2}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="City"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.state"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="State"
+                    Icon={Building2}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="State"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.country"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Country"
+                    Icon={Globe}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="Country"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address.postalCode"
+              render={({ field }) => (
+                <FormItem>
+                  <InputFieldWithLabelNIcon
+                    label="Postal Code"
+                    Icon={Hash}
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="Postal code"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+      </div>
+    </Form>
+  );
 };
 
 export default AddressInfoStep;

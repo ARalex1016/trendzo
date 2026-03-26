@@ -1,6 +1,9 @@
 // Components
 import { Button } from "@/components/ui/button";
 
+// Images
+// import HeroImage from "@/assets/Images/hero-image.png";
+
 const HeroSection = () => {
   return (
     <section
@@ -38,6 +41,7 @@ const HeroSection = () => {
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full order-1 sm:order-2">
         <img
           src="https://images.unsplash.com/photo-1638717366457-dbcaf6b1afbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwd29tYW4lMjBlbGVnYW50fGVufDF8fHx8MTc2MzcxNTczN3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+          // src={HeroImage}
           alt="Fashion model"
           className="w-full h-full object-cover"
         />

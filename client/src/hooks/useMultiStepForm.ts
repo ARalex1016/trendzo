@@ -1,8 +1,13 @@
 import { useState } from "react";
 
-interface Step {
+// Types
+import { type LucideIcon } from "lucide-react";
+
+export interface Step {
   id: string;
   label: string;
+  text?: string;
+  icon?: LucideIcon;
   component: (props?: any) => React.ReactNode;
   schema: any;
 }

@@ -213,9 +213,9 @@ const SidebarLogo = ({ state }: SidebarLogoProps) => {
             animate="animate"
             exit="exit"
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="font-semibold text-xl inline-block overflow-hidden whitespace-nowrap"
+            className="font-semibold text-lg inline-block overflow-hidden whitespace-nowrap"
           >
-            Trendzo
+            Rukshana Trends
           </motion.span>
         )}
       </AnimatePresence>
