@@ -184,7 +184,7 @@ const CheckOut = () => {
 
     if (isValid) next();
 
-    next();
+    // next();
   };
 
   const onSubmit = async (checkOutData: CheckoutSchemaType) => {
