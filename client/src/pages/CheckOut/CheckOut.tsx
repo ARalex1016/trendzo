@@ -184,7 +184,7 @@ const CheckOut = () => {
 
     if (isValid) next();
 
-    // next();
+    next();
   };
 
   const onSubmit = async (checkOutData: CheckoutSchemaType) => {
@@ -290,7 +290,7 @@ const CheckOut = () => {
         </CardHeader>
 
         <CardContent className="w-full py-2">
-          {step.text && <p>{step.text}</p>}
+          {step.text && <p className="text-foreground/60">{step.text}</p>}
 
           <FormProvider {...methods}>
             <form
