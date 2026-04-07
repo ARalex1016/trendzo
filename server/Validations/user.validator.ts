@@ -14,17 +14,20 @@ export const registerSchema = z
       .regex(/\d/, "Password must contain at least 1 number")
       .regex(
         /[!@#$%^&*(),.?":{}|<>]/,
-        "Password must contain at least 1 special character"
+        "Password must contain at least 1 special character",
       ),
     confirmPassword: z.string(),
-    role: z.enum(["customer"], "Role must be 'customer'").optional(), // prevent admin or operator here
     address: z.object({
       label: z.string().optional(),
+      fullName: z.string(),
+      phone: z.string(),
       street: z.string(),
+      area: z.string().optional(),
       city: z.string().optional(),
       state: z.string().optional(),
       country: z.string().optional().default("Nepal"),
       postalCode: z.string().optional(),
+      landmark: z.string().optional(),
     }),
     referralCode: z.string().optional(),
   })

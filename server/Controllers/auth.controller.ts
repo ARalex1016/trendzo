@@ -8,7 +8,7 @@ import { AuthService } from "../Services/auth.service.ts";
 // Utils
 import { generateToken, clearCookie } from "../Utils/generateToken.utils.ts";
 import { asyncHandler } from "../Utils/asyncHandler.ts";
-import { verifyToken } from "../Utils/generateToken.utils.ts";
+// import { verifyToken } from "../Utils/generateToken.utils.ts";
 import { hashPassword } from "../Utils/password.utils.ts";
 import { generateOTPandSendVerificationEmail } from "../Utils/generateOTPandSendVerificationEmail.utils.ts";
 import { sendEmail } from "../Utils/sendEmail.ts";

@@ -99,9 +99,11 @@ const OrderSummary = ({
         <p className="text-lg font-medium">Order Summary</p>
       </div>
 
-      <p className="text-sm text-foreground/70 mb-1">3 items in your cart</p>
+      <p className="text-sm text-foreground/70 mb-1">
+        {cart.items.length} items in your cart
+      </p>
 
-      <div className="flex flex-col gap-y-4">
+      <div className="max-h-56 flex flex-col gap-y-4 overflow-y-auto no-scrollbar">
         {cart.items.map((item) => {
           return <OrderItem key={item.product} item={item} />;
         })}

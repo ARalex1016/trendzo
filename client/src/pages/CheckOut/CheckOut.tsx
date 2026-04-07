@@ -80,7 +80,7 @@ const steps: Step[] = [
   },
   {
     id: "review",
-    label: "Review",
+    label: "Review Your Order",
     text: "Review your details before placing the orderr",
     icon: ClipboardList,
     component: ReviewInfoStep,

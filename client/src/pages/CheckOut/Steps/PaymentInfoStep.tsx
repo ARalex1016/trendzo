@@ -83,8 +83,9 @@ const PaymentInfoStep = () => {
         </div>
 
         <textarea
+          rows={4}
           placeholder="Any special instructions for yur order..."
-          className="w-full min-h-10 bg-accent rounded-md p-3"
+          className="w-full min-h-30 max-h-42 bg-accent rounded-md p-3"
         />
       </div>
     </div>

@@ -3,6 +3,21 @@ import { v4 as uuidv4 } from "uuid";
 
 export type Role = "customer" | "operator" | "admin";
 
+export interface IAddress {
+  _id: mongoose.Types.ObjectId;
+  label?: string; // Home, Work, Mom, etc.
+  fullName: string; // recipient name
+  phone: string;
+  street: string;
+  area?: string; // optional local area / landmark
+  city: string;
+  state?: string;
+  country: string;
+  postalCode?: string;
+  landmark?: string;
+  isDefault: boolean;
+}
+
 export interface IUser extends Document {
   name: string;
   email: string;
@@ -22,32 +37,68 @@ export interface IUser extends Document {
   role: Role;
   createdAt: Date;
   updatedAt: Date;
-  address: {
-    _id: mongoose.Types.ObjectId;
-    label?: string; // Home, Work, Mom, etc
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    country?: string;
-    postalCode: string;
-  };
+  addresses: IAddress[];
   // Referral fields
   referralId: string;
   displayCode?: string;
   previousDisplayCodes?: { code: string; changedAt: Date }[];
 }
 
-const AddressSchema = new Schema(
+const AddressSchema = new Schema<IAddress>(
   {
-    label: { type: String },
-    street: { type: String, required: true },
-    city: { type: String },
-    state: String,
-    country: { type: String, default: "Nepal" },
-    postalCode: String,
+    label: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    street: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    area: {
+      type: String,
+      trim: true,
+    },
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true,
+    },
+    state: {
+      type: String,
+      trim: true,
+    },
+    country: {
+      type: String,
+      default: "Nepal",
+      trim: true,
+    },
+    postalCode: {
+      type: String,
+      trim: true,
+    },
+    landmark: {
+      type: String,
+      trim: true,
+    },
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { _id: true },
+  { _id: true, timestamps: false },
 );
 
 const UserSchema = new Schema<IUser>(
@@ -107,8 +158,9 @@ const UserSchema = new Schema<IUser>(
       enum: ["customer", "operator", "admin"],
       default: "customer",
     },
-    address: {
-      type: AddressSchema,
+    addresses: {
+      type: [AddressSchema],
+      default: [],
     },
     // Referral fields
     referralId: {
@@ -131,6 +183,31 @@ const UserSchema = new Schema<IUser>(
   },
   { timestamps: true },
 );
+
+// Ensure only one default address per user
+UserSchema.pre("save", async function () {
+  if (!this.addresses || this.addresses.length === 0) {
+    return;
+  }
+
+  const defaultAddresses = this.addresses.filter((addr) => addr.isDefault);
+
+  if (defaultAddresses.length === 0 && this.addresses.length > 0) {
+    this.addresses[0]!.isDefault = true;
+  }
+
+  if (defaultAddresses.length > 1) {
+    let foundFirst = false;
+
+    this.addresses.forEach((addr) => {
+      if (addr.isDefault && !foundFirst) {
+        foundFirst = true;
+      } else {
+        addr.isDefault = false;
+      }
+    });
+  }
+});
 
 const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
 

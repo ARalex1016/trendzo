@@ -413,7 +413,7 @@ const SidebarComponent = () => {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t" />
+      <SidebarFooter />
     </Sidebar>
   );
 };

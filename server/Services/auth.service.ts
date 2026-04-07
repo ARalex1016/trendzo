@@ -31,11 +31,10 @@ export const AuthService = {
     email: string;
     password: string;
     phone?: string;
-    role?: "customer";
     address?: any;
     referralCode?: string;
   }) {
-    const { name, email, password, phone, role, address, referralCode } = data;
+    const { name, email, password, phone, address, referralCode } = data;
 
     // Check if email exists
     const existingUser = await UserRepository.getUserByEmail(email);
@@ -50,8 +49,13 @@ export const AuthService = {
       email,
       phone,
       password: hashedPassword,
-      role: role || "customer",
-      address,
+      role: "customer",
+      addresses: [
+        {
+          ...data.address,
+          isDefault: true,
+        },
+      ],
     });
 
     // Handle referral
@@ -94,7 +98,12 @@ export const AuthService = {
       phone,
       password: hashedPassword,
       role: "admin",
-      address,
+      addresses: [
+        {
+          ...data.address,
+          isDefault: true,
+        },
+      ],
     });
   },
 
