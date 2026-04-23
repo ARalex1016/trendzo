@@ -5,6 +5,7 @@ export interface IAddress {
   label?: string;
   fullName: string;
   phone: string;
+  email: string;
   street: string;
   area?: string;
   city: string;

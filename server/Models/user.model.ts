@@ -8,6 +8,7 @@ export interface IAddress {
   label?: string; // Home, Work, Mom, etc.
   fullName: string; // recipient name
   phone: string;
+  email: string;
   street: string;
   area?: string; // optional local area / landmark
   city: string;
@@ -57,6 +58,11 @@ const AddressSchema = new Schema<IAddress>(
       trim: true,
     },
     phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
       type: String,
       required: true,
       trim: true,

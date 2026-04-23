@@ -21,6 +21,8 @@ import UserInfoStep from "./Steps/UserInfoStep";
 import AddressInfoStep from "./Steps/AddressInfoStep";
 import PaymentInfoStep from "./Steps/PaymentInfoStep";
 import ReviewInfoStep from "./Steps/ReviewInfoStep";
+import CheckoutAuthGuard from "./CheckoutAuthGuard";
+// import CheckoutAuthGuard from "./GuestCheckout";
 
 // Schema
 import {
@@ -49,15 +51,14 @@ import { type Step } from "@/hooks/useMultiStepForm";
 
 // Store
 import useOrderStore from "@/store/useOrderStore";
-
-const CHECKOUT_DRAFT_EXPIRY_MINUTES = 30;
-const CHECKOUT_DRAFT_EXPIRY_MS = CHECKOUT_DRAFT_EXPIRY_MINUTES * 60 * 1000;
+import useAuthStore from "@/store/useAuthStore";
+import useCartStore from "@/store/useCartStore";
 
 const steps: Step[] = [
   {
     id: "userDetails",
     label: "User Details",
-    text: "Sign up to complete your order",
+    // text: "Sign up to complete your order",
     icon: User,
     component: UserInfoStep,
     schema: userStepSchema,
@@ -88,69 +89,43 @@ const steps: Step[] = [
   },
 ];
 
-function getValidCheckOutDraft() {
-  try {
-    const raw = localStorage.getItem("checkout-draft");
-
-    if (!raw) return null;
-
-    const draft = JSON.parse(raw);
-
-    if (!draft?.savedAt) {
-      localStorage.removeItem("checkout-draft");
-      return null;
-    }
-
-    const isExpired = Date.now() - draft.savedAt > CHECKOUT_DRAFT_EXPIRY_MS;
-
-    if (isExpired) {
-      localStorage.removeItem("checkout-draft");
-      return null;
-    }
-
-    return draft;
-  } catch {
-    localStorage.removeItem("checkout-draft");
-    return null;
-  }
-}
-
 const CheckOut = () => {
   const navigate = useNavigate();
 
   const { placeOrder } = useOrderStore();
+  const { user } = useAuthStore();
+  const { cart } = useCartStore();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const draft = React.useMemo(() => getValidCheckOutDraft(), []);
-
-  const initialStepIndex = draft?.stepIndex >= 0 ? draft.stepIndex : 0;
+  const initialStepIndex = 0;
 
   const { step, currentStepIndex, isFirstStep, isLastStep, next, back } =
     useMultiStepForm({ steps, initialStep: initialStepIndex });
 
-  const defaultValues: CheckoutSchemaType = draft?.data ?? {
+  const defaultValues: CheckoutSchemaType = {
     user: {
       fullName: "",
       phone: "",
       email: "",
-      password: "",
     },
     address: {
+      _id: "",
       label: "",
-      name: "",
+      fullName: "",
       phone: "",
       email: "",
       street: "",
+      area: "",
       city: "",
       state: "",
       country: "",
       postalCode: "",
+      landmark: "",
     },
     paymentMethod: "cod",
     orderNote: "",
-    couponCode: "",
-    selectedAddressId: undefined,
+    couponCode: cart?.coupon && "",
     addressMode: "saved",
   };
 
@@ -175,6 +150,37 @@ const CheckOut = () => {
   let StepComponent = step.component;
   let Icon = step.icon;
 
+  const formartOrderData = (checkOutData: CheckoutSchemaType) => {
+    return {
+      items: cart.items.map((item) => ({
+        product: item.product,
+        color: item.color._id,
+        size: item.size._id,
+        quantity: item.quantity,
+      })),
+      paymentMethod: checkOutData.paymentMethod,
+      deliveryAddress: {
+        name: checkOutData.address.fullName, // ✅ mapped
+        phone: checkOutData.address.phone,
+        email: checkOutData.address.email,
+
+        address: [
+          checkOutData.address.street,
+          checkOutData.address.area,
+          checkOutData.address.landmark,
+        ]
+          .filter(Boolean)
+          .join(", "), // ✅ flattened
+
+        city: checkOutData.address.city,
+        postalCode: checkOutData.address.postalCode,
+        country: checkOutData.address.country,
+      },
+      orderNote: checkOutData.orderNote || undefined,
+      couponCode: checkOutData.couponCode || undefined,
+    };
+  };
+
   const handleNext = async () => {
     const currentStepFields = Object.keys(
       steps[currentStepIndex].schema.shape,
@@ -184,22 +190,21 @@ const CheckOut = () => {
 
     if (isValid) next();
 
-    next();
+    // next();
   };
 
   const onSubmit = async (checkOutData: CheckoutSchemaType) => {
     setIsCheckingOut(true);
     try {
-      await placeOrder(checkOutData);
+      let formatedOrderData = formartOrderData(checkOutData);
 
-      // ✅ Clear persisted draft
-      localStorage.removeItem("checkout-draft");
+      let res = await placeOrder(formatedOrderData);
 
       // ✅ Optional: reset form state
-      methods.reset();
+      // methods.reset();
 
       // ✅ Redirect after success
-      // navigate("/products");
+      navigate(`/checkout/success/${res?.data?.orderNumber}`);
     } catch (error: any) {
     } finally {
       setIsCheckingOut(false);
@@ -241,119 +246,134 @@ const CheckOut = () => {
       </div>
 
       {/* Stepper */}
-      <div className="col-span-full flex items-center w-full gap-1 my-2">
-        {steps?.map((step, index) => {
-          const isCompleted = currentStepIndex > index;
-          const isCurrent = currentStepIndex === index;
+      {!!user && (
+        <div className="col-span-full flex items-center w-full gap-1 my-2">
+          {steps?.map((step, index) => {
+            const isCompleted = currentStepIndex > index;
+            const isCurrent = currentStepIndex === index;
 
-          const bgColor = isCompleted
-            ? "bg-blue-700"
-            : isCurrent
-              ? "bg-blue-600"
-              : "bg-muted";
+            const bgColor = isCompleted
+              ? "bg-blue-700"
+              : isCurrent
+                ? "bg-blue-600"
+                : "bg-muted";
 
-          return (
-            <React.Fragment key={step.id}>
-              {/* Indicator */}
-              <div
-                className={`size-8 sm:size-10 rounded-full flex justify-center items-center ${bgColor}`}
-              >
-                {currentStepIndex > index ? (
-                  <Check className="size-4" />
-                ) : (
-                  <p className="text-sm text-white font-medium">{index + 1}</p>
-                )}
-              </div>
-
-              {/* Seperator */}
-              {index !== steps.length - 1 && (
+            return (
+              <React.Fragment key={step.id}>
+                {/* Indicator */}
                 <div
-                  className={`flex-1 h-0.5 rounded-sm opacity-75 ${
-                    isCompleted ? "bg-blue-600" : "bg-muted"
-                  }`}
-                ></div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
+                  className={`size-8 sm:size-10 rounded-full flex justify-center items-center ${bgColor}`}
+                >
+                  {currentStepIndex > index ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <p className="text-sm text-white font-medium">
+                      {index + 1}
+                    </p>
+                  )}
+                </div>
 
-      <Card className="lg:col-span-2 w-full! h-fit gap-0 py-6! mb-4">
-        <CardHeader className="flex flex-row items-center">
-          {Icon && (
-            <div className="size-8 bg-primary rounded-full flex justify-center items-center">
-              <Icon size={18} className="" />
-            </div>
-          )}
-
-          <CardTitle className="text-lg">{step.label}</CardTitle>
-        </CardHeader>
-
-        <CardContent className="w-full py-2">
-          {step.text && <p className="text-foreground/60">{step.text}</p>}
-
-          <FormProvider {...methods}>
-            <form
-              onSubmit={methods.handleSubmit(onSubmit)}
-              // className="flex flex-col gap-y-4"
-            >
-              <StepComponent />
-
-              {/* Action Button */}
-              <CardFooter className="col-span-2 justify-end gap-x-2 px-0">
-                {/* Pre Button */}
-                {!isFirstStep && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={back}
-                    disabled={isCheckingOut}
-                    // className="px-5"
-                  >
-                    Prev
-                  </Button>
+                {/* Seperator */}
+                {index !== steps.length - 1 && (
+                  <div
+                    className={`flex-1 h-0.5 rounded-sm opacity-75 ${
+                      isCompleted ? "bg-blue-600" : "bg-muted"
+                    }`}
+                  ></div>
                 )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      )}
 
-                {/* Next Button */}
-                {!isLastStep && (
-                  <Button
-                    type="button"
-                    // variant="destructive"
-                    onClick={handleNext}
-                    // className="text-white font-medium bg-red-500 px-5 py-1 rounded-sm"
-                  >
-                    Continue
-                  </Button>
-                )}
+      {!!user && (
+        <Card className="lg:col-span-2 w-full! h-fit gap-0 py-6! mb-4">
+          <CardHeader className="flex flex-row items-center">
+            {Icon && (
+              <div className="size-8 bg-primary rounded-full flex justify-center items-center">
+                <Icon size={18} className="" />
+              </div>
+            )}
 
-                {/* Sign up Button */}
-                {isLastStep && (
-                  <Button
-                    type="submit"
-                    disabled={isCheckingOut}
-                    className="relative"
-                  >
-                    <span
-                      className={isCheckingOut ? "opacity-0" : "opacity-100"}
+            <CardTitle className="text-lg">{step.label}</CardTitle>
+          </CardHeader>
+
+          <CardContent className="w-full py-2">
+            {step.text && <p className="text-foreground/60">{step.text}</p>}
+
+            <FormProvider {...methods}>
+              <form
+                onSubmit={methods.handleSubmit(onSubmit)}
+                // className="flex flex-col gap-y-4"
+              >
+                <StepComponent />
+
+                {/* Action Button */}
+                <CardFooter className="col-span-2 justify-end gap-x-2 px-0">
+                  {/* Pre Button */}
+                  {!isFirstStep && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={back}
+                      disabled={isCheckingOut}
+                      // className="px-5"
                     >
-                      Place Order
-                    </span>
+                      Prev
+                    </Button>
+                  )}
 
-                    {/* Spinner */}
-                    {isCheckingOut && (
-                      <span className="absolute inset-0 flex items-center justify-center">
-                        <Spinner className="h-4 w-4" />
+                  {/* Next Button */}
+                  {!isLastStep && (
+                    <Button
+                      type="button"
+                      // variant="destructive"
+                      onClick={handleNext}
+                      // className="text-white font-medium bg-red-500 px-5 py-1 rounded-sm"
+                    >
+                      Continue
+                    </Button>
+                  )}
+
+                  {/* Sign up Button */}
+                  {isLastStep && (
+                    <Button
+                      type="submit"
+                      disabled={isCheckingOut}
+                      className="relative"
+                    >
+                      <span
+                        className={isCheckingOut ? "opacity-0" : "opacity-100"}
+                      >
+                        Place Order
                       </span>
-                    )}
-                  </Button>
-                )}
-              </CardFooter>
-            </form>
-          </FormProvider>
-        </CardContent>
 
-        {/* <CardFooter className="flex justify-center items-center"></CardFooter> */}
-      </Card>
+                      {/* Spinner */}
+                      {isCheckingOut && (
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <Spinner className="h-4 w-4" />
+                        </span>
+                      )}
+                    </Button>
+                  )}
+                </CardFooter>
+              </form>
+            </FormProvider>
+          </CardContent>
+
+          <CardFooter>
+            {isLastStep && (
+              <p className="w-full text-center text-[10px] xs:text-xs text-foreground/40">
+                By placing the order, you confirm that the above information is
+                correct and agree to our terms & conditions.
+              </p>
+            )}
+          </CardFooter>
+        </Card>
+      )}
+
+      {!user && <CheckoutAuthGuard />}
 
       <OrderSummary
         onCheckout={methods.handleSubmit(onSubmit)}

@@ -7,7 +7,7 @@ import {
 
 function findFirstErrorPath(
   errors: FieldErrors,
-  parentPath = ""
+  parentPath = "",
 ): string | null {
   for (const key in errors) {
     const value = errors[key];

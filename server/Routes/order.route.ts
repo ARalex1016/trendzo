@@ -15,7 +15,10 @@ import {
 // Middlrewares
 import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
-import { orderIdParamHandler } from "../Middleware/param.middleware.ts";
+import {
+  orderIdParamHandler,
+  orderNumberParamHandler,
+} from "../Middleware/param.middleware.ts";
 
 // Validation Schemas
 import {
@@ -26,6 +29,7 @@ import {
 const router = express.Router();
 
 router.param("orderId", orderIdParamHandler);
+router.param("orderNumber", orderNumberParamHandler);
 
 // USER ROUTES
 router.post(
@@ -35,13 +39,21 @@ router.post(
   validateRequest(placeOrderSchema),
   placeOrder,
 );
+
 router.get("/my-orders", protect, authorize("customer"), getMyOrders);
 router.get(
   "/:orderId",
   protect,
   authorize("customer", "operator", "admin"),
   getSingleOrder,
-);
+); // getOrderById
+router.get(
+  "/orderNumber/:orderNumber",
+  protect,
+  authorize("customer", "operator", "admin"),
+  getSingleOrder,
+); // getOrderByOrderNumber
+
 router.patch("/cancel/:orderId", protect, authorize("customer"), cancelOrder);
 
 // ADMIN / OPERATOR ROUTES

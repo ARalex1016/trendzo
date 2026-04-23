@@ -1,5 +1,8 @@
 import mongoose, { Schema, Document, Types, Model } from "mongoose";
 
+// Models
+import OrderCounter from "./order-counter.model.ts";
+
 export type OrderType = "online" | "in_store";
 
 export type OrderStatus =
@@ -16,6 +19,7 @@ export type PaymentStatus = "pending" | "completed" | "failed";
 export type PaymentMethod = "bank" | "esewa" | "khalti" | "cod" | "cash";
 
 export interface IOrder extends Document {
+  orderNumber: string;
   user?: Types.ObjectId;
   items: Types.ObjectId[];
 
@@ -52,6 +56,11 @@ export interface IOrder extends Document {
 
 const orderSchema = new Schema<IOrder>(
   {
+    orderNumber: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     user: { type: Schema.Types.ObjectId, ref: "User" },
     items: [
       {

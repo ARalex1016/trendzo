@@ -240,7 +240,12 @@ export const OrderService = {
       orderData.paymentStatus =
         input.orderType === "online" ? "pending" : "completed";
 
-      const order = await OrderRepository.create(orderData, session);
+      const orderNumber = await OrderRepository.getNextOrderNumber();
+
+      const order = await OrderRepository.create(
+        { ...orderData, orderNumber },
+        session,
+      );
 
       // REFERRAL SYSTEM
       if (input.orderType === "online" && userId) {

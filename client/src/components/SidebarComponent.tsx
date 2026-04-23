@@ -41,6 +41,9 @@ import {
   Users,
 } from "lucide-react";
 
+// Config
+import { BRAND } from "@/config/brand";
+
 // =========================
 // Types
 // =========================
@@ -215,7 +218,7 @@ const SidebarLogo = ({ state }: SidebarLogoProps) => {
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="font-semibold text-lg inline-block overflow-hidden whitespace-nowrap"
           >
-            Rukshana Trends
+            {BRAND.name}
           </motion.span>
         )}
       </AnimatePresence>

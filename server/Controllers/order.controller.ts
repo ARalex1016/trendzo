@@ -46,7 +46,7 @@ export const getSingleOrder = asyncHandler(
 
     const order = await OrderService.getSingleOrder(orderId, req.user);
 
-    res.status(200).json({ status: "success", order });
+    res.status(200).json({ status: "success", data: order });
   },
 );
 

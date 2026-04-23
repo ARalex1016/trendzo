@@ -2,6 +2,7 @@ import { Types, type ClientSession } from "mongoose";
 
 // Models
 import Order, { type IOrder } from "./../Models/order.model.ts";
+import OrderCounter from "../Models/order-counter.model.ts";
 
 // Utils
 import AppError from "../Utils/AppError.ts";
@@ -173,5 +174,20 @@ export const OrderRepository = {
     });
 
     return !exists;
+  },
+
+  async getNextOrderNumber(): Promise<string> {
+    const today = new Date();
+    const datePart = today.toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
+
+    const counter = await OrderCounter.findOneAndUpdate(
+      { key: `order_${datePart}` },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true },
+    );
+
+    const sequence = String(counter.seq).padStart(6, "0");
+
+    return `ORD-${datePart}-${sequence}`;
   },
 };

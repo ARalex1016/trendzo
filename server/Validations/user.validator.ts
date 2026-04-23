@@ -21,6 +21,7 @@ export const registerSchema = z
       label: z.string().optional(),
       fullName: z.string(),
       phone: z.string(),
+      email: z.string(),
       street: z.string(),
       area: z.string().optional(),
       city: z.string().optional(),

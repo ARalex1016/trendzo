@@ -5,6 +5,9 @@ import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { InputFieldWithLabelNIcon } from "@/components/InputFields";
 import { Button } from "@/components/ui/button";
 
+// Hooks
+import { useFirstStepError } from "@/hooks/useFirstStepError";
+
 // Icons
 import {
   MapPin,
@@ -21,7 +24,16 @@ import {
 } from "lucide-react";
 
 // Types
-import type { CheckoutSchemaType } from "@/validations/checkout.validator";
+import type {
+  CheckoutSchemaType,
+  AddressStepSchemaType,
+} from "@/validations/checkout.validator";
+
+// Store
+import useAuthStore from "@/store/useAuthStore";
+
+// Types
+import type { IAddress } from "@/types/user.types";
 
 type SavedAddress = {
   id: string;
@@ -36,66 +48,48 @@ type SavedAddress = {
   postalCode: string;
 };
 
-const addresses: SavedAddress[] = [
-  {
-    id: "home",
-    label: "Home",
-    name: "Aslam",
-    phone: "+977 9873821",
-    email: "aslam@gmail.com",
-    street: "Starda D18",
-    city: "Constanta",
-    state: "Constanta",
-    country: "Romania",
-    postalCode: "9808722",
-  },
-  {
-    id: "office",
-    label: "Office",
-    name: "Aslam",
-    phone: "+977 9873821",
-    email: "aslam@gmail.com",
-    street: "Street B12",
-    city: "Bucharest",
-    state: "Bucharest",
-    country: "Romania",
-    postalCode: "123456",
-  },
-  {
-    id: "other",
-    label: "Other",
-    name: "Aslam",
-    phone: "+977 9873821",
-    email: "aslam@gmail.com",
-    street: "Street C10",
-    city: "Cluj",
-    state: "Cluj",
-    country: "Romania",
-    postalCode: "654321",
-  },
-];
+const emptyAddress: CheckoutSchemaType["address"] = {
+  _id: "",
+  label: "",
+  fullName: "",
+  phone: "",
+  email: "",
+  street: "",
+  area: "",
+  city: "",
+  state: "",
+  country: "",
+  postalCode: "",
+  landmark: "",
+};
 
 const AddressInfoStep = () => {
+  const { user } = useAuthStore();
+
   const form = useFormContext<CheckoutSchemaType>();
 
-  const selectedAddressId = form.watch("selectedAddressId");
+  const { firstErrorPath } = useFirstStepError<AddressStepSchemaType>();
+
+  const selectedAddressId = form.watch("address._id");
   const addressMode = form.watch("addressMode");
 
-  const handleSelectAddress = (address: SavedAddress) => {
-    form.setValue("selectedAddressId", address.id, { shouldValidate: true });
+  const handleSelectAddress = (address: IAddress) => {
     form.setValue("addressMode", "saved");
     form.setValue(
       "address",
       {
+        _id: address._id,
         label: address.label ?? "",
-        name: address.name,
-        phone: address.phone,
-        email: address.email,
+        fullName: address.fullName ?? user?.name,
+        phone: address.phone ?? user?.phone,
+        email: address.email ?? user?.email,
         street: address.street,
+        area: address.area ?? "",
         city: address.city,
-        state: address.state,
+        state: address?.state || "",
         country: address.country ?? "",
-        postalCode: address.postalCode,
+        postalCode: address.postalCode ?? "",
+        landmark: address.landmark ?? "",
       },
       { shouldValidate: true, shouldDirty: true },
     );
@@ -103,22 +97,10 @@ const AddressInfoStep = () => {
 
   const handleAddNewAddress = () => {
     form.setValue("addressMode", "new");
-    form.setValue("selectedAddressId", undefined);
-    form.setValue(
-      "address",
-      {
-        label: "",
-        name: "",
-        phone: "",
-        email: "",
-        street: "",
-        city: "",
-        state: "",
-        country: "",
-        postalCode: "",
-      },
-      { shouldValidate: true, shouldDirty: true },
-    );
+    form.setValue("address", emptyAddress, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleCancleNewAddress = () => {
@@ -127,15 +109,18 @@ const AddressInfoStep = () => {
 
   const handleSaveNewAddress = async () => {
     const isValid = await form.trigger([
+      "address._id",
       "address.label",
-      "address.name",
+      "address.fullName",
       "address.phone",
       "address.email",
       "address.street",
+      "address.area",
       "address.city",
       "address.state",
       "address.country",
       "address.postalCode",
+      "address.landmark",
     ]);
 
     if (!isValid) return;
@@ -145,7 +130,7 @@ const AddressInfoStep = () => {
     const newAddress: SavedAddress = {
       id: crypto.randomUUID(),
       label: newAddressValues.label?.trim() || "Other",
-      name: newAddressValues.name.trim(),
+      name: newAddressValues.fullName.trim(),
       phone: newAddressValues.phone.trim(),
       email: newAddressValues.email.trim(),
       street: newAddressValues.street.trim(),
@@ -155,20 +140,14 @@ const AddressInfoStep = () => {
       postalCode: newAddressValues.postalCode.trim(),
     };
 
-    // setAddresses((prev) => [...prev, newAddress]);
-
-    form.setValue("selectedAddressId", newAddress.id, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-
     form.setValue("addressMode", "saved");
 
     form.setValue(
       "address",
       {
+        _id: newAddress.id,
         label: newAddress.label,
-        name: newAddress.name,
+        fullName: newAddress.name,
         phone: newAddress.phone,
         email: newAddress.email,
         street: newAddress.street,
@@ -177,6 +156,7 @@ const AddressInfoStep = () => {
         country: newAddress.country ?? "",
         postalCode: newAddress.postalCode,
       },
+
       { shouldValidate: true, shouldDirty: true },
     );
   };
@@ -185,14 +165,14 @@ const AddressInfoStep = () => {
     <Form {...form}>
       <div className="w-full flex flex-col gap-y-4 py-4">
         {/* Addresses  */}
-        {addresses.map((address, index) => {
+        {user?.addresses.map((address) => {
           const isSelected =
-            addressMode === "saved" && selectedAddressId === address.id;
+            addressMode === "saved" && selectedAddressId === address._id;
 
           return (
             <label
-              key={address.id}
-              htmlFor={`address-${index}`}
+              key={address._id}
+              htmlFor={address._id}
               className={`w-full rounded-lg border flex flex-col gap-y-1 px-3 py-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] relative ${
                 isSelected
                   ? "border-primary bg-primary/10"
@@ -200,28 +180,25 @@ const AddressInfoStep = () => {
               }`}
             >
               <input
-                id={`address-${index}`}
+                id={address._id}
                 type="radio"
                 checked={isSelected}
                 onChange={() => handleSelectAddress(address)}
                 className="sr-only"
               />
 
-              <div
-                className={`size-5 flex shrink-0 items-center justify-center rounded-full border transition absolute top-4 right-3 ${
-                  isSelected
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "invisible"
-                }`}
-              >
-                {isSelected && <Check size={"15px"} />}
-              </div>
+              {/* Check Icon */}
+              {isSelected && (
+                <div className="size-5 flex shrink-0 items-center justify-center rounded-full border transition absolute top-4 right-3 border-primary bg-primary text-primary-foreground">
+                  <Check size={"15px"} />
+                </div>
+              )}
 
               <div className="flex flex-row items-center gap-x-2">
                 <MapPin size={"16px"} className="text-primary" />
 
                 <p className="text-base text-foreground font-medium">
-                  {address.name}
+                  {address.fullName}
                 </p>
 
                 <span className="text-sm bg-primary/70 rounded-md px-2">
@@ -287,7 +264,7 @@ const AddressInfoStep = () => {
 
               <FormField
                 control={form.control}
-                name="address.name"
+                name="address.fullName"
                 render={({ field }) => (
                   <FormItem>
                     <InputFieldWithLabelNIcon
@@ -424,11 +401,16 @@ const AddressInfoStep = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-row gap-x-3 mt-4">
-              <Button onClick={handleSaveNewAddress} className="flex-1 py-5">
+              <Button
+                type="button"
+                onClick={handleSaveNewAddress}
+                className="flex-1 py-5"
+              >
                 Save Address
               </Button>
 
               <Button
+                type="button"
                 variant={"outline"}
                 onClick={handleCancleNewAddress}
                 className="py-5"

@@ -259,6 +259,41 @@ export const orderIdParamHandler = async (
   }
 };
 
+export const orderNumberParamHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { orderNumber } = req.params;
+
+    // Validate ObjectId
+    if (!orderNumber) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid order Number",
+      });
+    }
+
+    const order = await Order.findOne({ orderNumber });
+
+    if (!order) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Order not found",
+      });
+    }
+
+    req.targetOrder = order;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+};
+
 export const withdrawalIdParamHandler = async (
   req: Request,
   res: Response,

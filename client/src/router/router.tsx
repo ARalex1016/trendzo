@@ -10,18 +10,26 @@ import Products from "@/pages/Products/Products";
 import ProductDetails from "@/pages/ProductDetails/ProductDetails";
 import Cart from "@/pages/Cart/Cart";
 import CheckOut from "@/pages/CheckOut/CheckOut";
+import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
 import NotFound from "@/pages/NotFound/NotFound";
 
+// Config
+import { ROUTES } from "@/config/routes";
+
 // Store
 import useAuthStore from "@/store/useAuthStore";
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? (
+    (children ?? <Outlet />)
+  ) : (
+    <Navigate to="/login" replace />
+  );
 };
 
 const RedirectIfAuthenticated = ({
@@ -34,7 +42,7 @@ const RedirectIfAuthenticated = ({
   return isAuthenticated ? (
     <Navigate to="/products" replace />
   ) : (
-    children || <Outlet />
+    (children ?? <Outlet />)
   );
 };
 
@@ -44,22 +52,22 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        path: "/",
+        path: ROUTES.HOME,
         element: <Home />,
       },
       {
-        path: "/products",
+        path: ROUTES.PRODUCTS,
         element: <Products />,
       },
       {
-        path: "/products/:productSlug",
+        path: ROUTES.PRODUCT_DETAILS(),
         element: <ProductDetails />,
       },
       {
         element: <ProtectedRoute />, // Only for Authenticated Users
         children: [
           {
-            path: "/profile",
+            path: ROUTES.PROFILE,
             element: <Profile />,
           },
         ],
@@ -70,29 +78,40 @@ const router = createBrowserRouter([
     element: <Layout showFooter={false} />, // Layout without Footer
     children: [
       {
-        path: "/checkout",
+        path: ROUTES.CHECKOUT,
         element: <CheckOut />,
       },
       {
-        path: "/cart",
+        path: ROUTES.CART,
         element: <Cart />,
       },
+
       {
-        path: "*",
-        element: <NotFound />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: ROUTES.CHECKOUT_SUCCESS(),
+            element: <Checkout_Success />,
+          },
+        ],
       },
       {
         element: <RedirectIfAuthenticated />, // Only for Non- Authenticated Users
         children: [
           {
-            path: "/login",
+            path: ROUTES.LOGIN,
             element: <Login />,
           },
           {
-            path: "/signup",
+            path: ROUTES.SIGNUP,
             element: <Signup />,
           },
         ],
+      },
+      // ✅ ALWAYS LAST
+      {
+        path: ROUTES.NOT_FOUND,
+        element: <NotFound />,
       },
     ],
   },

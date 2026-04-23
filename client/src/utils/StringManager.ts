@@ -19,3 +19,13 @@ export function getInitials(name: string): string {
 
   return (firstInitial + lastInitial).toUpperCase();
 }
+
+export const copyText = async (text: string): Promise<boolean> => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    console.error("Copy failed:", err);
+    return false;
+  }
+};

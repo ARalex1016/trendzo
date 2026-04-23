@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 // Store
 import useCartStore from "@/store/useCartStore";
+import useAuthStore from "@/store/useAuthStore";
 
 // Icons
 import { ShoppingBag } from "lucide-react";
@@ -89,6 +90,7 @@ const OrderSummary = ({
   className,
 }: OrderSummaryProps) => {
   const { cart } = useCartStore();
+  const { user } = useAuthStore();
 
   return (
     <div
@@ -104,8 +106,8 @@ const OrderSummary = ({
       </p>
 
       <div className="max-h-56 flex flex-col gap-y-4 overflow-y-auto no-scrollbar">
-        {cart.items.map((item) => {
-          return <OrderItem key={item.product} item={item} />;
+        {cart.items.map((item, index) => {
+          return <OrderItem key={`${item.product}-${index}`} item={item} />;
         })}
       </div>
 
@@ -130,7 +132,11 @@ const OrderSummary = ({
 
       <SummaryTotal title="Total" value={`Rs ${cart?.totals.total}`} />
 
-      <Button disabled={disabled} onClick={onCheckout} className="py-6!">
+      <Button
+        disabled={!user || disabled}
+        onClick={onCheckout}
+        className="py-6!"
+      >
         Place order
       </Button>
 
