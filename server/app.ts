@@ -32,6 +32,16 @@ if (env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+app.get("/health", (req, res) => {
+  console.log(1);
+
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+  });
+});
+
 app.use("/api", router);
 
 app.use((req: Request, res: Response) => {

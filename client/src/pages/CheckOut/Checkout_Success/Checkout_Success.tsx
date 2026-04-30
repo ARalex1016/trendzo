@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/CopyButton";
 
 // Icons
-import { CircleCheckBig } from "lucide-react";
+import {
+  CircleCheckBig,
+  Package,
+  CreditCard,
+  Calendar,
+  Banknote,
+} from "lucide-react";
 
 // Config
 import { BRAND } from "@/config/brand";
@@ -20,6 +26,7 @@ import { formatDateToReadable } from "@/utils/DateManager";
 
 // Types
 import type { IOrder } from "@/types/order.type";
+import type { LucideIcon } from "lucide-react";
 
 const Card = ({
   className,
@@ -29,9 +36,7 @@ const Card = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div
-      className={`border border-border rounded-lg px-side-spacing py-5 ${className}`}
-    >
+    <div className={`border border-border rounded-lg px-6 py-6 ${className}`}>
       {children}
     </div>
   );
@@ -39,16 +44,22 @@ const Card = ({
 
 const DetailItem = ({
   title,
+  Icon,
   children,
 }: {
   title: string;
+  Icon?: LucideIcon;
   children?: React.ReactNode;
 }) => {
   return (
-    <div className="w-full">
-      <p className="text-sm text-foreground/70">{title}</p>
+    <div className="w-full flex flex-row gap-x-2">
+      {Icon && <Icon className="text-primary" />}
 
-      {children}
+      <div className="flex flex-col gap-y-1">
+        <p className="text-sm text-foreground/70">{title}</p>
+
+        {children}
+      </div>
     </div>
   );
 };
@@ -96,17 +107,17 @@ const Checkout_Success = () => {
         <CircleCheckBig className="size-10 text-success" />
       </div>
 
-      <Title text="Order Placed Successfully!" className="text-3xl!" />
+      <Title text="Order Placed Successfully!" className="text-4xl!" />
 
       <BaseText className="text-lg">
         Thank you for shopping with{" "}
         <span className="text-foreground/80 font-medium">{BRAND.name}</span>
       </BaseText>
 
-      <div className="w-1/2 flex flex-col gap-y-5 mt-3">
+      <div className="w-2/3 flex flex-col gap-y-5 mt-3">
         {/* Order Details */}
-        <Card className="w-full bg-background1 grid grid-cols-1 sm:grid-cols-2 gap-x-20 gap-y-4">
-          <DetailItem title={"Order Number"}>
+        <Card className="w-full bg-background1 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
+          <DetailItem title={"Order Number"} Icon={Package}>
             <div className="flex flex-row items-center gap-x-3">
               <p className="text-base font-medium">
                 {order?.orderNumber ?? "N/A"}
@@ -116,17 +127,17 @@ const Checkout_Success = () => {
             </div>
           </DetailItem>
 
-          <DetailItem title={"Order Total"}>
+          <DetailItem title={"Order Total"} Icon={Banknote}>
             <p className="text-base font-medium">{`Rs. ${order?.totalAmount?.toFixed(2)}`}</p>
           </DetailItem>
 
-          <DetailItem title={"Payment Method"}>
+          <DetailItem title={"Payment Method"} Icon={CreditCard}>
             <p className="text-base font-medium">
               {order?.paymentMethod?.toLocaleUpperCase() ?? "N/A"}
             </p>
           </DetailItem>
 
-          <DetailItem title={"Order Date"}>
+          <DetailItem title={"Order Date"} Icon={Calendar}>
             <p className="text-base font-medium">
               {order.createdAt ? formatDateToReadable(order.createdAt) : "N/A"}
             </p>
