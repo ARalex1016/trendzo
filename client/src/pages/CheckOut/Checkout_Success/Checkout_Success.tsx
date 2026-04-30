@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Title, BaseText } from "@/components/Text";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/CopyButton";
+import { OrderTimeline } from "@/components/OrderTimeline";
 
 // Icons
 import {
@@ -107,14 +108,17 @@ const Checkout_Success = () => {
         <CircleCheckBig className="size-10 text-success" />
       </div>
 
-      <Title text="Order Placed Successfully!" className="text-4xl!" />
+      <Title
+        text="Order Placed Successfully!"
+        className="text-xl! xs:text-2xl! sm:text-3xl! md:text-4xl!"
+      />
 
-      <BaseText className="text-lg">
+      <BaseText className="text-sm xs:text-base sm:text-lg">
         Thank you for shopping with{" "}
         <span className="text-foreground/80 font-medium">{BRAND.name}</span>
       </BaseText>
 
-      <div className="w-2/3 flex flex-col gap-y-5 mt-3">
+      <div className="w-full md:w-11/12 lg:w-2/3 flex flex-col gap-y-5 mt-3">
         {/* Order Details */}
         <Card className="w-full bg-background1 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
           <DetailItem title={"Order Number"} Icon={Package}>
@@ -145,17 +149,21 @@ const Checkout_Success = () => {
         </Card>
 
         {/* What happens next? */}
-        <Card className="w-full bg-background1 grid grid-cols-1 sm:grid-cols-2 gap-x-20 gap-y-4">
+        <Card className="w-full bg-background1">
           <Title text="What happens next?" className="text-base!" />
 
-          <div></div>
+          <div className="mt-2">
+            {order?.status && <OrderTimeline currentStatus={order?.status} />}
+          </div>
         </Card>
 
         {/* Action Button */}
         <div className="w-full flex flex-row justify-around gap-x-4">
-          <Button className="flex-1 bg-primary">Continue Shopping</Button>
+          <Button className="flex-1 bg-primary py-0 sm:py-6">
+            Continue Shopping
+          </Button>
 
-          <Button variant={"outline"} className="flex-1">
+          <Button variant={"outline"} className="flex-1 py-0 sm:py-6">
             Track Order
           </Button>
         </div>
