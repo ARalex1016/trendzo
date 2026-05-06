@@ -24,7 +24,7 @@ const Cart = () => {
   };
 
   return (
-    <section className="w-full m-auto min-h-svh flex flex-col gap-x-8 px-side-spacing py-4 relative pb-20">
+    <section className="w-full min-h-svh flex flex-col gap-x-8 px-side-spacing py-4 relative pb-20">
       <Title text="Shopping Cart" />
 
       <BaseText>{cart?.items.length} items in your cart</BaseText>

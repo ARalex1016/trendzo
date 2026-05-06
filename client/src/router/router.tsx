@@ -11,6 +11,7 @@ import ProductDetails from "@/pages/ProductDetails/ProductDetails";
 import Cart from "@/pages/Cart/Cart";
 import CheckOut from "@/pages/CheckOut/CheckOut";
 import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success";
+import MyOrders from "@/pages/MyOrders/MyOrders";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PRODUCT_DETAILS(),
         element: <ProductDetails />,
+      },
+      {
+        path: ROUTES.MyORDERS,
+        element: <MyOrders />,
       },
       {
         element: <ProtectedRoute />, // Only for Authenticated Users

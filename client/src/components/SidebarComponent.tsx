@@ -117,8 +117,8 @@ const menuItemsList: MenuGroup[] = [
       { title: "Sign up", url: "/signup", icon: UserPlus, roles: ["guest"] },
       { title: "Log in", url: "/login", icon: LogIn, roles: ["guest"] },
       {
-        title: "Orders",
-        url: "/orders",
+        title: "My Orders",
+        url: "/myorders",
         icon: ClipboardList,
         roles: ["customer"],
       },

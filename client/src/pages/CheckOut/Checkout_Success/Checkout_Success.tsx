@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Components
 import { Title, BaseText } from "@/components/Text";
@@ -67,6 +67,7 @@ const DetailItem = ({
 
 const Checkout_Success = () => {
   const { getOrderByOrderNumber } = useOrderStore();
+  const navigate = useNavigate();
 
   const { orderNumber } = useParams();
 
@@ -159,11 +160,18 @@ const Checkout_Success = () => {
 
         {/* Action Button */}
         <div className="w-full flex flex-row justify-around gap-x-4">
-          <Button className="flex-1 bg-primary py-0 sm:py-6">
+          <Button
+            onClick={() => navigate("/products")}
+            className="flex-1 bg-primary py-0 sm:py-6"
+          >
             Continue Shopping
           </Button>
 
-          <Button variant={"outline"} className="flex-1 py-0 sm:py-6">
+          <Button
+            variant={"outline"}
+            onClick={() => navigate("/orders")}
+            className="flex-1 py-0 sm:py-6"
+          >
             Track Order
           </Button>
         </div>
