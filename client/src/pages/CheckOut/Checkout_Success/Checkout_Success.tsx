@@ -26,7 +26,7 @@ import useOrderStore from "@/store/useOrderStore";
 import { formatDateToReadable } from "@/utils/DateManager";
 
 // Types
-import type { IOrder } from "@/types/order.type";
+import type { IOrderRes } from "@/types/order/order_response.type";
 import type { LucideIcon } from "lucide-react";
 
 const Card = ({
@@ -71,7 +71,7 @@ const Checkout_Success = () => {
 
   const { orderNumber } = useParams();
 
-  const [order, setOrder] = useState<IOrder | null>(null);
+  const [order, setOrder] = useState<IOrderRes | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const fetchOrder = async (orderNumber: string) => {

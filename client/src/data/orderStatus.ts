@@ -2,7 +2,6 @@
 import {
   Clock,
   CheckCircle,
-  // Package,
   Truck,
   XCircle,
   RotateCcw,
@@ -10,7 +9,7 @@ import {
 } from "lucide-react";
 
 // Types
-import type { OrderStatus } from "@/types/order.type";
+import type { OrderStatus } from "@/types/order/shared.type";
 import type { LucideIcon } from "lucide-react";
 
 export type StatusMeta = {

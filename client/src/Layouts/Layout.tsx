@@ -28,16 +28,16 @@ const Layout = ({ showFooter = true }: LayoutProps) => {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-row w-screen min-h-svh">
+    <div className="flex flex-row w-screen overflow-hidden min-h-svh">
       {/* Sidebar */}
       <SidebarComponent />
 
       {/* Right content area */}
-      <div className="flex flex-col flex-1 min-h-screen relative">
+      <div className="flex flex-col flex-1 min-h-screen min-w-0 relative">
         <Header />
 
         {/* Main */}
-        <main className="flex-1 bg-background">
+        <main className="w-full flex-1 bg-background ">
           <Outlet />
         </main>
 

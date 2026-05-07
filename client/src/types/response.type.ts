@@ -2,7 +2,7 @@
 import type { ICategory } from "./category.type";
 import type { IProduct } from "./product.type";
 import type { ICoupon } from "./coupon.type";
-import type { IOrder } from "./order.type";
+import type { IOrderRes } from "./order/order_response.type";
 
 export interface Meta {
   page: number;
@@ -27,5 +27,5 @@ export interface ApiErrorResponse {
 
 export type IProductResponse = ApiResponse<IProduct[]>;
 export type ICategoryResponse = ApiResponse<ICategory[]>;
-export type IOrderResponse = ApiResponse<IOrder[]>;
+export type IOrderResponse = ApiResponse<IOrderRes[]>;
 export type ICouponResponse = ApiResponse<ICoupon>;

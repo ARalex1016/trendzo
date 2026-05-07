@@ -2,16 +2,16 @@ import { create } from "zustand";
 import { axiosInstance } from "./axios";
 
 // Type
-import type { OnlineOrder } from "@/types/order.type";
-import type { IOrder } from "@/types/order.type";
+import type { OnlineOrder } from "@/types/order/order_create.type";
+import type { IOrderRes } from "@/types/order/order_response.type";
 import type { IOrderResponse, ApiResponse } from "@/types/response.type";
 
 interface OrderStore {
-  getSingleOrder: (orderId: string) => Promise<ApiResponse<IOrder> | null>;
+  getSingleOrder: (orderId: string) => Promise<ApiResponse<IOrderRes> | null>;
 
   getOrderByOrderNumber: (
     orderNumber: string,
-  ) => Promise<ApiResponse<IOrder> | null>;
+  ) => Promise<ApiResponse<IOrderRes> | null>;
 
   getMyOrders: () => Promise<IOrderResponse | null>;
 

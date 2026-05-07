@@ -10,7 +10,7 @@ import OrderCard from "@/components/Cards/OrderCard";
 import { Package, CircleCheckBig, Clock } from "lucide-react";
 
 // Types
-import type { IOrder } from "@/types/order.type";
+import type { IOrderRes } from "@/types/order/order_response.type";
 
 // Store
 import useAuthStore from "@/store/useAuthStore";
@@ -20,7 +20,7 @@ const Orders = () => {
   const { isAuthenticated } = useAuthStore();
   const { getMyOrders } = useOrderStore();
 
-  const [myOrders, setMyOrders] = useState<IOrder[] | null>(null);
+  const [myOrders, setMyOrders] = useState<IOrderRes[] | null>(null);
 
   const fetchMyOrders = async () => {
     try {
@@ -41,7 +41,7 @@ const Orders = () => {
   }, [isAuthenticated]);
 
   return (
-    <div className="w-full min-h-svh flex flex-col gap-y-2 px-side-spacing py-4 relative pb-20">
+    <div className="w-full flex flex-col gap-y-2 px-side-spacing py-4 relative pb-20">
       <Title text="My Orders" />
 
       <BaseText>Track and manage all your purchases</BaseText>
@@ -70,17 +70,11 @@ const Orders = () => {
         />
       </StatsContainer>
 
-      <div className="flex flex-col gap-y-3">
-        {myOrders?.map((myOrder) => {
-          return (
-            <OrderCard
-              key={myOrder.orderNumber || myOrder._id}
-              orderNumber={myOrder.orderNumber}
-              orderDate={myOrder.createdAt}
-              totalAmount={myOrder.totalAmount}
-            />
-          );
-        })}
+      <div className="w-full flex flex-col gap-y-4">
+        {myOrders &&
+          myOrders?.map((myOrder) => {
+            return <OrderCard key={myOrder.orderNumber} order={myOrder} />;
+          })}
       </div>
     </div>
   );

@@ -3,79 +3,118 @@ import { Link } from "react-router-dom";
 // Components
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
+import { StatusBadge } from "../Badges/StatusBadge";
+import { PaymentMethodBadge } from "../Badges/PaymentMethodBadge";
 
 // Icons
 import { Calendar, Banknote } from "lucide-react";
 
 // Utils
 import { formatDateToReadable } from "@/utils/DateManager";
+import { capitalize } from "@/utils/StringManager";
+
+// Types
+import type {
+  IOrderRes,
+  IOrderItemRes,
+} from "@/types/order/order_response.type";
 
 interface OrderCardProps {
-  orderNumber?: string;
-  orderDate?: string;
-  totalAmount?: string | number;
+  order: IOrderRes;
 }
 
-const OrderCard = ({ orderNumber, orderDate, totalAmount }: OrderCardProps) => {
-  if (!orderNumber) return;
+const ItemContainer = ({ orderItem }: { orderItem: IOrderItemRes }) => {
+  return (
+    <div className="min-w-20 max-w-24 flex flex-col gap-y-0.5">
+      <img
+        src={orderItem.productImage}
+        alt={`${orderItem.productName}-${orderItem.size}-Img`}
+        className="w-full aspect-square object-cover rounded-lg"
+      />
+
+      <p className="text-xs text-muted-foreground font-medium line-clamp-1">
+        {orderItem.productName}
+      </p>
+
+      <div className="flex flex-row items-center gap-x-1">
+        <span
+          className="inline-block size-3 rounded-full border-2 border-border"
+          style={{ backgroundColor: orderItem.color.hexCode }}
+        ></span>
+
+        <p className="text-xs text-muted-foreground">{orderItem.size.name}</p>
+      </div>
+    </div>
+  );
+};
+
+const OrderCard = ({ order }: OrderCardProps) => {
+  if (!order) return;
 
   return (
     <Link
-      to={orderNumber}
-      className="border border-border rounded-2xl flex flex-col px-4 py-5 transition-all duration-300 hover:shadow-xs hover:shadow-primary hover:translate-x-0.5 hover:-translate-y-0.5"
+      to={order.orderNumber}
+      className="w-full border border-border rounded-2xl flex flex-col gap-y-4 p-5 transition-all duration-300 hover:shadow-xs hover:shadow-primary hover:translate-x-0.5 hover:-translate-y-0.5"
     >
       <div className="flex flex-row justify-between">
         {/* ORD Number & Date */}
         <div className="flex flex-col gap-y-1">
-          {orderNumber && (
-            <p className="text-primary font-medium">{orderNumber}</p>
-          )}
+          <p className="text-primary text-base xs:text-base font-medium">
+            {order.orderNumber}
+          </p>
 
-          {orderDate && (
-            <div className="flex flex-row items-center gap-x-2">
-              <Calendar size={16} className="text-muted-foreground" />
+          <div className="flex flex-row items-center gap-x-1.5">
+            <Calendar className="size-3.5 xs:size-4 text-muted-foreground" />
 
-              <p className="text-muted-foreground text-sm font-medium">
-                {formatDateToReadable(orderDate, { includeTime: true })}
-              </p>
-            </div>
-          )}
+            <p className="text-muted-foreground text-xs xs:text-sm font-medium line-clamp-1">
+              {formatDateToReadable(order.createdAt, { includeTime: true })}
+            </p>
+          </div>
         </div>
 
         {/* Statuses */}
         <div className="flex flex-col items-end gap-y-1">
-          <p className="inline-block text-blue-500 bg-blue-500/20 border border-blue-500/80 rounded-lg shadow shadow-blue-500/40 px-3 py-0">
-            Confirmed
-          </p>
+          <StatusBadge>{capitalize(order.status)}</StatusBadge>
 
-          <p className="inline-block text-green-500 bg-green-500/20 border border-green-500/80 rounded-lg shadow shadow-green-500/40 px-3 py-0">
-            Paid
-          </p>
+          <StatusBadge variant="success">
+            {capitalize(order.paymentStatus)}
+          </StatusBadge>
         </div>
       </div>
 
       {/* Order Items */}
-      {/* <div></div> */}
+      <div className="w-full overflow-x-auto no-scrollbar flex flex-row flex-nowrap gap-x-3 py-2">
+        {order.items.map((orderItem, index) => {
+          return (
+            <ItemContainer
+              key={`${orderItem.createdAt}-${index}`}
+              orderItem={orderItem}
+            />
+          );
+        })}
+      </div>
 
-      <Separator className="my-3" />
+      <Separator />
 
       {/* Total Amount & Payment Method */}
       <div className="flex flex-row justify-between">
-        <div className="flex flex-col gap-y-1">
+        {/* Total Amount */}
+        <div className="flex flex-col">
           <p className="text-sm text-muted-foreground">Total Amount</p>
 
-          <p className="text-primary font-medium">NPR {totalAmount}</p>
+          <p className="text-primary text-lg font-medium">
+            NPR {order.totalAmount}
+          </p>
         </div>
 
-        <div className="h-fit bg-black rounded-lg border-2 border-border flex flex-row items-center gap-x-2 px-3 py-1">
-          <Banknote size={16} className="text-foreground/80" />
-
-          <span className="text-sm text-foreground/80">Bank</span>
-        </div>
+        {/* Payment Method */}
+        <PaymentMethodBadge method={order.paymentMethod} />
       </div>
 
       {/* Action Buttons */}
-      <Button>View Details</Button>
+      <div className="flex justify-end">
+        <Button>View Details</Button>
+      </div>
     </Link>
   );
 };
