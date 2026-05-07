@@ -1,7 +1,10 @@
-export function formatDateToReadable(
+export const formatDateToReadable = (
   isoDate: string,
-  locale: string = "en-US",
-): string {
+  options?: {
+    locale?: string;
+    includeTime?: boolean;
+  },
+): string => {
   if (!isoDate) return "";
 
   const date = new Date(isoDate);
@@ -11,9 +14,14 @@ export function formatDateToReadable(
     throw new Error("Invalid date string");
   }
 
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(options?.locale || "en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
+    ...(options?.includeTime && {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }),
   }).format(date);
-}
+};

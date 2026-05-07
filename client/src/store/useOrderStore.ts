@@ -3,14 +3,17 @@ import { axiosInstance } from "./axios";
 
 // Type
 import type { OnlineOrder } from "@/types/order.type";
-import type { IOrderResponse } from "@/types/response.type";
+import type { IOrder } from "@/types/order.type";
+import type { IOrderResponse, ApiResponse } from "@/types/response.type";
 
 interface OrderStore {
-  getSingleOrder: (orderId: string) => Promise<IOrderResponse | null>;
+  getSingleOrder: (orderId: string) => Promise<ApiResponse<IOrder> | null>;
 
   getOrderByOrderNumber: (
     orderNumber: string,
-  ) => Promise<IOrderResponse | null>;
+  ) => Promise<ApiResponse<IOrder> | null>;
+
+  getMyOrders: () => Promise<IOrderResponse | null>;
 
   placeOrder: (orderData: OnlineOrder) => Promise<IOrderResponse | null>;
 }
@@ -31,6 +34,16 @@ const useOrderStore = create<OrderStore>(() => ({
       let res = await axiosInstance.get(
         `/v1/orders/orderNumber/${orderNumber}`,
       );
+
+      return res.data;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  },
+
+  getMyOrders: async () => {
+    try {
+      let res = await axiosInstance.get(`/v1/orders/my-orders`);
 
       return res.data;
     } catch (error: any) {

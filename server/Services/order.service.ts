@@ -346,7 +346,7 @@ export const OrderService = {
     ]);
 
     return {
-      orders,
+      data: orders,
       meta: {
         total,
         page,

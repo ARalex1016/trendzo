@@ -144,7 +144,9 @@ const Checkout_Success = () => {
 
           <DetailItem title={"Order Date"} Icon={Calendar}>
             <p className="text-base font-medium">
-              {order.createdAt ? formatDateToReadable(order.createdAt) : "N/A"}
+              {order.createdAt
+                ? formatDateToReadable(order.createdAt, { includeTime: true })
+                : "N/A"}
             </p>
           </DetailItem>
         </Card>

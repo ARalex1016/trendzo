@@ -27,5 +27,5 @@ export interface ApiErrorResponse {
 
 export type IProductResponse = ApiResponse<IProduct[]>;
 export type ICategoryResponse = ApiResponse<ICategory[]>;
+export type IOrderResponse = ApiResponse<IOrder[]>;
 export type ICouponResponse = ApiResponse<ICoupon>;
-export type IOrderResponse = ApiResponse<IOrder>;
