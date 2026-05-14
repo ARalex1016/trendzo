@@ -18,9 +18,9 @@ export const registerSchema = z
     role: z.enum(["customer"], "Role must 'customer'").optional(), // prevent admin here
     address: z.object({
       label: z.string().trim().optional(),
-      fullName: z.string().trim(),
-      phone: z.string().trim(),
-      email: z.string().trim(),
+      fullName: z.string().trim().optional(),
+      phone: z.string().trim().optional(),
+      email: z.string().trim().optional(),
       country: z
         .string("Country is required")
         .trim()

@@ -4,6 +4,7 @@ import { UserRepository } from "../Repositories/user.repository.ts";
 
 // Services
 import { ReferralService } from "./referral.service.ts";
+import { UserStatsService } from "./user-stats.service.ts";
 
 // Utils
 import { hashPassword, comparePassword } from "../Utils/password.utils.ts";
@@ -57,6 +58,8 @@ export const AuthService = {
         },
       ],
     });
+
+    await UserStatsService.initializeUserStats(user._id);
 
     // Handle referral
     if (referralCode) {

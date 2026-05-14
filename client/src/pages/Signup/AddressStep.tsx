@@ -28,6 +28,58 @@ const AddressStep = () => {
       <Form {...form}>
         <FormField
           control={form.control}
+          name="address.fullName"
+          render={({ field }) => (
+            <FormItem className="gap-1">
+              {/* <FormLabel>City</FormLabel> */}
+              <Input
+                {...field}
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                placeholder="Full Name"
+              />
+              {firstErrorPath === "address.fullName" && <FormMessage />}
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address.phone"
+          render={({ field }) => (
+            <FormItem className="gap-1">
+              {/* <FormLabel>City</FormLabel> */}
+              <Input
+                {...field}
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                placeholder="Phone Number"
+              />
+              {firstErrorPath === "address.phone" && <FormMessage />}
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address.email"
+          render={({ field }) => (
+            <FormItem className="gap-1">
+              {/* <FormLabel>City</FormLabel> */}
+              <Input
+                {...field}
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                placeholder="Email"
+                className="w-full col-span-2"
+              />
+              {firstErrorPath === "address.email" && <FormMessage />}
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="address.country"
           render={({ field }) => (
             <FormItem className="gap-1">

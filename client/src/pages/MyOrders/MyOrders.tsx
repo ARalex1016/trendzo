@@ -5,6 +5,7 @@ import { Title, BaseText } from "@/components/Text";
 import { StatsCard } from "@/components/Stats/StatsCard";
 import { StatsContainer } from "@/components/Stats/StatsContainer";
 import OrderCard from "@/components/Cards/OrderCard";
+import NoOrders from "./NoOrders";
 
 // Icons
 import { Package, CircleCheckBig, Clock } from "lucide-react";
@@ -27,8 +28,6 @@ const Orders = () => {
       let res = await getMyOrders();
 
       if (res) {
-        console.log(res);
-
         setMyOrders(res?.data);
       }
     } catch (error) {}
@@ -71,6 +70,8 @@ const Orders = () => {
       </StatsContainer>
 
       <div className="w-full flex flex-col gap-y-4">
+        {myOrders && myOrders?.length <= 0 && <NoOrders />}
+
         {myOrders &&
           myOrders?.map((myOrder) => {
             return <OrderCard key={myOrder.orderNumber} order={myOrder} />;
