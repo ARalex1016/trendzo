@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Title, BaseText } from "@/components/Text";
 import { StatsCard } from "@/components/Stats/StatsCard";
 import { StatsContainer } from "@/components/Stats/StatsContainer";
+import FilterOrder from "./FilterOrder";
 import OrderCard from "@/components/Cards/OrderCard";
 import NoOrders from "./NoOrders";
 
@@ -68,6 +69,8 @@ const Orders = () => {
           className="col-span-full lg:col-span-1"
         />
       </StatsContainer>
+
+      <FilterOrder />
 
       <div className="w-full flex flex-col gap-y-4">
         {myOrders && myOrders?.length <= 0 && <NoOrders />}
