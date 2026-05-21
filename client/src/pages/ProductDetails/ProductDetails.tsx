@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 // Components
+import { PageShell } from "@/components/Container";
 import ImageSection from "./ImageSection";
 import DetailsSection from "./DetailsSection";
 import DSR_TabSection from "./DSR_TabSection";
@@ -52,7 +53,7 @@ const ProductDetails = () => {
   }
 
   return (
-    <section className="w-full px-side-spacing py-side-spacing">
+    <PageShell>
       <div className="w-full grid lg:grid-cols-2 gap-x-10 gap-y-8 mb-10">
         <ImageSection images={product.images} />
 
@@ -63,7 +64,7 @@ const ProductDetails = () => {
         description={product.description}
         specifications={product.specifications}
       />
-    </section>
+    </PageShell>
   );
 };
 

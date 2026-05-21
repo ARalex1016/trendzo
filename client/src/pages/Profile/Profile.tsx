@@ -1,5 +1,8 @@
+// Components
+import { PageShell } from "@/components/Container";
+
 const Profile = () => {
-  return <div>Profile</div>;
+  return <PageShell>Profile</PageShell>;
 };
 
 export default Profile;

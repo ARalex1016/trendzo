@@ -1,8 +1,6 @@
 // Components
 import { StatusBadge } from "@/components/Badges/StatusBadge";
-
-// Icons
-import { Search } from "lucide-react";
+import { SearchInput } from "@/components/SearchInput";
 
 // Utils
 import { capitalize } from "@/utils/StringManager";
@@ -25,19 +23,9 @@ const statusList: OrderStatusProps[] = [
 
 const FilterOrder = () => {
   return (
-    <div className="flex flex-col gap-y-3 rounded-2xl border border-border p-5">
+    <div className="bg-background1 flex flex-col gap-y-3 rounded-2xl border border-border p-5">
       <div className="w-full flex flex-col lg:flex-row items-center gap-3">
-        <div className="w-full flex-1 flex flex-row items-center gap-x-2 rounded-xl border border-border px-3 py-2">
-          <Search size={18} className="text-muted-foreground" />
-
-          <input
-            type="search"
-            name=""
-            id=""
-            placeholder="Search by order number..."
-            className="w-full"
-          />
-        </div>
+        <SearchInput />
 
         <div className="w-full lg:w-fit flex flex-row gap-x-3">
           <select

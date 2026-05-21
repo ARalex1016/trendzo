@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 // Components
 import { Title, BaseText } from "@/components/Text";
+import { TitleTextContainer } from "@/components/Container";
 import SearchBox from "./SearchBox";
 import ProductCards from "@/components/Cards/ProductCards";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
@@ -64,14 +65,14 @@ const ProductDisplay = () => {
       {/* Product Header */}
       <div className="w-full flex flex-col lg:flex-row justify-between items-center gap-x-5 gap-y-2">
         <div className="order-2 lg:order-1 w-full">
-          <Title text="All Products" />
-
-          {productsResponse && productsResponse?.meta?.total && (
-            <BaseText>
-              Showing {productsResponse.data.length} of{" "}
-              {productsResponse.meta.total} products
-            </BaseText>
-          )}
+          <TitleTextContainer title="All Products">
+            {productsResponse?.meta?.total && (
+              <>
+                Showing {productsResponse.data.length} of{" "}
+                {productsResponse.meta.total} products
+              </>
+            )}
+          </TitleTextContainer>
 
           {fetchingProducts && (
             <p className="text-foreground/60">Loading products...</p>

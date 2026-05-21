@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 // Components
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import ThemeTrigger from "./ThemeTrigger";
@@ -21,6 +23,8 @@ import { User, LogOut } from "lucide-react";
 import { getInitials } from "@/utils/StringManager";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   const { user, isAuthenticated, logout } = useAuthStore();
 
   const handleLogout = async () => {
@@ -57,7 +61,7 @@ const Header = () => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
                 <User />
                 Profile
               </DropdownMenuItem>

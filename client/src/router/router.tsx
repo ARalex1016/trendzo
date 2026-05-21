@@ -12,6 +12,7 @@ import Cart from "@/pages/Cart/Cart";
 import CheckOut from "@/pages/CheckOut/CheckOut";
 import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success";
 import MyOrders from "@/pages/MyOrders/MyOrders";
+import MyOrderDetails from "@/pages/MyOrderDetails/MyOrderDetails";
 import Profile from "@/pages/Profile/Profile";
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
@@ -65,10 +66,6 @@ const router = createBrowserRouter([
         element: <ProductDetails />,
       },
       {
-        path: ROUTES.MyORDERS,
-        element: <MyOrders />,
-      },
-      {
         element: <ProtectedRoute />, // Only for Authenticated Users
         children: [
           {
@@ -97,6 +94,19 @@ const router = createBrowserRouter([
           {
             path: ROUTES.CHECKOUT_SUCCESS(),
             element: <Checkout_Success />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute />, // Only for Authenticated Users
+        children: [
+          {
+            path: ROUTES.MYORDERS,
+            element: <MyOrders />,
+          },
+          {
+            path: ROUTES.MYORDER_DETAILS(),
+            element: <MyOrderDetails />,
           },
         ],
       },

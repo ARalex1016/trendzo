@@ -4,6 +4,7 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // Components
+import { PageShell } from "@/components/Container";
 import {
   Card,
   CardContent,
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Title, BaseText } from "@/components/Text";
+import { TitleTextContainer } from "@/components/Container";
 import OrderSummary from "./OrderSummary";
 
 // Components // Steps
@@ -34,14 +35,7 @@ import {
 import { type CheckoutSchemaType } from "@/validations/checkout.validator";
 
 // Icons
-import {
-  Check,
-  ArrowLeft,
-  User,
-  MapPin,
-  CreditCard,
-  ClipboardList,
-} from "lucide-react";
+import { Check, User, MapPin, CreditCard, ClipboardList } from "lucide-react";
 
 // Hooks
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -225,25 +219,15 @@ const CheckOut = () => {
   }, [methods, currentStepIndex]);
 
   return (
-    <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-2 xs:gap-y-5 px-side-spacing py-4">
-      {/* Back to Cart Button */}
-      <div>
-        <Button
-          variant={"secondary"}
-          onClick={() => navigate("/cart")}
-          className="text-xs text-foreground/60 hover:text-foreground gap-x-1! pl-0!"
-        >
-          <ArrowLeft />
-
-          <span>Back to Cart</span>
-        </Button>
-      </div>
-
+    <PageShell
+      back="Back to Cart"
+      to="/cart"
+      className="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-2 xs:gap-y-5"
+    >
       {/* Title */}
-      <div className="col-span-full">
-        <Title text="Checkout" />
-        <BaseText>Complete your purchase securely</BaseText>
-      </div>
+      <TitleTextContainer title="Checkout" className="col-span-full">
+        Complete your purchase securely
+      </TitleTextContainer>
 
       {/* Stepper */}
       {!!user && (
@@ -380,7 +364,7 @@ const CheckOut = () => {
         disabled={!canPlaceOrder}
         className="lg:col-span-1"
       />
-    </div>
+    </PageShell>
   );
 };
 

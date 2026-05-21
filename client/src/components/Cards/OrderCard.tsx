@@ -54,7 +54,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
   return (
     <Link
       to={order.orderNumber}
-      className="w-full border border-border rounded-2xl flex flex-col gap-y-4 p-5 transition-all duration-300 hover:shadow-xs hover:shadow-primary hover:translate-x-0.5 hover:-translate-y-0.5"
+      className="w-full bg-background1 border border-border rounded-2xl flex flex-col gap-y-4 p-5 transition-all duration-300 hover:shadow-xs hover:shadow-primary hover:translate-x-0.5 hover:-translate-y-0.5"
     >
       <div className="flex flex-row justify-between">
         {/* ORD Number & Date */}

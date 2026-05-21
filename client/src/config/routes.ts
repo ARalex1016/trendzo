@@ -8,7 +8,8 @@ export const ROUTES = {
   CHECKOUT_SUCCESS: (slug: string = ":orderNumber") =>
     `/checkout/success/${slug}`,
 
-  MyORDERS: "/myorders",
+  MYORDERS: "/myorders",
+  MYORDER_DETAILS: (slug: string = ":orderNumber") => `/myorders/${slug}`,
 
   PROFILE: "/profile",
 

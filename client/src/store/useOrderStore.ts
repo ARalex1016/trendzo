@@ -15,7 +15,9 @@ interface OrderStore {
 
   getMyOrders: () => Promise<IOrderResponse | null>;
 
-  placeOrder: (orderData: OnlineOrder) => Promise<IOrderResponse | null>;
+  placeOrder: (
+    orderData: OnlineOrder,
+  ) => Promise<ApiResponse<IOrderRes> | null>;
 }
 
 const useOrderStore = create<OrderStore>(() => ({

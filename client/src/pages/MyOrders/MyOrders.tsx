@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
 // Components
-import { Title, BaseText } from "@/components/Text";
+import { PageShell } from "@/components/Container";
+import { TitleTextContainer } from "@/components/Container";
 import { StatsCard } from "@/components/Stats/StatsCard";
 import { StatsContainer } from "@/components/Stats/StatsContainer";
 import FilterOrder from "./FilterOrder";
@@ -41,10 +42,10 @@ const Orders = () => {
   }, [isAuthenticated]);
 
   return (
-    <div className="w-full flex flex-col gap-y-2 px-side-spacing py-4 relative pb-20">
-      <Title text="My Orders" />
-
-      <BaseText>Track and manage all your purchases</BaseText>
+    <PageShell className="flex flex-col gap-y-5 relative">
+      <TitleTextContainer title="My Orders">
+        Track and manage all your purchases
+      </TitleTextContainer>
 
       <StatsContainer>
         <StatsCard
@@ -80,7 +81,7 @@ const Orders = () => {
             return <OrderCard key={myOrder.orderNumber} order={myOrder} />;
           })}
       </div>
-    </div>
+    </PageShell>
   );
 };
 

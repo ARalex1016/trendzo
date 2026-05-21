@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
 // Components
-import { Title, BaseText } from "@/components/Text";
+import { PageShell } from "@/components/Container";
+import { TitleTextContainer } from "@/components/Container";
 import CartList from "./CartList";
 import OrderSummary from "./OrderSummary";
 import MobileCheckoutBar from "./MobileCheckoutBar";
@@ -24,10 +25,10 @@ const Cart = () => {
   };
 
   return (
-    <section className="w-full min-h-svh flex flex-col gap-x-8 px-side-spacing py-4 relative pb-20">
-      <Title text="Shopping Cart" />
-
-      <BaseText>{cart?.items.length} items in your cart</BaseText>
+    <PageShell className="min-h-svh flex flex-col gap-x-8 relative">
+      <TitleTextContainer title="Shopping Cart">
+        {cart?.items.length} items in your cart
+      </TitleTextContainer>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-6">
         <CartList />
@@ -40,7 +41,7 @@ const Cart = () => {
         discount={cart.totals.discount}
         oncheckOut={handleCheckout}
       />
-    </section>
+    </PageShell>
   );
 };
 

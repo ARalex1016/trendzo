@@ -1,4 +1,5 @@
 // Components
+import { PageShell } from "@/components/Container";
 import FilterSidebar from "./FilterSidebar";
 import ProductDisplay from "./ProductDisplay";
 import {
@@ -22,7 +23,7 @@ const Products = () => {
   const isMobile = useIsMobile();
 
   return (
-    <section className="w-full min-h-svh flex flex-row gap-x-8 px-side-spacing relative">
+    <PageShell className="min-h-svh flex flex-row gap-x-8 relative">
       {/* Filter for Desktop */}
       {!isMobile && <FilterSidebar />}
 
@@ -51,7 +52,7 @@ const Products = () => {
       )}
 
       <ProductDisplay />
-    </section>
+    </PageShell>
   );
 };
 
