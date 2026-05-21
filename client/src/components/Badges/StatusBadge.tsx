@@ -25,7 +25,7 @@ type Size = "sm" | "md" | "lg";
 // -----------------------------
 // Props
 // -----------------------------
-export interface StatusBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+interface StatusBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 
   variant?: Variant;

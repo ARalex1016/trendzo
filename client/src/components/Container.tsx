@@ -38,7 +38,7 @@ export const PageShell = ({
   className,
 }: PageShellProps) => {
   return (
-    <section className="w-full px-side-spacing py-4">
+    <section className="w-full flex flex-col items-start gap-y-2 px-side-spacing py-4">
       {to && back && <BackButton to={to} label={back} />}
 
       <div className={`w-full ${className}`}>{children}</div>
