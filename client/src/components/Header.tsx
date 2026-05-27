@@ -17,7 +17,7 @@ import { CartButton } from "./CartButtons";
 import useAuthStore from "@/store/useAuthStore";
 
 // Icons
-import { User, LogOut } from "lucide-react";
+import { Mail, User, LogOut } from "lucide-react";
 
 // Utils
 import { getInitials } from "@/utils/StringManager";
@@ -60,7 +60,14 @@ const Header = () => {
               </Avatar>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
+            <DropdownMenuContent className="p-3  mr-side-spacing">
+              <DropdownMenuItem className="text-xs">
+                <Mail />
+                {user?.email}
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
               <DropdownMenuItem onClick={() => navigate("/profile")}>
                 <User />
                 Profile

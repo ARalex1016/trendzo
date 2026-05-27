@@ -156,7 +156,12 @@ const Checkout_Success = () => {
           <Title text="What happens next?" className="text-base!" />
 
           <div className="mt-2">
-            {order?.status && <OrderTimeline currentStatus={order?.status} />}
+            {order?.status && (
+              <OrderTimeline
+                currentStatus={order?.status}
+                orientation="vertical"
+              />
+            )}
           </div>
         </Card>
 

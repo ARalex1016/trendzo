@@ -13,6 +13,11 @@ export const ROUTES = {
 
   PROFILE: "/profile",
 
+  // Admin
+  PRODUCT_MANAGEMENT: "/products-management",
+  ALL_PRODUCTS: "/products-management/all",
+  ADD_PRODUCTS: "/products-management/add",
+
   LOGIN: "/login",
   SIGNUP: "/signup",
 

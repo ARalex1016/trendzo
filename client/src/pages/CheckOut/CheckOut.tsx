@@ -15,73 +15,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { TitleTextContainer } from "@/components/Container";
+import CheckoutAuthGuard from "./CheckoutAuthGuard";
 import OrderSummary from "./OrderSummary";
 
-// Components // Steps
-import UserInfoStep from "./Steps/UserInfoStep";
-import AddressInfoStep from "./Steps/AddressInfoStep";
-import PaymentInfoStep from "./Steps/PaymentInfoStep";
-import ReviewInfoStep from "./Steps/ReviewInfoStep";
-import CheckoutAuthGuard from "./CheckoutAuthGuard";
-// import CheckoutAuthGuard from "./GuestCheckout";
-
 // Schema
-import {
-  userStepSchema,
-  addressStepSchema,
-  paymentStepSchema,
-  checkoutSchema,
-} from "@/validations/checkout.validator";
+import { checkoutSchema } from "@/validations/checkout.validator";
 import { type CheckoutSchemaType } from "@/validations/checkout.validator";
 
 // Icons
-import { Check, User, MapPin, CreditCard, ClipboardList } from "lucide-react";
+import { Check } from "lucide-react";
 
 // Hooks
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 
-// Types
-import { type Step } from "@/hooks/useMultiStepForm";
+// data
+import { steps } from "./data";
 
 // Store
 import useOrderStore from "@/store/useOrderStore";
 import useAuthStore from "@/store/useAuthStore";
 import useCartStore from "@/store/useCartStore";
-
-const steps: Step[] = [
-  {
-    id: "userDetails",
-    label: "User Details",
-    // text: "Sign up to complete your order",
-    icon: User,
-    component: UserInfoStep,
-    schema: userStepSchema,
-  },
-  {
-    id: "address",
-    label: "Delivery Address",
-    text: "Select or add a delivery address",
-    icon: MapPin,
-    component: AddressInfoStep,
-    schema: addressStepSchema,
-  },
-  {
-    id: "payment",
-    label: "Payment",
-    text: "Choose your payment method",
-    icon: CreditCard,
-    component: PaymentInfoStep,
-    schema: paymentStepSchema,
-  },
-  {
-    id: "review",
-    label: "Review Your Order",
-    text: "Review your details before placing the orderr",
-    icon: ClipboardList,
-    component: ReviewInfoStep,
-    schema: checkoutSchema,
-  },
-];
 
 const CheckOut = () => {
   const navigate = useNavigate();

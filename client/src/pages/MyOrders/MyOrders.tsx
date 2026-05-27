@@ -74,7 +74,7 @@ const Orders = () => {
       <FilterOrder />
 
       <div className="w-full flex flex-col gap-y-4">
-        {myOrders && myOrders?.length <= 0 && <NoOrders />}
+        {(!myOrders || myOrders.length === 0) && <NoOrders />}
 
         {myOrders &&
           myOrders?.map((myOrder) => {

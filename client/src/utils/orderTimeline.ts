@@ -1,5 +1,5 @@
 // Types
-import type { OrderStatus } from "@/types/order.type";
+import type { OrderStatus } from "@/types/order/shared.type";
 import { ORDER_FLOW, type StatusMeta } from "@/data/orderStatus";
 
 type TimelineStepState = "completed" | "current" | "upcoming";

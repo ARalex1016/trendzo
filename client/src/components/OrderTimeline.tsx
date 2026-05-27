@@ -1,17 +1,22 @@
-// Data
 import { orderStatus } from "@/data/orderStatus";
 
 // Utils
 import { getOrderTimeline } from "@/utils/orderTimeline";
 
 // Types
-import type { OrderStatus } from "@/types/order.type";
+import type { OrderStatus } from "@/types/order/shared.type";
+
+type Orientation = "vertical" | "horizontal";
 
 type Props = {
   currentStatus: OrderStatus;
+  orientation?: Orientation;
 };
 
-export function OrderTimeline({ currentStatus }: Props) {
+export function OrderTimeline({
+  currentStatus,
+  orientation = "horizontal",
+}: Props) {
   const timeline = getOrderTimeline(currentStatus, orderStatus);
 
   if (timeline.type === "terminal") {
@@ -22,54 +27,85 @@ export function OrderTimeline({ currentStatus }: Props) {
     const Icon = status.Icon;
 
     return (
-      <div className="flex items-center gap-3 p-4 border rounded-xl bg-red-50">
-        <Icon className={`w-6 h-6 ${status.color}`} />
+      <div className="flex items-center gap-3 rounded-xl border bg-red-50 p-4">
+        <Icon className={`size-6 ${status.color}`} />
+
         <div>
-          <p className="font-semibold">{status.label}</p>
+          <p className="font-semibold">{status.label} </p>
+
           <p className="text-sm text-gray-500">{status.description}</p>
         </div>
       </div>
     );
   }
 
-  // ✅ Now TypeScript KNOWS this is linear
+  const isVertical = orientation === "vertical";
+
   return (
-    <div className="flex flex-col gap-6">
-      {timeline.steps.map((step) => {
+    <div
+      className={isVertical ? "flex flex-col gap-8" : "flex w-full items-start"}
+    >
+      {timeline.steps.map((step, index) => {
         const Icon = step.Icon;
 
+        const isLast = index === timeline.steps.length - 1;
+
+        const isCompleted = step.state === "completed";
+
+        const isCurrent = step.state === "current";
+
         return (
-          <div key={step.key} className="flex gap-4">
-            <div className="flex flex-col items-center">
-              {/* Icons */}
+          <div
+            key={step.key}
+            className={
+              isVertical
+                ? "relative flex gap-4"
+                : "relative flex flex-1 flex-col items-center"
+            }
+          >
+            {/* HORIZONTAL CONNECTOR */}
+            {!isVertical && !isLast && (
               <div
-                className={`size-10 flex items-center justify-center rounded-full border
+                className={`absolute left-[calc(50%+1.25rem)] top-5 h-0.5 w-[calc(100%-2.5rem)]
+                ${isCompleted ? "bg-green-500" : "bg-gray-200"}`}
+              />
+            )}
+
+            {/* ICON + VERTICAL LINE */}
+            <div className="relative flex shrink-0 flex-col items-center">
+              {/* ICON */}
+              <div
+                className={`z-10 flex size-10 items-center justify-center rounded-full border
                 ${
-                  step.state === "completed"
-                    ? "bg-green-500 text-white"
-                    : step.state === "current"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 text-gray-400"
+                  isCompleted
+                    ? "border-green-500 bg-green-500 text-white"
+                    : isCurrent
+                      ? "border-blue-500 bg-blue-500 text-white"
+                      : "border-gray-200 bg-gray-100 text-gray-400"
                 }`}
               >
                 <Icon className="size-5" />
               </div>
 
-              <div
-                className={`w-0.5 flex-1 mt-1
-                ${step.state === "completed" ? "bg-green-500" : "bg-gray-200"}`}
-              />
+              {/* VERTICAL CONNECTOR */}
+              {isVertical && !isLast && (
+                <div
+                  className={`absolute top-10 h-8 w-0.5
+                  ${isCompleted ? "bg-green-500" : "bg-gray-200"}`}
+                />
+              )}
             </div>
 
-            <div>
+            {/* CONTENT */}
+            <div className={isVertical ? "pt-1" : "mt-3 max-w-35 text-center"}>
               <p
                 className={`font-medium
                 ${
-                  step.state === "current"
+                  isCurrent
                     ? "text-blue-600"
-                    : step.state === "completed"
-                      ? "text-gray-900"
-                      : "text-gray-400"
+                    : isCompleted
+                      ? "text-blue-600"
+                      : "text-muted-foreground"
                 }`}
               >
                 {step.label}

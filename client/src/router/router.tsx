@@ -14,6 +14,10 @@ import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success
 import MyOrders from "@/pages/MyOrders/MyOrders";
 import MyOrderDetails from "@/pages/MyOrderDetails/MyOrderDetails";
 import Profile from "@/pages/Profile/Profile";
+// Admin
+import AllProducts from "@/pages/ProductManagement/AllProducts/AllProducts";
+import AddProduct from "@/pages/ProductManagement/AddProduct/AddProduct";
+
 import Signup from "@/pages/Signup/Signup";
 import Login from "@/pages/Login/Login";
 import NotFound from "@/pages/NotFound/NotFound";
@@ -23,6 +27,13 @@ import { ROUTES } from "@/config/routes";
 
 // Store
 import useAuthStore from "@/store/useAuthStore";
+
+// Types
+import type { Role } from "@/types/user.types";
+
+type RoleRouteProps = {
+  allowedRoles: Role[];
+};
 
 const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
@@ -46,6 +57,22 @@ const RedirectIfAuthenticated = ({
   ) : (
     (children ?? <Outlet />)
   );
+};
+
+const RoleRoute = ({ allowedRoles }: RoleRouteProps) => {
+  const { user } = useAuthStore();
+
+  // Safety fallback
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Role check
+  if (!allowedRoles.includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
 };
 
 const router = createBrowserRouter([
@@ -89,17 +116,12 @@ const router = createBrowserRouter([
       },
 
       {
-        element: <ProtectedRoute />,
+        element: <ProtectedRoute />, // Only for Authenticated Users
         children: [
           {
             path: ROUTES.CHECKOUT_SUCCESS(),
             element: <Checkout_Success />,
           },
-        ],
-      },
-      {
-        element: <ProtectedRoute />, // Only for Authenticated Users
-        children: [
           {
             path: ROUTES.MYORDERS,
             element: <MyOrders />,
@@ -107,6 +129,19 @@ const router = createBrowserRouter([
           {
             path: ROUTES.MYORDER_DETAILS(),
             element: <MyOrderDetails />,
+          },
+          {
+            element: <RoleRoute allowedRoles={["admin"]} />,
+            children: [
+              {
+                path: ROUTES.ALL_PRODUCTS,
+                element: <AllProducts />,
+              },
+              {
+                path: ROUTES.ADD_PRODUCTS,
+                element: <AddProduct />,
+              },
+            ],
           },
         ],
       },
