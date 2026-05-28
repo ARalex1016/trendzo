@@ -28,7 +28,7 @@ const Layout = ({ showFooter = true }: LayoutProps) => {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-row w-screen overflow-hidden min-h-svh">
+    <div className="flex flex-row w-screen min-h-svh">
       {/* Sidebar */}
       <SidebarComponent />
 

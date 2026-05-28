@@ -4,6 +4,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // Components
+import { PageShell } from "@/components/Container";
 import {
   Card,
   CardContent,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Separator } from "@/components/ui/separator";
 
 // Stepper
 import { Stepper, MobileStepper } from "./Stepper/Stepper";
@@ -45,8 +47,6 @@ const AddProduct = () => {
 
   const { width } = useResponsive();
 
-  const referral = localStorage.getItem("ref") ?? undefined;
-
   const methods = useForm<UserRegisterType>({
     resolver: zodResolver(isLastStep ? registerSchema : step.schema) as any,
     mode: "onBlur",
@@ -54,11 +54,10 @@ const AddProduct = () => {
     shouldUnregister: false, // important for multi-step forms
     criteriaMode: "firstError", // ✅ IMPORTANT
     shouldFocusError: true, // ✅ Focus first invalid field
-    defaultValues: {
-      address: { country: "Nepal" },
-      referralCode: referral,
-    },
+    defaultValues: {},
   });
+
+  let Icon = step.icon;
 
   let StepComponent = step.component;
 
@@ -109,97 +108,86 @@ const AddProduct = () => {
   }, [methods, currentStepIndex]);
 
   return (
-    <div className="w-full h-full flex justify-center items-center px-side-spacing">
-      <Card className="w-full">
-        <CardHeader className="">
-          {/* <CardTitle className="text-center">New Product</CardTitle> */}
+    <PageShell className="flex flex-col lg:flex-row gap-5">
+      {width >= 1024 ? (
+        <Stepper steps={steps} currentStepIndex={currentStepIndex} />
+      ) : (
+        <MobileStepper steps={steps} currentStepIndex={currentStepIndex} />
+      )}
 
-          {width >= 1024 ? (
-            <Stepper steps={steps} currentStepIndex={currentStepIndex} />
-          ) : (
-            <MobileStepper steps={steps} currentStepIndex={currentStepIndex} />
-          )}
-        </CardHeader>
+      {/* Content */}
+      <Card className="flex-1">
+        <FormProvider {...methods}>
+          <form
+            onSubmit={methods.handleSubmit(onSubmit)}
+            // className="flex flex-col gap-y-4"
+            className="w-full"
+          >
+            <CardTitle className="col-span-2 flex flex-row gap-x-2 items-center px-side-spacing mb-5">
+              {Icon && <Icon />}
+              <span>{step.label}</span>
+            </CardTitle>
 
-        <CardContent className="">
-          <FormProvider {...methods}>
-            <form
-              onSubmit={methods.handleSubmit(onSubmit)}
-              // className="flex flex-col gap-y-4"
-              className="grid grid-cols-2 gap-x-2 gap-y-4"
-            >
-              {/* <CardTitle className="col-span-2">{step.label}</CardTitle> */}
+            <Separator />
 
+            <div className="w-full px-side-spacing py-3">
               <StepComponent />
+            </div>
 
-              {/* Action Button */}
-              <CardFooter className="col-span-2 justify-end gap-x-2 px-0">
-                {/* Pre Button */}
-                {!isFirstStep && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={back}
-                    disabled={isRegistering}
-                    // className="px-5"
-                  >
-                    Prev
-                  </Button>
-                )}
+            <Separator />
 
-                {/* Next Button */}
-                {!isLastStep && (
-                  <Button
-                    type="button"
-                    // variant="destructive"
-                    onClick={handleNext}
-                    // className="text-white font-medium bg-red-500 px-5 py-1 rounded-sm"
-                  >
-                    Next
-                  </Button>
-                )}
+            {/* Action Button */}
+            <CardFooter className="col-span-2 justify-end gap-x-2 px-side-spacing mt-5">
+              {/* Pre Button */}
+              {!isFirstStep && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={back}
+                  disabled={isRegistering}
+                  // className="px-5"
+                >
+                  Prev
+                </Button>
+              )}
 
-                {/* Sign up Button */}
-                {isLastStep && (
-                  <Button
-                    type="submit"
-                    disabled={isRegistering}
-                    className="relative"
-                  >
-                    {/* Text */}
-                    <span
-                      className={isRegistering ? "opacity-0" : "opacity-100"}
-                    >
-                      Sign up
+              {/* Next Button */}
+              {!isLastStep && (
+                <Button
+                  type="button"
+                  // variant="destructive"
+                  onClick={handleNext}
+                  // className="text-white font-medium bg-red-500 px-5 py-1 rounded-sm"
+                >
+                  Next
+                </Button>
+              )}
+
+              {/* Sign up Button */}
+              {isLastStep && (
+                <Button
+                  type="submit"
+                  disabled={isRegistering}
+                  className="relative"
+                >
+                  {/* Text */}
+                  <span className={isRegistering ? "opacity-0" : "opacity-100"}>
+                    Create Product
+                  </span>
+
+                  {/* Spinner */}
+                  {isRegistering && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <Spinner className="h-4 w-4" />
                     </span>
-
-                    {/* Spinner */}
-                    {isRegistering && (
-                      <span className="absolute inset-0 flex items-center justify-center">
-                        <Spinner className="h-4 w-4" />
-                      </span>
-                    )}
-                  </Button>
-                )}
-              </CardFooter>
-            </form>
-          </FormProvider>
-        </CardContent>
-
-        {/* <CardFooter className="flex justify-center items-center">
-          <p className="text-sm font-light">
-            Already have an account?
-            <Button
-              className="font-bold px-1"
-              variant="link"
-              onClick={() => navigate("/login")}
-            >
-              Log in
-            </Button>
-          </p>
-        </CardFooter> */}
+                  )}
+                </Button>
+              )}
+            </CardFooter>
+          </form>
+        </FormProvider>
       </Card>
-    </div>
+    </PageShell>
   );
 };
 

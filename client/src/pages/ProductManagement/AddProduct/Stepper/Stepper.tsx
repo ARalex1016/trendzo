@@ -1,7 +1,11 @@
-import React from "react";
+// Components
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 
 // Lib
 import { cn } from "@/lib/utils";
+
+// Hooks
+import { useResponsive } from "@/hooks/use-mobile";
 
 // Icons
 import { Check } from "lucide-react";
@@ -20,13 +24,33 @@ export const Stepper = ({
   // completed,
   // onSelect,
 }: StepperProps) => {
+  const { breakpoint } = useResponsive();
+
+  var Filter_Width: string;
+
+  let padding_top = 16;
+
+  if (breakpoint === "xs" || breakpoint === "sm") {
+    Filter_Width = "288px";
+  } else if (breakpoint === "md" || breakpoint === "lg") {
+    Filter_Width = "250px";
+  } else {
+    Filter_Width = "288px";
+  }
+
   return (
-    <nav className="w-fit glass-panel rounded-3xl p-3 lg:sticky lg:top-6">
-      <div className="px-3 pt-2 pb-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          New Product
-        </p>
-      </div>
+    <Card
+      className="self-start bg-sidebar rounded-xl border border-border flex flex-col gap-y-2 px-6 py-5 sticky top-menu-height"
+      style={{
+        width: Filter_Width,
+        height: `calc(100svh - var(--menu-height) - ${padding_top * 2}px)`,
+        top: `calc(var(--menu-height) + ${padding_top}px)`,
+      }}
+    >
+      <CardTitle className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground px-3 pt-2 pb-2">
+        New Product
+      </CardTitle>
+
       <ol className="relative flex flex-col gap-0.5">
         <span
           aria-hidden
@@ -88,6 +112,7 @@ export const Stepper = ({
                       {step.label}
                     </span>
                   </span>
+
                   <span className="block truncate text-[11px] text-muted-foreground">
                     {step.text}
                   </span>
@@ -97,47 +122,69 @@ export const Stepper = ({
           );
         })}
       </ol>
-    </nav>
+    </Card>
   );
 };
 
-export const MobileStepper = ({ steps, currentStepIndex }: StepperProps) => {
+export function MobileStepper({
+  steps,
+  currentStepIndex,
+  // completed,
+  // onSelect,
+}: StepperProps) {
+  const progress = ((currentStepIndex + 1) / steps.length) * 100;
   return (
-    <div className="flex items-center w-full gap-1 my-5">
-      {steps?.map((step, index) => {
-        const isCompleted = currentStepIndex > index;
-        const isActive = currentStepIndex === index;
+    <Card className="w-full flex flex-col gap-y-0 glass-panel rounded-2xl p-3 lg:hidden">
+      <div className="flex items-center justify-between px-1 pb-2">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Step {currentStepIndex + 1} / {steps.length}
+          </p>
+          {/* <p className="text-sm font-semibold">
+            {steps[currentStepIndex]?.label}
+          </p> */}
+        </div>
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {Math.round(progress)}%
+        </p>
+      </div>
 
-        const bgColor = isCompleted
-          ? "bg-blue-700"
-          : isActive
-            ? "bg-blue-600"
-            : "bg-muted";
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+        <div
+          className="h-full rounded-full bg-linear-to-r from-neon-purple via-neon-blue to-neon-cyan transition-all duration-500"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
 
-        return (
-          <React.Fragment key={step.id}>
-            {/* Indicator */}
-            <div
-              className={`size-5 rounded-full flex justify-center items-center ${bgColor}`}
-            >
-              {currentStepIndex > index ? (
-                <Check className="size-4" />
-              ) : (
-                <p className="text-sm text-white font-medium">{index + 1}</p>
+      <div className="no-scrollbar mt-3 flex gap-1.5 overflow-x-auto pb-2">
+        {steps.map((step, index) => {
+          const isCompleted = currentStepIndex > index;
+          const isActive = currentStepIndex === index;
+
+          // const Icon = step.icon;
+
+          return (
+            <button
+              key={step.id}
+              // onClick={() => onSelect(s.id)}
+              className={cn(
+                "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-all",
+                isActive &&
+                  "border-neon-purple/60 bg-neon-purple/15 text-foreground",
+                isCompleted &&
+                  !isActive &&
+                  "border-success/30 bg-success/10 text-success",
+                !isActive &&
+                  !isCompleted &&
+                  "border-border bg-surface text-muted-foreground",
               )}
-            </div>
-
-            {/* Seperator */}
-            {index !== steps.length - 1 && (
-              <div
-                className={`flex-1 h-0.5 rounded-sm opacity-75 ${
-                  isCompleted ? "bg-blue-600" : "bg-muted"
-                }`}
-              ></div>
-            )}
-          </React.Fragment>
-        );
-      })}
-    </div>
+            >
+              <span className="tabular-nums">{index + 1}</span>
+              <span className="font-medium">{step.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </Card>
   );
-};
+}
