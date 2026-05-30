@@ -23,12 +23,12 @@ export const basicInfoSchema = addProductSchema.pick({
   description: true,
 });
 
-export type BasicInfpSchemaType = z.infer<typeof basicInfoSchema>;
+export type BasicInoSchemaType = z.infer<typeof basicInfoSchema>;
 
 const Basicinfo = () => {
-  const form = useFormContext<BasicInfpSchemaType>();
+  const form = useFormContext<BasicInoSchemaType>();
 
-  const { firstErrorPath } = useFirstStepError<BasicInfpSchemaType>();
+  const { firstErrorPath } = useFirstStepError<BasicInoSchemaType>();
 
   return (
     <Form {...form}>
@@ -41,6 +41,7 @@ const Basicinfo = () => {
               <InputFieldWithLabelNIcon
                 label="Product name"
                 {...field}
+                id="nameInput"
                 value={field.value ?? ""}
                 onChange={field.onChange}
                 placeholder="e.g. Oversized Cashmere Trench Coat"
@@ -58,15 +59,31 @@ const Basicinfo = () => {
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <InputFieldWithLabelNIcon
-                label="URL slug"
-                {...field}
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                placeholder="oversized-cashmere-trench-coat"
-                className="w-full!"
-                labelClassName="text-foreground! font-medium"
-              />
+              <div className={`flex flex-col gap-y-1`}>
+                <label
+                  htmlFor="slugInput"
+                  className="text-sm text-foreground font-medium"
+                >
+                  URL Slug
+                </label>
+
+                <div className="bg-accent flex flex-row items-center gap-x-1 border border-border focus-within:border-primary rounded-md px-3">
+                  <span className="text-foreground font-medium">
+                    /products/
+                  </span>
+
+                  <input
+                    id="slugInput"
+                    type="text"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                    placeholder="oversized-cashmere-trench-coat"
+                    className="w-full text-foreground/80 outline-none! rounded-inherit py-2"
+                  />
+                </div>
+              </div>
+
               {firstErrorPath === "slug" && <FormMessage />}
             </FormItem>
           )}
@@ -79,6 +96,7 @@ const Basicinfo = () => {
             <FormItem>
               <TextAreaiWithLabelNIcon
                 label="Description"
+                id="descriptionInput"
                 {...field}
                 value={field.value ?? ""}
                 onChange={field.onChange}

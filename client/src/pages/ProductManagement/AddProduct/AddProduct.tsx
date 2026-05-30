@@ -120,24 +120,23 @@ const AddProduct = () => {
         <FormProvider {...methods}>
           <form
             onSubmit={methods.handleSubmit(onSubmit)}
-            // className="flex flex-col gap-y-4"
-            className="w-full"
+            className="w-full h-full flex flex-col"
           >
-            <CardTitle className="col-span-2 flex flex-row gap-x-2 items-center px-side-spacing mb-5">
+            <CardTitle className="col-span-2 flex flex-row gap-x-2 items-center px-side-spacing mb-3">
               {Icon && <Icon />}
               <span>{step.label}</span>
             </CardTitle>
 
             <Separator />
 
-            <div className="w-full px-side-spacing py-3">
+            <div className="flex-1 w-full px-side-spacing py-3">
               <StepComponent />
             </div>
 
             <Separator />
 
             {/* Action Button */}
-            <CardFooter className="col-span-2 justify-end gap-x-2 px-side-spacing mt-5">
+            <CardFooter className="col-span-2 justify-end gap-x-2 px-side-spacing pt-3">
               {/* Pre Button */}
               {!isFirstStep && (
                 <Button

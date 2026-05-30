@@ -7,6 +7,7 @@ interface InputFieldProps {
   Icon?: LucideIcon;
   className?: string;
   labelClassName?: string;
+  inputClassName?: string;
 }
 
 export const InputFieldWithLabelNIcon = ({
@@ -14,6 +15,7 @@ export const InputFieldWithLabelNIcon = ({
   Icon,
   className,
   labelClassName,
+  inputClassName,
   id,
   ...inputProps
 }: InputFieldProps & InputHTMLAttributes<HTMLInputElement>) => {
@@ -33,7 +35,7 @@ export const InputFieldWithLabelNIcon = ({
 
         <input
           id={id}
-          className="w-full outline-none! rounded-inherit py-2"
+          className={`w-full outline-none! rounded-inherit py-2 ${inputClassName}`}
           {...inputProps}
         />
       </div>
@@ -46,6 +48,7 @@ export const TextAreaiWithLabelNIcon = ({
   Icon,
   className,
   labelClassName,
+  inputClassName,
   id,
   ...inputProps
 }: InputFieldProps & InputHTMLAttributes<HTMLTextAreaElement>) => {
@@ -66,7 +69,7 @@ export const TextAreaiWithLabelNIcon = ({
         <textarea
           id={id}
           rows={5}
-          className="w-full outline-none! rounded-inherit py-2"
+          className={`w-full outline-none! rounded-inherit py-2 ${inputClassName}`}
           {...inputProps}
         />
       </div>
