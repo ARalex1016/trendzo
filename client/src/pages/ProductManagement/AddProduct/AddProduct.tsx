@@ -1,17 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // Components
 import { PageShell } from "@/components/Container";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Separator } from "@/components/ui/separator";
@@ -27,18 +20,16 @@ import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { useResponsive } from "@/hooks/use-mobile";
 
 // Store
-import useAuthStore from "@/store/useAuthStore";
+import useProductStore from "@/store/useProductStore";
 
 // Validations
 import {
-  registerSchema,
-  type UserRegisterType,
-} from "@/validations/user.validator";
+  addProductSchema,
+  type AddProductType,
+} from "@/validations/product.validator";
 
 const AddProduct = () => {
-  const { registerUser } = useAuthStore();
-
-  const navigate = useNavigate();
+  const { addProduct } = useProductStore();
 
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -47,8 +38,8 @@ const AddProduct = () => {
 
   const { width } = useResponsive();
 
-  const methods = useForm<UserRegisterType>({
-    resolver: zodResolver(isLastStep ? registerSchema : step.schema) as any,
+  const methods = useForm<AddProductType>({
+    resolver: zodResolver(isLastStep ? addProductSchema : step.schema) as any,
     mode: "onBlur",
     reValidateMode: "onChange",
     shouldUnregister: false, // important for multi-step forms
@@ -64,7 +55,7 @@ const AddProduct = () => {
   const handleNext = async () => {
     const currentStepFields = Object.keys(
       steps[currentStepIndex].schema.shape,
-    ) as (keyof UserRegisterType)[];
+    ) as (keyof AddProductType)[];
 
     const isValid = await methods.trigger(currentStepFields);
 
@@ -73,21 +64,13 @@ const AddProduct = () => {
     next();
   };
 
-  const onSubmit = async (userData: UserRegisterType) => {
+  const onSubmit = async (productData: AddProductType) => {
     setIsRegistering(true);
     try {
-      await registerUser(userData);
-
-      // ✅ Clear persisted draft
-      localStorage.removeItem("signup-draft");
-
-      localStorage.removeItem("ref");
+      await addProduct(productData);
 
       // ✅ Optional: reset form state
       methods.reset();
-
-      // ✅ Redirect after success
-      navigate("/products");
     } catch (error: any) {
     } finally {
       setIsRegistering(false);
@@ -116,20 +99,29 @@ const AddProduct = () => {
       )}
 
       {/* Content */}
-      <Card className="flex-1">
+      <Card className="flex-1 h-fit">
         <FormProvider {...methods}>
           <form
             onSubmit={methods.handleSubmit(onSubmit)}
             className="w-full h-full flex flex-col"
           >
-            <CardTitle className="col-span-2 flex flex-row gap-x-2 items-center px-side-spacing mb-3">
-              {Icon && <Icon />}
-              <span>{step.label}</span>
-            </CardTitle>
+            <CardHeader className="flex flex-row items-center gap-x-2 px-side-spacing mb-3">
+              {Icon && (
+                <div className="bg-primary/60 rounded-full p-2">
+                  <Icon className="size-5" />
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <CardTitle>{step.label}</CardTitle>
+
+                <p className="text-sm text-foreground/70">{step.text}</p>
+              </div>
+            </CardHeader>
 
             <Separator />
 
-            <div className="flex-1 w-full px-side-spacing py-3">
+            <div className="w-full px-side-spacing py-3">
               <StepComponent />
             </div>
 

@@ -4,7 +4,17 @@ export const addProductSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
   description: z.string().min(1),
-  images: z.array(z.string()).min(1),
+  images: z
+    .array(z.instanceof(File))
+    .refine(
+      (files) =>
+        files.every((file) =>
+          ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+        ),
+      {
+        message: "Only JPG, PNG, and WEBP images are allowed",
+      },
+    ),
   thumbnail: z.string().optional(),
   baseCostPrice: z.number().positive(),
   baseSellingPrice: z.number().positive(),
@@ -31,3 +41,5 @@ export const addProductSchema = z.object({
   featured: z.boolean().optional(),
   isActive: z.boolean().optional(),
 });
+
+export type AddProductType = z.infer<typeof addProductSchema>;

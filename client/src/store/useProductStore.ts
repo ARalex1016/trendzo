@@ -4,6 +4,7 @@ import { axiosInstance } from "./axios";
 // Types
 import type { IProduct, ISuggestion } from "@/types/product.type";
 import type { IProductResponse } from "@/types/response.type";
+import type { AddProductType } from "@/validations/product.validator";
 
 interface ProductStore {
   productsResponse: IProductResponse | null;
@@ -12,6 +13,8 @@ interface ProductStore {
   getFeaturedProducts: () => Promise<IProduct[] | null>;
   getProductBySlug: (slug: string) => Promise<IProduct | null>;
   getAutoSuggestions: (query: string) => Promise<ISuggestion[] | null>;
+
+  addProduct: (productData: AddProductType) => Promise<void>;
 }
 
 const useProductStore = create<ProductStore>((set) => ({
@@ -72,6 +75,16 @@ const useProductStore = create<ProductStore>((set) => ({
       return res.data.data;
     } catch (error: any) {
       throw new Error(error.message);
+    }
+  },
+
+  addProduct: async (productData) => {
+    try {
+      let res = await axiosInstance.post(`/v1/products/`, productData);
+
+      console.log(res.data);
+    } catch (error: any) {
+      console.log(error);
     }
   },
 }));
