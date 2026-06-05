@@ -76,7 +76,7 @@ export const Stepper = ({
                   className={cn(
                     "relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-semibold transition-all",
                     isActive &&
-                      "border-transparent bg-linear-to-br from-neon-purple to-neon-blue text-white shadow-[0_0_24px_-4px_var(--neon-purple)] animate-glow-pulse",
+                      "border-primary bg-primary-gradient text-foreground shadow-[0_0_24px_-4px_var(--neon-purple)] animate-glow-pulse",
                     isCompleted &&
                       !isActive &&
                       "border-success/40 bg-success/10 text-success",
@@ -91,6 +91,7 @@ export const Stepper = ({
                     <Icon className="h-4 w-4" strokeWidth={2} />
                   ) : null}
                 </span>
+
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
                     <span

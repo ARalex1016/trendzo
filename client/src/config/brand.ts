@@ -7,6 +7,12 @@ export const BRAND = {
   logo: "/assets/logo.png",
   favicon: "/favicon.ico",
 
+  currency: {
+    code: "NPR",
+    symbol: "Rs.",
+    name: "Nepalese Rupee",
+  },
+
   contact: {
     email: "support@yourbrand.com",
     phone: "+123456789",

@@ -12,6 +12,9 @@ import { Separator } from "@/components/ui/separator";
 // Stepper
 import { Stepper, MobileStepper } from "./Stepper/Stepper";
 
+// Icons
+import { ChevronRight, ChevronLeft } from "lucide-react";
+
 // data
 import { steps } from "./data";
 
@@ -107,7 +110,7 @@ const AddProduct = () => {
           >
             <CardHeader className="flex flex-row items-center gap-x-2 px-side-spacing mb-3">
               {Icon && (
-                <div className="bg-primary/60 rounded-full p-2">
+                <div className="bg-primary-gradient rounded-full p-2">
                   <Icon className="size-5" />
                 </div>
               )}
@@ -115,20 +118,20 @@ const AddProduct = () => {
               <div className="space-y-1">
                 <CardTitle>{step.label}</CardTitle>
 
-                <p className="text-sm text-foreground/70">{step.text}</p>
+                <p className="text-sm text-foreground/60">{step.text}</p>
               </div>
             </CardHeader>
 
             <Separator />
 
-            <div className="w-full px-side-spacing py-3">
+            <div className="w-full px-side-spacing py-5">
               <StepComponent />
             </div>
 
             <Separator />
 
             {/* Action Button */}
-            <CardFooter className="col-span-2 justify-end gap-x-2 px-side-spacing pt-3">
+            <CardFooter className="col-span-2 justify-end gap-x-3 px-side-spacing pt-3">
               {/* Pre Button */}
               {!isFirstStep && (
                 <Button
@@ -136,9 +139,10 @@ const AddProduct = () => {
                   variant="outline"
                   onClick={back}
                   disabled={isRegistering}
-                  // className="px-5"
+                  className="hover:scale-105"
                 >
-                  Prev
+                  <ChevronLeft />
+                  <span>Prev</span>
                 </Button>
               )}
 
@@ -146,11 +150,11 @@ const AddProduct = () => {
               {!isLastStep && (
                 <Button
                   type="button"
-                  // variant="destructive"
                   onClick={handleNext}
-                  // className="text-white font-medium bg-red-500 px-5 py-1 rounded-sm"
+                  className="bg-primary-gradient hover:scale-105"
                 >
-                  Next
+                  <span>Next</span>
+                  <ChevronRight />
                 </Button>
               )}
 
@@ -159,7 +163,7 @@ const AddProduct = () => {
                 <Button
                   type="submit"
                   disabled={isRegistering}
-                  className="relative"
+                  className="relative bg-primary-gradient hover:scale-105"
                 >
                   {/* Text */}
                   <span className={isRegistering ? "opacity-0" : "opacity-100"}>

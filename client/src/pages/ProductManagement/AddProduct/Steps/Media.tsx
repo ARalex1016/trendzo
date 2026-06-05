@@ -60,7 +60,7 @@ const Media = () => {
             <FormItem>
               <label
                 htmlFor="productImagesUploader"
-                className="group border-2 border-dashed border-border rounded-2xl hover:border-primary hover:bg-accent/40 transition-all duration-300 flex flex-col justify-center items-center gap-y-3 py-7 "
+                className="group border-2 border-dashed border-border rounded-2xl hover:border-primary hover:bg-accent/40 transition-all duration-300 flex flex-col justify-center items-center gap-y-3 py-7"
               >
                 <input
                   type="file"
@@ -81,9 +81,11 @@ const Media = () => {
 
                 <CloudUpload className="size-14 rounded-full bg-primary p-4 group-hover:scale-105" />
 
-                <p className="font-medium">Drop product images here</p>
+                <p className="font-medium text-center">
+                  Drop product images here
+                </p>
 
-                <p className="text-sm text-foreground/60">
+                <p className="text-sm text-foreground/60 text-center">
                   PNG, JPG or WEBP — up to 10MB each. Recommended 2000×2000.
                 </p>
               </label>
