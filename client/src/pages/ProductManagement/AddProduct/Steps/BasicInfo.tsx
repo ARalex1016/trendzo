@@ -45,7 +45,6 @@ const Basicinfo = () => {
                 value={field.value ?? ""}
                 onChange={field.onChange}
                 placeholder="e.g. Oversized Cashmere Trench Coat"
-                className="w-full!"
                 labelClassName="text-foreground! font-medium"
               />
 
@@ -59,7 +58,7 @@ const Basicinfo = () => {
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <div className={`flex flex-col gap-y-1`}>
+              <div className="flex flex-col gap-y-1">
                 <label
                   htmlFor="slugInput"
                   className="text-sm text-foreground font-medium"
@@ -101,7 +100,6 @@ const Basicinfo = () => {
                 value={field.value ?? ""}
                 onChange={field.onChange}
                 placeholder="Write a compelling product description..."
-                className="w-full!"
                 labelClassName="text-foreground! font-medium"
               />
 

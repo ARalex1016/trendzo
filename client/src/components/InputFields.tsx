@@ -63,13 +63,13 @@ export const TextAreaiWithLabelNIcon = ({
         </label>
       )}
 
-      <div className="bg-accent rounded-md flex flex-row items-center gap-x-2 border border-border focus-within:border-primary pl-3">
+      <div className="bg-accent rounded-md flex flex-row items-center gap-x-2 border border-border focus-within:border-primary">
         {Icon && <Icon size={"16px"} className="text-foreground/70" />}
 
         <textarea
           id={id}
           rows={5}
-          className={`w-full outline-none! rounded-inherit py-2 ${inputClassName}`}
+          className={`flex-1 min-w-0 outline-none! resize-y rounded-inherit px-3 py-2 ${inputClassName}`}
           {...inputProps}
         />
       </div>

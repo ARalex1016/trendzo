@@ -4,9 +4,6 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 // Lib
 import { cn } from "@/lib/utils";
 
-// Hooks
-import { useResponsive } from "@/hooks/use-mobile";
-
 // Icons
 import { Check } from "lucide-react";
 
@@ -16,33 +13,22 @@ import type { Step } from "@/hooks/useMultiStepForm";
 interface StepperProps {
   steps: Step[];
   currentStepIndex: number;
+  goTo: (index: number) => void;
 }
 
-export const Stepper = ({
+const Stepper = ({
   steps,
   currentStepIndex,
+  goTo,
   // completed,
   // onSelect,
 }: StepperProps) => {
-  const { breakpoint } = useResponsive();
-
-  var Filter_Width: string;
-
   let padding_top = 16;
-
-  if (breakpoint === "xs" || breakpoint === "sm") {
-    Filter_Width = "288px";
-  } else if (breakpoint === "md" || breakpoint === "lg") {
-    Filter_Width = "250px";
-  } else {
-    Filter_Width = "288px";
-  }
 
   return (
     <Card
-      className="self-start bg-sidebar rounded-xl border border-border flex flex-col gap-y-2 px-6 py-5 sticky top-menu-height"
+      className="w-64 xl:w-72 self-start bg-sidebar rounded-xl border border-border hidden lg:flex flex-col gap-y-2 px-6 py-5 sticky top-menu-height"
       style={{
-        width: Filter_Width,
         height: `calc(100svh - var(--menu-height) - ${padding_top * 2}px)`,
         top: `calc(var(--menu-height) + ${padding_top}px)`,
       }}
@@ -63,7 +49,7 @@ export const Stepper = ({
           const Icon = step.icon;
 
           return (
-            <li key={step.id} className="relative">
+            <li key={step.id} className="relative" onClick={() => goTo(index)}>
               <button
                 type="button"
                 // onClick={() => onSelect(step.id)}
@@ -127,12 +113,13 @@ export const Stepper = ({
   );
 };
 
-export function MobileStepper({
+const MobileStepper = ({
   steps,
   currentStepIndex,
+  goTo,
   // completed,
   // onSelect,
-}: StepperProps) {
+}: StepperProps) => {
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
   return (
     <Card className="w-full flex flex-col gap-y-0 glass-panel rounded-2xl p-3 lg:hidden">
@@ -167,7 +154,7 @@ export function MobileStepper({
           return (
             <button
               key={step.id}
-              // onClick={() => onSelect(s.id)}
+              onClick={() => goTo(index)}
               className={cn(
                 "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-all",
                 isActive &&
@@ -188,4 +175,14 @@ export function MobileStepper({
       </div>
     </Card>
   );
-}
+};
+
+export const ResponsiveStepper = (props: StepperProps) => {
+  return (
+    <>
+      <Stepper {...props} />
+
+      <MobileStepper {...props} />
+    </>
+  );
+};

@@ -10,7 +10,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Separator } from "@/components/ui/separator";
 
 // Stepper
-import { Stepper, MobileStepper } from "./Stepper/Stepper";
+import { ResponsiveStepper } from "./Stepper/Stepper";
 
 // Icons
 import { ChevronRight, ChevronLeft } from "lucide-react";
@@ -20,7 +20,6 @@ import { steps } from "./data";
 
 // Hooks
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import { useResponsive } from "@/hooks/use-mobile";
 
 // Store
 import useProductStore from "@/store/useProductStore";
@@ -36,10 +35,8 @@ const AddProduct = () => {
 
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const { step, currentStepIndex, isFirstStep, isLastStep, next, back } =
+  const { step, currentStepIndex, isFirstStep, isLastStep, next, back, goTo } =
     useMultiStepForm({ steps });
-
-  const { width } = useResponsive();
 
   const methods = useForm<AddProductType>({
     resolver: zodResolver(isLastStep ? addProductSchema : step.schema) as any,
@@ -48,7 +45,11 @@ const AddProduct = () => {
     shouldUnregister: false, // important for multi-step forms
     criteriaMode: "firstError", // ✅ IMPORTANT
     shouldFocusError: true, // ✅ Focus first invalid field
-    defaultValues: {},
+    defaultValues: {
+      colors: [],
+      sizes: [],
+      inventory: [],
+    },
   });
 
   let Icon = step.icon;
@@ -95,14 +96,14 @@ const AddProduct = () => {
 
   return (
     <PageShell className="flex flex-col lg:flex-row gap-5">
-      {width >= 1024 ? (
-        <Stepper steps={steps} currentStepIndex={currentStepIndex} />
-      ) : (
-        <MobileStepper steps={steps} currentStepIndex={currentStepIndex} />
-      )}
+      <ResponsiveStepper
+        steps={steps}
+        currentStepIndex={currentStepIndex}
+        goTo={goTo}
+      />
 
       {/* Content */}
-      <Card className="flex-1 h-fit">
+      <Card className="flex-1 min-w-0 h-fit">
         <FormProvider {...methods}>
           <form
             onSubmit={methods.handleSubmit(onSubmit)}
@@ -124,7 +125,7 @@ const AddProduct = () => {
 
             <Separator />
 
-            <div className="w-full px-side-spacing py-5">
+            <div className="max-w-full px-side-spacing py-5">
               <StepComponent />
             </div>
 

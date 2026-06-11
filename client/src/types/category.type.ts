@@ -1,4 +1,4 @@
-export interface ICategory {
+export interface ICategoryBase {
   _id: string;
   name: string;
   description?: string;
@@ -7,8 +7,21 @@ export interface ICategory {
   metaTitle?: string;
   metaDescription?: string;
   isActive: boolean;
-  parentCategory?: string | null;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ICategory extends ICategoryBase {
+  parentCategory: string | null;
+}
+
+export type IChildCategory = ICategory;
+
+export interface IParentCategory extends ICategoryBase {
+  parentCategory: null;
+}
+
+export interface ICategoryTree extends IParentCategory {
+  children: IChildCategory[];
 }

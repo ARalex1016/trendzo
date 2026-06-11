@@ -12,6 +12,9 @@ import { ShoppingCart, Share2 } from "lucide-react";
 import useAuthStore from "@/store/useAuthStore";
 import useCartStore from "@/store/useCartStore";
 
+// Lib
+import { cn } from "@/lib/utils";
+
 // Types
 import type { IProduct } from "@/types/product.type";
 import type { ICartItem } from "@/types/cart.type";
@@ -84,12 +87,12 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
   }, [selectedVariant.quantity]);
 
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex flex-col gap-y-3">
       {/* Name */}
       <h2 className="text-2xl text-foreground font-medium">{product.name}</h2>
 
       {/* Price */}
-      <p className="text-2xl text-foreground font-bold">
+      <p className="text-2xl text-primary font-bold">
         <span>NPR</span> {product.baseSellingPrice}
       </p>
 
@@ -100,11 +103,15 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
       <div className="flex flex-col gap-y-1">
         <p className="text-sm text-foreground/60">
           Colors:{" "}
-          <span className="text-foreground">{selectedVariant.color.name}</span>
+          <span className="text-foreground font-medium">
+            {selectedVariant.color.name}
+          </span>
         </p>
 
         <div className="flex flex-row gap-x-2">
           {product?.colors?.map((color) => {
+            const selectedColor = selectedVariant?.color._id === color._id;
+
             return (
               <div
                 key={color._id}
@@ -118,7 +125,13 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
                     },
                   }))
                 }
-                className={`size-10 rounded-full border bg-[${color.hexCode}]`}
+                className={cn(
+                  "size-8 rounded-full border-2 transition-all  duration-200",
+                  selectedColor ? "border-primary scale-110" : "border-accent",
+                )}
+                style={{
+                  backgroundColor: color.hexCode,
+                }}
               ></div>
             );
           })}
@@ -129,11 +142,15 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
       <div className="flex flex-col gap-y-1">
         <p className="text-sm text-foreground/60">
           Size:{" "}
-          <span className="text-foreground">{selectedVariant.size.name}</span>
+          <span className="text-foreground font-medium">
+            {selectedVariant.size.name}
+          </span>
         </p>
 
         <div className="flex flex-row gap-x-2">
           {product?.sizes?.map((size) => {
+            const selectedSize = selectedVariant.size._id === size._id;
+
             return (
               <div
                 key={size._id}
@@ -146,7 +163,10 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
                     },
                   }))
                 }
-                className={`w-16 rounded-lg border flex justify-center items-center py-2`}
+                className={cn(
+                  "w-16 rounded-lg border flex justify-center items-center py-2 transition-all  duration-200",
+                  selectedSize ? "border-primary scale-110" : "border-accent",
+                )}
               >
                 {size.name}
               </div>
@@ -211,9 +231,9 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
         <Button
           variant="outline"
           onClick={handleShare}
-          className="hover:bg-primary! py-5"
+          className="hover:bg-primary/10! hover:border-primary! py-5 group transition-all duration-300"
         >
-          <Share2 />
+          <Share2 className="group-hover:text-primary transition-all duration-300" />
         </Button>
       </div>
 

@@ -50,10 +50,20 @@ const CategoryService = {
 
     // parentCategory validation
     let parentCategoryId: Types.ObjectId | null = null;
+
     if (payload.parentCategory) {
       const parent = await CategoryRepository.findById(payload.parentCategory);
+
+      // If Parent Category is sent but not found
       if (!parent) throw new AppError("Parent category not found.", 400);
       parentCategoryId = parent._id;
+
+      // If Parent also has it's parent category (Only 1 layer is allowed)
+      if (parent.parentCategory) {
+        throw new Error(
+          "Cannot create grandchild category. Only one level allowed.",
+        );
+      }
     }
 
     const newCategory = await CategoryRepository.create({

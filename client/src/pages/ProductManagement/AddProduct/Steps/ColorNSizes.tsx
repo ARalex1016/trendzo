@@ -49,37 +49,45 @@ const ColorsNSizes = () => {
   const { attributes } = useAttributeStore();
 
   const groupedSizes = attributes
-    ? Object.values(
-        attributes.sizes.reduce(
-          (acc, size) => {
-            if (!acc[size.type]) {
-              acc[size.type] = {
-                type: size.type,
-                sizes: [],
-              };
-            }
+    ? (() => {
+        const grouped = Object.values(
+          attributes.sizes.reduce(
+            (acc, size) => {
+              if (!acc[size.type]) {
+                acc[size.type] = {
+                  type: size.type,
+                  sizes: [],
+                };
+              }
 
-            acc[size.type].sizes.push({
-              _id: size._id,
-              name: size.name,
-              slug: size.slug,
-            });
+              acc[size.type].sizes.push({
+                _id: size._id,
+                name: size.name,
+                slug: size.slug,
+              });
 
-            return acc;
-          },
-          {} as Record<
-            string,
-            {
-              type: string;
-              sizes: {
-                _id: string;
-                name: string;
-                slug: string;
-              }[];
-            }
-          >,
-        ),
-      )
+              return acc;
+            },
+            {} as Record<
+              string,
+              {
+                type: string;
+                sizes: {
+                  _id: string;
+                  name: string;
+                  slug: string;
+                }[];
+              }
+            >,
+          ),
+        );
+
+        const normal = grouped.filter((g) => g.type.toLowerCase() !== "custom");
+
+        const custom = grouped.filter((g) => g.type.toLowerCase() === "custom");
+
+        return [...normal, ...custom];
+      })()
     : [];
 
   const form = useFormContext<ColorsNSizeSchemaType>();
@@ -149,7 +157,9 @@ const ColorsNSizes = () => {
                   ></span>
 
                   <div>
-                    <p className="text-foreground font-medium">{color.name}</p>
+                    <p className="text-foreground text-sm font-medium line-clamp-1">
+                      {color.name}
+                    </p>
 
                     <p className="text-foreground/60 text-[10px]">
                       {color.hexCode}
