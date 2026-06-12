@@ -8,6 +8,7 @@ interface InputFieldProps {
   className?: string;
   labelClassName?: string;
   inputClassName?: string;
+  iconClassName?: string;
 }
 
 export const InputFieldWithLabelNIcon = ({
@@ -16,6 +17,7 @@ export const InputFieldWithLabelNIcon = ({
   className,
   labelClassName,
   inputClassName,
+  iconClassName,
   id,
   ...inputProps
 }: InputFieldProps & InputHTMLAttributes<HTMLInputElement>) => {
@@ -31,7 +33,12 @@ export const InputFieldWithLabelNIcon = ({
       )}
 
       <div className="bg-accent rounded-md flex flex-row items-center gap-x-2 border border-border focus-within:border-primary pl-3">
-        {Icon && <Icon size={"16px"} className="text-foreground/70" />}
+        {Icon && (
+          <Icon
+            size={"16px"}
+            className={`text-foreground/70 ${iconClassName}`}
+          />
+        )}
 
         <input
           id={id}
@@ -49,6 +56,7 @@ export const TextAreaiWithLabelNIcon = ({
   className,
   labelClassName,
   inputClassName,
+  iconClassName,
   id,
   ...inputProps
 }: InputFieldProps & InputHTMLAttributes<HTMLTextAreaElement>) => {
@@ -64,7 +72,12 @@ export const TextAreaiWithLabelNIcon = ({
       )}
 
       <div className="bg-accent rounded-md flex flex-row items-center gap-x-2 border border-border focus-within:border-primary">
-        {Icon && <Icon size={"16px"} className="text-foreground/70" />}
+        {Icon && (
+          <Icon
+            size={"16px"}
+            className={`text-foreground/70 ${iconClassName}`}
+          />
+        )}
 
         <textarea
           id={id}
@@ -73,6 +86,45 @@ export const TextAreaiWithLabelNIcon = ({
           {...inputProps}
         />
       </div>
+    </div>
+  );
+};
+
+export const InputFieldWithLabelNIconOutsie = ({
+  label,
+  Icon,
+  className,
+  labelClassName,
+  inputClassName,
+  iconClassName,
+  id,
+  ...inputProps
+}: InputFieldProps & InputHTMLAttributes<HTMLInputElement>) => {
+  return (
+    <div className={`flex flex-col gap-y-1 ${className}`}>
+      <div className="flex flex-row items-center gap-x-2">
+        {Icon && (
+          <Icon
+            size={"16px"}
+            className={`text-foreground/70 ${iconClassName}`}
+          />
+        )}
+
+        {label && (
+          <label
+            htmlFor={id}
+            className={`text-sm text-foreground/70 ${labelClassName}`}
+          >
+            {label}
+          </label>
+        )}
+      </div>
+
+      <input
+        id={id}
+        className={`w-full outline-none! bg-accent rounded-md border border-border focus-within:border-primary transition-all duration-200 pl-3 py-2 ${inputClassName}`}
+        {...inputProps}
+      />
     </div>
   );
 };

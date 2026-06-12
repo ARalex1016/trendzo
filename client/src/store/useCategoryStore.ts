@@ -1,19 +1,19 @@
 import { create } from "zustand";
 import { axiosInstance } from "./axios";
 
+// Utils
+import { buildCategoryData } from "@/utils/buildCategoryData";
+
 // Types
 import type { ICategoryResponse } from "@/types/response.type";
-import type {
-  ICategory,
-  IParentCategory,
-  IChildCategory,
-  ICategoryTree,
-} from "@/types/category.type";
+import type { ICategory, ICategoryTree } from "@/types/category.type";
 
 interface CategoryStore {
   categoriesResponse: ICategoryResponse | null;
 
   categoryTree: ICategoryTree[];
+
+  categoryMap: Record<string, ICategory>;
 
   getAllCategories: (query?: string) => Promise<ICategoryResponse | null>;
 }
@@ -23,6 +23,8 @@ const useCategoryStore = create<CategoryStore>((set) => ({
 
   categoryTree: [],
 
+  categoryMap: {},
+
   getAllCategories: async (query?: string) => {
     set({ categoriesResponse: null, categoryTree: [] });
 
@@ -31,19 +33,15 @@ const useCategoryStore = create<CategoryStore>((set) => ({
         `/v1/categories${query ? `?${query}` : ""}`,
       );
 
-      const parentCategories = response.data.data.filter(
-        (cat: ICategory) => !cat.parentCategory,
-      );
+      const categories = response.data.data;
 
-      const categoryTree = parentCategories.map((parent: IParentCategory) => ({
-        ...parent,
-        children: response.data.data.filter(
-          (cat: IChildCategory) =>
-            cat.parentCategory?.toString() === parent._id.toString(),
-        ),
-      }));
+      const { categoryTree, categoryMap } = buildCategoryData(categories);
 
-      set({ categoriesResponse: response.data, categoryTree });
+      set({
+        categoriesResponse: response.data,
+        categoryTree,
+        categoryMap,
+      });
 
       return response.data;
     } catch (error: any) {
