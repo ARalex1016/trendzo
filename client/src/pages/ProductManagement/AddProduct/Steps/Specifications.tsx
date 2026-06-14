@@ -21,8 +21,6 @@ export type SpecificationSchemaType = z.infer<typeof specificationsSchema>;
 const Specifications = () => {
   const form = useFormContext<SpecificationSchemaType>();
 
-  console.log(form.watch("specifications"));
-
   return (
     <Form {...form}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">

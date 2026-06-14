@@ -256,7 +256,7 @@ const Pricing = () => {
               <p
                 className={`text-xs font-medium ${profit === 0 ? "text-foreground" : profit < 0 ? "text-destructive" : "text-success"}`}
               >
-                {isNaN(Number(profitMargin)) ? 0 : profitMargin}%
+                {isNaN(Number(profitMargin)) ? 0 : profitMargin.toFixed(2)}%
               </p>
             </div>
 
