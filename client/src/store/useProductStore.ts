@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "./axios";
+import toast from "react-hot-toast";
 
 // Types
 import type { IProduct, ISuggestion } from "@/types/product.type";
@@ -16,6 +17,24 @@ interface ProductStore {
 
   addProduct: (productData: AddProductType) => Promise<void>;
 }
+
+const createProductFormData = (product: AddProductType) => {
+  const formData = new FormData();
+
+  // Destructuring
+  const { images, ...productWithoutImages } = product;
+
+  // Files
+  images.forEach((image) => {
+    formData.append("images", image.file);
+    formData.append("imageIds", image.id);
+  });
+
+  // Send the rest of the product data
+  formData.append("product", JSON.stringify(productWithoutImages));
+
+  return formData;
+};
 
 const useProductStore = create<ProductStore>((set) => ({
   productsResponse: null,
@@ -80,12 +99,18 @@ const useProductStore = create<ProductStore>((set) => ({
 
   addProduct: async (productData) => {
     try {
-      let res = await axiosInstance.post(`/v1/products/`, productData);
+      const formData = createProductFormData(productData);
 
-      console.log(res.data);
-    } catch (error: any) {
-      console.log(error);
-    }
+      let response = axiosInstance.post(`/v1/products/`, formData);
+
+      toast.promise(response, {
+        loading: "Creating product...",
+        success: "Product created successfully",
+        error: "Failed to create product",
+      });
+
+      await response;
+    } catch (error: any) {}
   },
 }));
 

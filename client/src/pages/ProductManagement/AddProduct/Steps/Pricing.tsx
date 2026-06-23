@@ -137,7 +137,11 @@ const Pricing = () => {
                   {...field}
                   id="costPriceInput"
                   value={field.value ?? ""}
-                  onChange={field.onChange}
+                  onChange={(e) => {
+                    const v = e.target.value;
+
+                    field.onChange(v === "" ? 0 : Number(v));
+                  }}
                   placeholder="0.00"
                   labelClassName="font-medium"
                 />
@@ -159,7 +163,10 @@ const Pricing = () => {
                   {...field}
                   id="sellingPriceInput"
                   value={field.value ?? ""}
-                  onChange={field.onChange}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    field.onChange(v === "" ? 0 : Number(v));
+                  }}
                   placeholder="0.00"
                   labelClassName="font-medium"
                 />
@@ -181,7 +188,10 @@ const Pricing = () => {
                   {...field}
                   id="discountInput"
                   value={field.value ?? ""}
-                  onChange={field.onChange}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    field.onChange(v === "" ? 0 : Number(v));
+                  }}
                   placeholder="0.00"
                   labelClassName="font-medium"
                 />
@@ -256,7 +266,10 @@ const Pricing = () => {
               <p
                 className={`text-xs font-medium ${profit === 0 ? "text-foreground" : profit < 0 ? "text-destructive" : "text-success"}`}
               >
-                {isNaN(Number(profitMargin)) ? 0 : profitMargin.toFixed(2)}%
+                {isNaN(Number(profitMargin))
+                  ? 0
+                  : Number(profitMargin).toFixed(2)}
+                %
               </p>
             </div>
 

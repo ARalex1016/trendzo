@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 // Components
-import { Title, BaseText } from "@/components/Text";
 import { TitleTextContainer } from "@/components/Container";
 import SearchBox from "./SearchBox";
 import ProductCards from "@/components/Cards/ProductCards";

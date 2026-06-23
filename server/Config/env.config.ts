@@ -11,4 +11,9 @@ export const env = {
   ADMIN_MASTER_KEY: process.env.ADMIN_MASTER_KEY ?? "",
   EMAIL_USER: process.env.EMAIL_USER ?? "",
   EMAIL_PASS: process.env.EMAIL_PASS ?? "",
+
+  // Cloudinary
+  CLOUDINARY_NAME: process.env.CLOUDINARY_NAME ?? "",
+  CLOUDINARY_KEY: process.env.CLOUDINARY_KEY ?? "",
+  CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET ?? "",
 };

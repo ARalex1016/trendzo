@@ -1,4 +1,3 @@
-import type React from "react";
 import { cn } from "@/lib/utils";
 
 // Utils
@@ -22,7 +21,7 @@ const colorVariants = {
 type Variant = keyof typeof colorVariants;
 
 // --- Component ---
-export interface StatsCardProps {
+interface StatsCardProps {
   title: string;
   value: string | number;
   icon?: LucideIcon;

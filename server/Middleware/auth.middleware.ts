@@ -8,6 +8,7 @@ import { AuthService } from "../Services/auth.service.ts";
 import { asyncHandler } from "../Utils/asyncHandler.ts";
 import { verifyToken } from "../Utils/generateToken.utils.ts";
 import AppError from "../Utils/AppError.ts";
+import { env } from "../Config/env.config.ts";
 
 // Protects, if user is not logged in
 export const protect = asyncHandler(

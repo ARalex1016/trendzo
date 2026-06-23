@@ -21,6 +21,9 @@ import {
 import { protect, authorize } from "../Middleware/auth.middleware.ts";
 import { validateRequest } from "../Middleware/validateRequest.middleware.ts";
 
+// Middleware
+import { upload } from "../Middleware/upload.middleware.ts";
+
 // Validation Schemas
 import {
   addProductSchema,
@@ -45,7 +48,8 @@ router.post(
   "/",
   protect,
   authorize("admin"),
-  validateRequest(addProductSchema),
+  upload.array("images"),
+  validateRequest(addProductSchema, "product"),
   addProduct,
 );
 router.patch(

@@ -4,8 +4,13 @@ export interface InventoryInput {
   stock: number;
 }
 
+export interface ImageInput {
+  url: string;
+  publicId: string;
+}
+
 export interface ProductSpecificationsInput {
-  weight?: number;
+  weight?: string;
   material?: string;
   countryOfOrigin?: string;
   warranty?: string;
@@ -16,8 +21,8 @@ export interface CreateProductInput {
   slug: string;
   description: string;
 
-  images: string[];
-  thumbnail: string;
+  images: ImageInput[];
+  thumbnail: ImageInput;
 
   baseCostPrice: number;
   baseSellingPrice: number;

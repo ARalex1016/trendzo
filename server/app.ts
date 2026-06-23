@@ -33,8 +33,6 @@ if (env.NODE_ENV === "development") {
 }
 
 app.get("/health", (req, res) => {
-  console.log(1);
-
   res.status(200).json({
     status: "ok",
     uptime: process.uptime(),

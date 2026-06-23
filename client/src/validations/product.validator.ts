@@ -1,27 +1,33 @@
 import { z } from "zod";
 
+export const imageItemSchema = z.object({
+  id: z.string().uuid(), // matches crypto.randomUUID()
+  file: z.instanceof(File),
+});
+
 export const addProductSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
   description: z.string().min(1),
   images: z
-    .array(z.instanceof(File))
+    .array(imageItemSchema)
+    .min(1)
     .refine(
       (files) =>
-        files.every((file) =>
-          ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+        files.every((img) =>
+          ["image/jpeg", "image/png", "image/webp"].includes(img.file.type),
         ),
       {
         message: "Only JPG, PNG, and WEBP images are allowed",
       },
     ),
-  thumbnail: z.string().optional(),
+  thumbnail: z.string().uuid().optional(),
   baseCostPrice: z.number().positive(),
   baseSellingPrice: z.number().positive(),
   discount: z.number().min(0).max(100).optional(),
   specifications: z
     .object({
-      weight: z.number().optional(),
+      weight: z.string().optional(),
       material: z.string().optional(),
       countryOfOrigin: z.string().optional(),
       warranty: z.string().optional(),

@@ -4,19 +4,33 @@ import { ZodObject, ZodError, type ZodIssue } from "zod";
 // Utils
 import AppError from "../Utils/AppError.ts";
 
+const parseIfJSON = (value: unknown) => {
+  if (typeof value !== "string") return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
+
 export const validateRequest =
-  (schema: ZodObject<any>) =>
+  (schema: ZodObject<any>, source?: string) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req.body);
+      let data = source ? req.body[source] : req.body;
+
+      // Parse JSON string if needed
+      data = parseIfJSON(data);
+
+      schema.parse(data);
 
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        // Build a map of field -> message
         const formattedErrors: Record<string, string> = {};
+
         err.issues.forEach((e: ZodIssue) => {
-          // e.path is an array like ["body","name"]
           const key = e.path.join(".") || "field";
           formattedErrors[key] = e.message;
         });
@@ -26,7 +40,10 @@ export const validateRequest =
         throw new AppError(firstErrorMsg || "Something went wrong", 400);
       }
 
-      // fallback for other errors
+      if (err instanceof AppError) {
+        throw err;
+      }
+
       throw new AppError((err as Error).message || "Validation error", 400);
     }
   };

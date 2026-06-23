@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -33,22 +33,26 @@ import {
 const AddProduct = () => {
   const { addProduct } = useProductStore();
 
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const { step, currentStepIndex, isFirstStep, isLastStep, next, back, goTo } =
     useMultiStepForm({ steps });
 
   const methods = useForm<AddProductType>({
-    resolver: zodResolver(isLastStep ? addProductSchema : step.schema) as any,
+    resolver: zodResolver(addProductSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     shouldUnregister: false, // important for multi-step forms
     criteriaMode: "firstError", // ✅ IMPORTANT
     shouldFocusError: true, // ✅ Focus first invalid field
     defaultValues: {
+      images: [],
       colors: [],
       sizes: [],
       inventory: [],
+      categories: [],
+      featured: false,
+      isActive: true,
     },
   });
 
@@ -69,15 +73,16 @@ const AddProduct = () => {
   };
 
   const onSubmit = async (productData: AddProductType) => {
-    setIsRegistering(true);
+    setIsCreating(true);
+
     try {
       await addProduct(productData);
 
       // ✅ Optional: reset form state
-      methods.reset();
+      // methods.reset();
     } catch (error: any) {
     } finally {
-      setIsRegistering(false);
+      setIsCreating(false);
     }
   };
 
@@ -106,7 +111,9 @@ const AddProduct = () => {
       <Card className="flex-1 min-w-0 h-fit">
         <FormProvider {...methods}>
           <form
-            onSubmit={methods.handleSubmit(onSubmit)}
+            onSubmit={methods.handleSubmit(onSubmit, (errors) => {
+              console.log("FORM ERRORS:", errors);
+            })}
             className="w-full h-full flex flex-col"
           >
             <CardHeader className="flex flex-row items-center gap-x-2 px-side-spacing mb-3">
@@ -139,7 +146,7 @@ const AddProduct = () => {
                   type="button"
                   variant="outline"
                   onClick={back}
-                  disabled={isRegistering}
+                  disabled={isCreating}
                   className="hover:scale-105"
                 >
                   <ChevronLeft />
@@ -159,20 +166,20 @@ const AddProduct = () => {
                 </Button>
               )}
 
-              {/* Sign up Button */}
+              {/* Create Product Button */}
               {isLastStep && (
                 <Button
                   type="submit"
-                  disabled={isRegistering}
+                  // disabled={isCreating}
                   className="relative bg-primary-gradient hover:scale-105"
                 >
                   {/* Text */}
-                  <span className={isRegistering ? "opacity-0" : "opacity-100"}>
+                  <span className={isCreating ? "opacity-0" : "opacity-100"}>
                     Create Product
                   </span>
 
                   {/* Spinner */}
-                  {isRegistering && (
+                  {isCreating && (
                     <span className="absolute inset-0 flex items-center justify-center">
                       <Spinner className="h-4 w-4" />
                     </span>

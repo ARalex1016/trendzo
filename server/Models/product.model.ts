@@ -6,6 +6,11 @@ export interface IInventory {
   stock: number;
 }
 
+export interface IImage {
+  url: string;
+  publicId: string;
+}
+
 export interface IProduct extends Document {
   name: string;
   slug: string;
@@ -13,15 +18,15 @@ export interface IProduct extends Document {
   description: string;
 
   specifications: {
-    weight?: number;
+    weight?: string;
     material?: string;
     countryOfOrigin?: string;
     warranty?: string;
   };
 
   // Base images (same for all variants)
-  images: string[];
-  thumbnail?: string;
+  images: IImage[];
+  thumbnail?: IImage;
 
   // Price only at base level
   baseCostPrice: number;
@@ -47,6 +52,7 @@ export interface IProduct extends Document {
   updatedAt: Date;
 }
 
+// Schema //
 const inventorySchema = new Schema<IInventory>(
   {
     color: {
@@ -62,6 +68,20 @@ const inventorySchema = new Schema<IInventory>(
     stock: {
       type: Number,
       default: 0,
+    },
+  },
+  { _id: false },
+);
+
+const imageSchema = new Schema<IImage>(
+  {
+    url: {
+      type: String,
+      required: true,
+    },
+    publicId: {
+      type: String,
+      required: true,
     },
   },
   { _id: false },
@@ -89,21 +109,23 @@ const productSchema = new Schema<IProduct>(
     },
 
     specifications: {
-      weight: Number,
+      weight: String,
       material: String,
       countryOfOrigin: String,
       warranty: String,
     },
 
-    images: [
-      {
-        type: String,
-        required: true,
+    images: {
+      type: [imageSchema],
+      required: true,
+      validate: {
+        validator: (v: any[]) => v.length > 0,
+        message: "At least one image is required",
       },
-    ],
+    },
 
     thumbnail: {
-      type: String,
+      type: imageSchema,
       required: true,
     },
 

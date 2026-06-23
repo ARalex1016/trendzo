@@ -4,14 +4,14 @@ export const addProductSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
   description: z.string().min(1),
-  images: z.array(z.string()).min(1),
-  thumbnail: z.string().optional(),
+  // images: z.array(z.string()).min(1),
+  thumbnail: z.string(),
   baseCostPrice: z.number().positive(),
   baseSellingPrice: z.number().positive(),
   discount: z.number().min(0).max(100).optional(),
   specifications: z
     .object({
-      weight: z.number().optional(),
+      weight: z.string().optional(),
       material: z.string().optional(),
       countryOfOrigin: z.string().optional(),
       warranty: z.string().optional(),

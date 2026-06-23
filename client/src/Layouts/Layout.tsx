@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 // Components
 import SidebarComponent from "@/components/SidebarComponent";
@@ -35,6 +36,15 @@ const Layout = ({ showFooter = true }: LayoutProps) => {
       {/* Right content area */}
       <div className="flex flex-col flex-1 min-h-screen min-w-0 relative">
         <Header />
+
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          gutter={8}
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
 
         {/* Main */}
         <main className="w-full flex-1 bg-background ">

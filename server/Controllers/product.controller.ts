@@ -4,6 +4,10 @@ import type { Request, Response } from "express";
 import ProductService from "../Services/product.service.ts";
 import SizeService from "../Services/size.service.ts";
 import ColorService from "../Services/color.service.ts";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} from "../Services/cloudinary.service.ts";
 
 // Utils
 import { asyncHandler } from "../Utils/asyncHandler.ts";
@@ -71,13 +75,77 @@ export const getAutoSuggestions = asyncHandler(
 );
 
 export const addProduct = asyncHandler(async (req: Request, res: Response) => {
-  const product = await ProductService.create(req.body, req.user!._id);
+  let uploadedImages: {
+    id: string;
+    url: string;
+    publicId: string;
+  }[] = [];
 
-  res.status(201).json({
-    status: "success",
-    message: "Product created successfully",
-    data: product,
-  });
+  try {
+    const files = req.files as Express.Multer.File[];
+
+    const imageIds = Array.isArray(req.body.imageIds)
+      ? req.body.imageIds
+      : [req.body.imageIds];
+
+    const productData = JSON.parse(req.body.product);
+
+    if (!files?.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Images are required",
+      });
+    }
+
+    uploadedImages = await Promise.all(
+      files.map(async (file, index) => {
+        const result = await uploadToCloudinary(
+          file.buffer,
+          "trendzo/products",
+        );
+
+        return {
+          id: imageIds[index],
+          url: result.url,
+          publicId: result.publicId,
+        };
+      }),
+    );
+
+    const thumbnailImage = uploadedImages.find(
+      (img) => img.id === productData.thumbnail,
+    );
+
+    const productToSave = {
+      ...productData,
+
+      images: uploadedImages.map((img) => ({
+        url: img.url,
+        publicId: img.publicId,
+      })),
+
+      thumbnail: {
+        url: thumbnailImage?.url,
+        publicId: thumbnailImage?.publicId,
+      },
+    };
+
+    const product = await ProductService.create(productToSave, req.user!._id);
+
+    return res.status(201).json({
+      status: "success",
+      message: "Product created successfully",
+      data: product,
+    });
+  } catch (error) {
+    // rollback
+    await Promise.allSettled(
+      uploadedImages.map((img) => deleteFromCloudinary(img.publicId)),
+    );
+
+    // let asyncHandler forward to global error handler
+    throw error;
+  }
 });
 
 export const updateProduct = asyncHandler(

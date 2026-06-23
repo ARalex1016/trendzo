@@ -112,7 +112,6 @@ export const AuthService = {
 
   async loginUser(email: string, password: string) {
     const user = await UserRepository.getUserByEmail(email);
-    console.log(user);
 
     if (!user || !user.password) throw new AppError("Invalid credentials", 401);
 

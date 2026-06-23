@@ -1,6 +1,7 @@
-import { env } from "./env.config.ts";
-
 import nodemailer from "nodemailer";
+
+// Config
+import { env } from "./env.config.ts";
 
 interface sendNodeMailerMailParams {
   from: string;

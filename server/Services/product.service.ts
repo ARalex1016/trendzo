@@ -122,7 +122,6 @@ const ProductService = {
       }
       return new mongoose.Types.ObjectId(id);
     });
-
     // Colors
     const uniqueColors = [...new Set(data.colors)];
 
@@ -158,7 +157,7 @@ const ProductService = {
       description: data.description,
 
       images: data.images,
-      thumbnail: (data.thumbnail || data.images[0] || "") as string,
+      thumbnail: data.thumbnail || data.images[0],
 
       baseCostPrice: data.baseCostPrice,
       baseSellingPrice: data.baseSellingPrice,

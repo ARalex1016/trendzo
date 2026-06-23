@@ -8,6 +8,11 @@ export interface IInventory {
   stock: number;
 }
 
+export interface IImage {
+  url: string;
+  publicId: string;
+}
+
 export interface IProductSpecifications {
   weight?: number;
   material?: string;
@@ -26,8 +31,8 @@ export interface IProduct {
   specifications?: IProductSpecifications;
 
   // Base images (same for all variants)
-  images: string[];
-  thumbnail: string;
+  images: IImage[];
+  thumbnail: IImage;
 
   // Base price
   baseCostPrice: number;

@@ -134,7 +134,10 @@ const CategoriesContainer = () => {
           <div className="flex flex-row gap-x-1 gap-y-2 flex-wrap">
             {categories.map((categoryId) => {
               return (
-                <div className="w-fit bg-primary/10 border border-primary/80 rounded-xl flex flex-row flex-nowrap items-center gap-x-2 px-3 py-1 md:py-1.5">
+                <div
+                  key={categoryId}
+                  className="w-fit bg-primary/10 border border-primary/80 rounded-xl flex flex-row flex-nowrap items-center gap-x-2 px-3 py-1 md:py-1.5"
+                >
                   <p
                     key={categoryId}
                     className="text-[10px] md:text-xs text-foreground/80 font-medium line-clamp-1"
@@ -231,12 +234,12 @@ const CategoriesContainer = () => {
                         parent?.children?.map((child) => {
                           return (
                             <FormField
+                              key={child._id}
                               control={form.control}
                               name="categories"
                               render={({ field }) => (
                                 <FormItem>
                                   <label
-                                    key={child._id}
                                     htmlFor={child._id}
                                     className={cn(
                                       "rounded-xl border-2 border-transparent flex flex-row items-center gap-x-2 px-4 py-3 transition-all duration-200 group",

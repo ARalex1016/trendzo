@@ -38,7 +38,7 @@ const ProductCards = ({ data, className }: ProductCardsPros) => {
       <div className="w-full aspect-3/4 overflow-hidden relative">
         {/* Image */}
         <img
-          src={data.thumbnail}
+          src={data.thumbnail.url}
           alt={`${data.name} Image`}
           loading="lazy"
           className="size-full object-cover group-hover:scale-110 transition-transform duration-500"

@@ -28,14 +28,14 @@ interface ContainerProps {
 const Container = ({ title, text, counter, children }: ContainerProps) => {
   return (
     <div className="space-y-3">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between gap-x-1">
         <div>
           <p className="text-base text-foreground font-medium">{title}</p>
 
-          <p className="text-xs text-foreground/60">{text}</p>
+          <p className="text-xs text-foreground/60 line-clamp-2">{text}</p>
         </div>
 
-        <div className="size-fit text-[10px] text-foreground/70 bg-accent rounded-xl px-3 py-1">
+        <div className="min-w-fit h-fit text-[10px] text-foreground/70 bg-accent rounded-xl px-3 py-1">
           <span>{counter}</span> selected
         </div>
       </div>
@@ -133,7 +133,7 @@ const ColorsNSizes = () => {
         text="Pulled from your global color library. Tap to include in this product."
         counter={selectedColors.length}
       >
-        <div className="w-full flex flex-row flex-wrap gap-3">
+        <div className="w-full grid grid-cols-2 xs:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {attributes &&
             attributes.colors.map((color) => {
               const isSelected = selectedColors.includes(color._id);
@@ -143,21 +143,21 @@ const ColorsNSizes = () => {
                   key={color._id}
                   onClick={() => toggleColor(color._id)}
                   className={cn(
-                    "w-40 rounded-lg flex items-center gap-x-2 px-3 py-2 cursor-pointer transition-all",
+                    "w-full rounded-lg flex items-center gap-x-2 p-3 py-2 cursor-pointer transition-all",
                     isSelected
                       ? "border-primary bg-primary/10 border"
                       : "border-border hover:border-foreground/40 hover:bg-accent/60 border",
                   )}
                 >
                   <span
-                    className="size-6 group-hover:scale-110 rounded-full ring-2 ring-accent transition-all duration-150"
+                    className="size-5 sm:size-6 group-hover:scale-110 rounded-full ring-2 ring-accent transition-all duration-150"
                     style={{
                       backgroundColor: color.hexCode,
                     }}
                   ></span>
 
                   <div>
-                    <p className="text-foreground text-sm font-medium line-clamp-1">
+                    <p className="text-foreground text-xs sm:text-sm font-medium line-clamp-1">
                       {color.name}
                     </p>
 
@@ -186,7 +186,7 @@ const ColorsNSizes = () => {
                     {group.type.toUpperCase()}
                   </p>
 
-                  <div className="flex flex-row gap-x-2">
+                  <div className="flex flex-row flex-wrap gap-2">
                     {group.sizes.map((size) => {
                       const isSelected = selectedSizes.includes(size._id);
 
@@ -195,7 +195,7 @@ const ColorsNSizes = () => {
                           key={size._id}
                           onClick={() => toggleSize(size._id)}
                           className={cn(
-                            "min-w-14 rounded-lg px-4 py-1.5 cursor-pointer transition-all duration-200",
+                            "min-w-fit rounded-lg px-4 py-1.5 cursor-pointer transition-all duration-200",
                             isSelected
                               ? "border-primary bg-primary/10 border"
                               : "bg-accent border border-transparent hover:border-border",

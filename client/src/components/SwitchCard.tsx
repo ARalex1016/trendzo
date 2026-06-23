@@ -24,8 +24,8 @@ const switchCardVariants = cva(
     variants: {
       variant: {
         default: "border-border",
-        warning: "border-info/20",
-        success: "border-success/20",
+        warning: "border-info/20 hover:shadow hover:shadow-info/20",
+        success: "border-success/20 hover:shadow hover:shadow-success/20",
       },
     },
     defaultVariants: {
@@ -55,7 +55,7 @@ const switchTheme = {
   },
 
   warning: {
-    switch: "data-[state=checked]:bg-info data-[state=checked]:border-success",
+    switch: "data-[state=checked]:bg-info data-[state=checked]:border-info",
     icon: "text-info",
     iconBg: "bg-info/15 border-info/30",
     badge: "bg-info/15 text-info border-info/30",

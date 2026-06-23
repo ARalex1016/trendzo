@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "./axios";
+import toast from "react-hot-toast";
 
 // Types
 import type {
@@ -7,9 +8,6 @@ import type {
   UserLoginType,
 } from "@/validations/user.validator";
 import type { IUser } from "@/types/user.types";
-
-// Components
-import Alert from "@/components/Alert";
 
 interface AuthStore {
   user: IUser | null;
@@ -34,27 +32,21 @@ const useAuthStore = create<AuthStore>((set) => ({
     set({ user: null, isAuthenticated: false });
 
     try {
-      const response = await axiosInstance.post("/v1/auth/register", userData);
+      const response = axiosInstance.post("/v1/auth/register", userData);
 
-      Alert({
-        title: "Successful",
-        text: response?.data?.message || "Successfully signed up",
-        icon: "success",
-        confirmButtonText: "Ok",
+      toast.promise(response, {
+        loading: "Signing up...",
+        success: "Signed up successfully",
+        error: "Failed to sign up",
       });
 
-      set({ user: response.data.data, isAuthenticated: true });
+      await response;
 
-      return response.data.data;
+      set({ user: (await response).data.data, isAuthenticated: true });
+
+      return (await response).data.data;
     } catch (error: any) {
       set({ user: null, isAuthenticated: false });
-
-      Alert({
-        title: "Error",
-        text: error.response.data.message || "Something went wrong",
-        icon: "error",
-        confirmButtonText: "Retry",
-      });
 
       throw new Error(error.message);
     }
@@ -64,27 +56,21 @@ const useAuthStore = create<AuthStore>((set) => ({
     set({ user: null, isAuthenticated: false });
 
     try {
-      const response = await axiosInstance.post("/v1/auth/login", userData);
+      const response = axiosInstance.post("/v1/auth/login", userData);
 
-      Alert({
-        title: "Successful",
-        text: response?.data?.message || "Logged in successful",
-        icon: "success",
-        confirmButtonText: "Ok",
+      toast.promise(response, {
+        loading: "Logging in...",
+        success: "Logged in successfully",
+        error: "Failed to log in",
       });
 
-      set({ user: response.data.data, isAuthenticated: true });
+      await response;
 
-      return response.data.data;
+      set({ user: (await response).data.data, isAuthenticated: true });
+
+      return (await response).data.data;
     } catch (error: any) {
       set({ user: null, isAuthenticated: false });
-
-      Alert({
-        title: "Error",
-        text: error.response.data.message || "Something went wrong",
-        icon: "error",
-        confirmButtonText: "Retry",
-      });
 
       throw new Error(error.message);
     }
@@ -111,13 +97,16 @@ const useAuthStore = create<AuthStore>((set) => ({
     set({ isAuthenticated: true });
 
     try {
-      await axiosInstance.post("/v1/auth/logout");
+      let response = axiosInstance.post("/v1/auth/logout");
 
-      Alert({
-        title: "Logged out",
-        text: "Logout successfully",
-        icon: "error",
+      toast.promise(response, {
+        loading: "Logging out...",
+        success: "Logged out successfully",
+        error: "Failed to log out",
       });
+
+      await response;
+
       set({ user: null, isAuthenticated: false });
     } catch (error) {
       set({ isAuthenticated: true });
