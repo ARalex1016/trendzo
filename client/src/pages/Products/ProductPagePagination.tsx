@@ -63,6 +63,8 @@ const ProductPagePagination = () => {
     page <= totalPages && setSearchParams({ page: String(page) });
   };
 
+  if (totalPages <= 0) return;
+
   return (
     <Pagination>
       <PaginationContent className="flex flex-row flex-wrap justify-center">

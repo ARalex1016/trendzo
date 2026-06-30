@@ -60,24 +60,30 @@ const Header = () => {
               </Avatar>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="p-3  mr-side-spacing">
-              <DropdownMenuItem className="text-xs">
+            <DropdownMenuContent className="bg-primary/20 backdrop-blur-lg p-3 mr-side-spacing">
+              <DropdownMenuItem className="text-xs hover:bg-primary/40! transition-all duration-300 group">
                 <Mail />
-                {user?.email}
+
+                <span>{user?.email}</span>
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
+              <DropdownMenuItem
+                className="hover:bg-primary/40! transition-all duration-300"
+                onClick={() => navigate("/profile")}
+              >
                 <User />
-                Profile
+
+                <span>Profile</span>
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
               <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                 <LogOut />
-                Log out
+
+                <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

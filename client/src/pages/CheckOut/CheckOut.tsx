@@ -146,6 +146,7 @@ const CheckOut = () => {
       let formatedOrderData = formartOrderData(checkOutData);
 
       let res = await placeOrder(formatedOrderData);
+      console.log(res);
 
       // ✅ Optional: reset form state
       // methods.reset();
@@ -153,6 +154,7 @@ const CheckOut = () => {
       // ✅ Redirect after success
       navigate(`/checkout/success/${res?.data?.orderNumber}`);
     } catch (error: any) {
+      console.log(error);
     } finally {
       setIsCheckingOut(false);
     }
