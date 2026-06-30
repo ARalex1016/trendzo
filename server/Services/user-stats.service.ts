@@ -20,12 +20,15 @@ export const UserStatsService = {
   |--------------------------------------------------------------------------
   */
 
-  async onOrderPlaced(userId: Types.ObjectId, orderAmount: number) {
+  async onOrderPlaced(
+    userId: Types.ObjectId,
+    // orderAmount: number
+  ) {
     return UserStatsRepository.updateByUserId(userId, {
       $inc: {
         "orders.total": 1,
         "orders.pending": 1,
-        "orders.totalSpent": orderAmount,
+        // "orders.totalSpent": orderAmount,
       },
 
       $set: {

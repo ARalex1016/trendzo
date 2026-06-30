@@ -28,6 +28,7 @@ interface StatsCardProps {
   variant?: Variant;
   baseColor?: string; // override variant
   className?: string;
+  iconClass?: string;
   trend?: {
     value: string;
     positive?: boolean;
@@ -41,6 +42,7 @@ export function StatsCard({
   variant = "primary",
   baseColor,
   className,
+  iconClass,
   trend,
 }: StatsCardProps) {
   const color = baseColor || colorVariants[variant];
@@ -61,7 +63,10 @@ export function StatsCard({
       {/* Icon */}
       {Icon && (
         <div
-          className="absolute right-4 top-4 opacity-80 text-5xl"
+          className={cn(
+            "absolute right-4 top-4 opacity-80 text-5xl",
+            iconClass,
+          )}
           //   style={{ color }}
         >
           <Icon style={{ color: color }} />

@@ -26,7 +26,7 @@ export interface IProduct extends Document {
 
   // Base images (same for all variants)
   images: IImage[];
-  thumbnail?: IImage;
+  thumbnail: IImage;
 
   // Price only at base level
   baseCostPrice: number;

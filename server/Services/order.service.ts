@@ -11,6 +11,7 @@ import { ReferralService } from "../Services/referral.service.ts";
 import { OrderRepository } from "./../Repositories/order.repository.ts";
 import { OrderItemRepository } from "../Repositories/orderItem.repository.ts";
 import ProductRepository from "./../Repositories/product.repository.ts";
+import { UserStatsService } from "./user-stats.service.ts";
 import ColorRepository from "../Repositories/color.repository.ts";
 import SizeRepository from "../Repositories/size.repository.ts";
 
@@ -32,7 +33,7 @@ export const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 
 export const OrderService = {
   async placeOrder(input: {
-    userId?: string;
+    userId: string;
     cashierId?: string;
 
     items: {
@@ -149,7 +150,7 @@ export const OrderService = {
             product: product._id,
 
             productName: product.name,
-            productImage: product.images?.[0] ?? "",
+            productImage: product.thumbnail,
 
             color: {
               id: color._id,
@@ -259,6 +260,10 @@ export const OrderService = {
         } catch (err: any) {
           console.warn("Referral qualification failed:", err.message);
         }
+      }
+
+      if (userId && !!order) {
+        await UserStatsService.onOrderPlaced(userId);
       }
 
       await session.commitTransaction();
