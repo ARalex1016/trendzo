@@ -46,8 +46,6 @@ const useProductStore = create<ProductStore>((set) => ({
         `/v1/products${query ? `?${query}&` : ""}`,
       );
 
-      console.log(res);
-
       // const data = await res.data;
       // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
       // const sizeInKB = (sizeInBytes / 1024).toFixed(2);

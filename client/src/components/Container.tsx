@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 
+// Lib
+import { cn } from "@/lib/utils";
+
 // Components
 import { Title, BaseText } from "./Text";
 import { BackButton } from "./Button";
@@ -23,7 +26,7 @@ export const TitleTextContainer = ({
   className,
 }: TitleTextContainerProps) => {
   return (
-    <div className={`flex flex-col gap-y-1 ${className}`}>
+    <div className={cn("flex flex-col gap-y-1", className)}>
       <Title text={title} />
 
       {children && <BaseText>{children}</BaseText>}
@@ -38,10 +41,10 @@ export const PageShell = ({
   className,
 }: PageShellProps) => {
   return (
-    <section className="w-full flex flex-col items-start gap-y-2 px-side-spacing py-4 ">
+    <section className="w-full flex flex-col items-start gap-y-2 px-side-spacing py-4">
       {to && back && <BackButton to={to} label={back} />}
 
-      <div className={`w-full ${className}`}>{children}</div>
+      <div className={cn("w-full", className)}>{children}</div>
     </section>
   );
 };

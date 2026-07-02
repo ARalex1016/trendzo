@@ -59,7 +59,7 @@ const kpiCards = [
 
 const Stats = () => {
   return (
-    <StatsContainer className="w-full py-3">
+    <StatsContainer className="w-full">
       {kpiCards.length >= 1 &&
         kpiCards.map((kpi) => {
           const Icon = kpi.icon;
