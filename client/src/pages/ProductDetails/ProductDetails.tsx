@@ -12,13 +12,14 @@ import Loader from "@/components/Loader";
 import useProductStore from "@/store/useProductStore";
 
 // Types
-import type { IProduct } from "@/types/product.type";
+import type { IProductDetail } from "@/types/product/index.type";
+
 const ProductDetails = () => {
   const { getProductBySlug } = useProductStore();
 
   const { productSlug } = useParams();
 
-  const [product, setProduct] = useState<IProduct | null>(null);
+  const [product, setProduct] = useState<IProductDetail | null>(null);
   const [loading, setLoading] = useState<Boolean>(false);
 
   const fetchProductBySlug = async (slug: string) => {

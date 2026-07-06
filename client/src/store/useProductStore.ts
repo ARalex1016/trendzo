@@ -2,20 +2,35 @@ import { create } from "zustand";
 import { axiosInstance } from "./axios";
 import toast from "react-hot-toast";
 
+// Utils
+import { getResponseSize } from "@/utils/getResponseSize";
+
 // Types
-import type { IProduct, ISuggestion } from "@/types/product.type";
-import type { IProductResponse } from "@/types/response.type";
+import type {
+  IProductCard,
+  IProductDetail,
+  IProductCardAdmin,
+  ISuggestion,
+} from "@/types/product/index.type";
 import type { AddProductType } from "@/validations/product.validator";
+import type { ApiResponse } from "@/types/response.type";
 
 interface ProductStore {
-  productsResponse: IProductResponse | null;
+  productsResponse: ApiResponse<IProductCard[]> | null;
 
-  getAllProducts: (query?: string) => Promise<IProductResponse | null>;
-  getFeaturedProducts: () => Promise<IProduct[] | null>;
-  getProductBySlug: (slug: string) => Promise<IProduct | null>;
+  getAllProducts: (
+    query?: string,
+  ) => Promise<ApiResponse<IProductCard[]> | null>;
+  getAllForAdmin: (
+    query?: string,
+  ) => Promise<ApiResponse<IProductCardAdmin[]> | null>;
+  getFeaturedProducts: () => Promise<IProductCard[] | null>;
+  getProductBySlug: (slug: string) => Promise<IProductDetail | null>;
   getAutoSuggestions: (query: string) => Promise<ISuggestion[] | null>;
 
   addProduct: (productData: AddProductType) => Promise<void>;
+
+  deleteBySlug: (slug: string) => Promise<void>;
 }
 
 const createProductFormData = (product: AddProductType) => {
@@ -46,12 +61,7 @@ const useProductStore = create<ProductStore>((set) => ({
         `/v1/products${query ? `?${query}&` : ""}`,
       );
 
-      // const data = await res.data;
-      // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
-      // const sizeInKB = (sizeInBytes / 1024).toFixed(2);
-
-      // console.log("Response size:", sizeInBytes, "bytes");
-      // console.log("Response size:", sizeInKB, "KB");
+      // getResponseSize(res.data);
 
       set({ productsResponse: res.data });
 
@@ -60,6 +70,22 @@ const useProductStore = create<ProductStore>((set) => ({
       console.log(error);
 
       set({ productsResponse: null });
+
+      throw new Error(error.message);
+    }
+  },
+
+  getAllForAdmin: async (query?: string) => {
+    try {
+      let res = await axiosInstance.get(
+        `/v1/products/admin${query ? `?${query}&` : ""}`,
+      );
+
+      getResponseSize(res.data);
+
+      return res.data;
+    } catch (error: any) {
+      console.log(error);
 
       throw new Error(error.message);
     }
@@ -112,6 +138,15 @@ const useProductStore = create<ProductStore>((set) => ({
       });
 
       await response;
+    } catch (error: any) {}
+  },
+
+  // Delete
+  deleteBySlug: async (slug) => {
+    try {
+      let response = await axiosInstance.delete(`/v1/products/${slug}`);
+
+      console.log(response.data);
     } catch (error: any) {}
   },
 }));

@@ -25,6 +25,20 @@ export const getAllProducts = asyncHandler(
   },
 );
 
+// Product Only For Admin
+export const getAllAdminProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await ProductService.getAllForAdmin(req.query);
+
+    res.status(200).json({
+      status: "success",
+      message: "Products retrieved successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  },
+);
+
 export const getFeaturedProducts = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await ProductService.getFeatured(req.query);

@@ -17,9 +17,9 @@ import type { IProduct, IInventory } from "../Models/product.model.ts";
 const ProductService = {
   async getAll(reqQuery: any) {
     const fields =
-      "_id name slug thumbnail images baseSellingPrice discount categories tags isActive featured createdAt";
+      "_id name slug thumbnail baseSellingPrice discount categories tags isActive featured createdAt";
 
-    let query = ProductRepository.findAll({}, fields);
+    let query = ProductRepository.findAll({ isActive: true }, fields);
 
     // await the async filter
     const filters = await buildProductFilterQuery({
@@ -49,7 +49,7 @@ const ProductService = {
       _id: p._id,
       name: p.name,
       slug: p.slug,
-      thumbnail: p.thumbnail || p.images[0] || null,
+      thumbnail: p.thumbnail || null,
       baseSellingPrice: p.baseSellingPrice,
       discount: p.discount,
       categories: p.categories,
@@ -58,6 +58,70 @@ const ProductService = {
       featured: p.featured,
       createdAt: p.createdAt,
     }));
+
+    return {
+      data: limitedData,
+      meta: features.meta,
+    };
+  },
+
+  async getAllForAdmin(reqQuery: any) {
+    const fields =
+      "_id name slug thumbnail images baseCostPrice baseSellingPrice discount categories tags inventory isActive featured createdBy createdAt updatedAt";
+
+    let query = ProductRepository.findAll({}, fields);
+
+    // await the async filter
+    const filters = await buildProductFilterQuery({
+      colors: reqQuery.colors?.split(",") || [],
+      sizes: reqQuery.sizes?.split(",") || [],
+      categories: reqQuery.categories?.split(",") || [],
+      tags: reqQuery.tags?.split(",") || [],
+      minPrice: reqQuery.minPrice ? Number(reqQuery.minPrice) : undefined,
+      maxPrice: reqQuery.maxPrice ? Number(reqQuery.maxPrice) : undefined,
+    });
+
+    const features = new ApiFeatures(query, reqQuery)
+      .filter()
+      .search(["name", "slug", "tags"]);
+
+    // ✅ APPLY PRODUCT FILTERS FIRST
+    features.query = features.query.find(filters);
+
+    // ✅ THEN SORT, LIMIT, PAGINATE
+    features.sort().limitFields();
+    await features.paginate(10);
+
+    const data = await features.query;
+
+    // Map thumbnail fallback
+    const limitedData = data.map((p: IProduct) => {
+      const stock = p.inventory.reduce(
+        (sum, inventory) => sum + inventory.stock,
+        0,
+      );
+
+      const variants = p.inventory.length;
+
+      return {
+        _id: p._id,
+        name: p.name,
+        slug: p.slug,
+        thumbnail: p.thumbnail || p.images[0] || null,
+        baseCostPrice: p.baseCostPrice,
+        baseSellingPrice: p.baseSellingPrice,
+        discount: p.discount,
+        categories: p.categories,
+        stock,
+        variants,
+        tags: p.tags,
+        featured: p.featured,
+        isActive: p.isActive,
+        createdBy: p.createdBy,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+      };
+    });
 
     return {
       data: limitedData,

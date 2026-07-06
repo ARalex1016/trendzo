@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import type { TdHTMLAttributes, ThHTMLAttributes } from "react";
 
+// Components
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CopyButton } from "@/components/CopyButton";
+
 // Config
 import { BRAND } from "@/config/brand";
 
@@ -13,12 +24,16 @@ import useCategoryStore from "@/store/useCategoryStore";
 
 // Utils
 import { capitalize } from "@/utils/StringManager";
+import { getTimeAgo } from "@/utils/DateManager";
+
+// Icons
+import { Ellipsis } from "lucide-react";
 
 // Types
-import type { IProduct, IImage } from "@/types/product.type";
+import type { IProductCardAdmin, IImage } from "@/types/product/index.type";
 
 interface TableDataProps {
-  product: IProduct;
+  product: IProductCardAdmin;
 }
 
 interface ProductNameProps {
@@ -81,8 +96,8 @@ const Category = ({ id }: { id: string }) => {
   const { categoryMap } = useCategoryStore();
 
   return (
-    <div className="inline-block text-[10px] text-foreground/60 font-medium bg-accent/50 border border-border rounded-xl px-2 py-0.5">
-      {categoryMap[id]?.name}
+    <div className="max-w-16 inline-block line-clamp-1 text-[8px] text-foreground/60 font-medium bg-accent/50 border border-border rounded-xl overflow-hidden px-2 py-0.5">
+      {categoryMap[id]?.name || id}
     </div>
   );
 };
@@ -100,7 +115,7 @@ const Price = ({
 
   return (
     <div className="flex flex-col">
-      <span className="text-sm font-medium">
+      <span className="text-sm font-medium text-primary">
         {BRAND.currency.symbol}
         {finalSellingPrice}
       </span>
@@ -125,40 +140,75 @@ const Discount = ({ discount }: { discount?: number }) => {
   }
 };
 
-const Switch = () => {
-  const [isOn, setIsOn] = useState<boolean>(false);
-
+const Switch = ({ state }: { state: boolean }) => {
   return (
     <div
-      onClick={() => setIsOn((pre) => !pre)}
+      // onClick={() => setIsOn((pre) => !pre)}
       className={cn(
-        "w-10 h-full flex flex-row items-center rounded-xl overflow-hidden transition-all duration-500 p-1",
-        isOn ? "bg-success" : "bg-accent",
+        "w-10 h-full flex flex-row items-center rounded-xl overflow-hidden transition-all duration-500 p-0.5",
+        state ? "bg-success" : "bg-accent",
       )}
     >
       <div
         className={cn(
-          "w-4 aspect-square rounded-full transition-all duration-500",
-          isOn
-            ? "bg-foreground translate-x-0"
-            : "bg-background translate-x-full",
+          "size-4.5 aspect-square rounded-full transition-all duration-500",
+          state
+            ? "bg-foreground translate-x-full"
+            : "bg-background translate-x-0",
         )}
-      ></div>
+      />
     </div>
   );
 };
 
-const TableData = ({ product }: TableDataProps) => {
-  const totalStocks = product.inventory?.reduce(
-    (sum, item) => sum + item.stock,
-    0,
-  );
+const DropDownMenuAction = ({ slug }: { slug: string }) => {
+  const { deleteBySlug } = useProductStore();
 
-  const totalVariants = product.inventory?.length;
+  const deteleProductBySlug = async () => {
+    try {
+      await deleteBySlug(slug);
+    } catch (error) {}
+  };
 
   return (
-    <tr className="border-b border-b-border">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="size-7 flex flex-row justify-center items-center rounded-full p-1.5 hover:bg-accent transition-all duration-300">
+          <Ellipsis />
+        </div>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className="bg-accent/5 backdrop-blur-lg p-3 mr-side-spacing">
+        <DropdownMenuGroup>
+          <DropdownMenuItem>Open</DropdownMenuItem>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem>
+            <CopyButton value={slug} />
+            Copy Slug
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={deteleProductBySlug}
+            className="py-1!"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const TableData = ({ product }: TableDataProps) => {
+  return (
+    <tr className="border-b border-b-border hover:bg-accent/40">
       <Data></Data>
+
       <Data>
         <ProductName
           name={product.name}
@@ -166,40 +216,77 @@ const TableData = ({ product }: TableDataProps) => {
           slug={product.slug}
         />
       </Data>
-      <Data className="flex flex-row flex-wrap gap-1">
+
+      <Data className="flex flex-row flex-wrap gap-0.5">
         {product.categories.map((categoryId) => {
           return <Category key={categoryId} id={categoryId} />;
         })}
       </Data>
+
+      <Data>
+        <span className="text-sm font-medium text-foreground/80">
+          {BRAND.currency.symbol}
+          {product.baseCostPrice}
+        </span>
+      </Data>
+
       <Data>
         <Price
           sellingPrice={product.baseSellingPrice}
           discount={product.discount}
         />
       </Data>
+
       <Data>
         <Discount discount={product.discount} />
       </Data>
-      <Data>{totalStocks}</Data> {/* Inventory */}
-      <Data>{totalVariants}</Data> {/* Variants  */}
-      <Data className="flex flex-row justify-center items-center ">
-        <Switch />
+
+      {/* Inventory */}
+      <Data>{product.stock}</Data>
+
+      {/* Variants  */}
+      <Data>{product.variants}</Data>
+
+      {/* Featured */}
+      <Data>
+        <div className="flex flex-row justify-center items-center">
+          <Switch state={product.featured} />
+        </div>
       </Data>
-      <Data>{product.updatedAt}/</Data>
+
+      <Data>
+        <div className="flex flex-row justify-center items-center">
+          <Switch state={product.isActive} />
+        </div>
+      </Data>
+
+      <Data>
+        <span className="text-sm">{getTimeAgo(product.updatedAt)}</span>
+      </Data>
+
+      <Data>
+        <div className="flex flex-row justify-center items-center">
+          <DropDownMenuAction slug={product.slug} />
+        </div>
+      </Data>
     </tr>
   );
 };
 
 const ProductTable = () => {
-  const { getAllProducts } = useProductStore();
+  const { getAllForAdmin } = useProductStore();
 
-  const [productLists, setProductLists] = useState<IProduct[] | null>(null);
+  const [productLists, setProductLists] = useState<IProductCardAdmin[] | null>(
+    null,
+  );
 
   const fetchAllProducts = async () => {
     try {
-      let res = await getAllProducts();
+      let res = await getAllForAdmin();
 
       if (res?.data) {
+        console.log(res.data);
+
         setProductLists(res.data);
       }
     } catch (error) {}
@@ -221,14 +308,15 @@ const ProductTable = () => {
             <Head className="min-w-14"></Head>
             <Head className="min-w-64 text-left!">Product</Head>
             <Head className="min-w-40 text-left!">Categories</Head>
+            <Head className="min-w-24">Base Price</Head>
             <Head className="min-w-24">Price</Head>
             <Head className="min-w-24">Discount</Head>
             <Head className="min-w-24">Inventory</Head>
             <Head className="min-w-24">Variants</Head>
             <Head className="min-w-32">Featured</Head>
             <Head className="min-w-32">Active</Head>
-            <Head className="min-w-32">Updated</Head>
-            <Head className="min-w-24">Actions</Head>
+            <Head className="min-w-32">Last Updated</Head>
+            <Head className="min-w-20">Actions</Head>
           </tr>
         </thead>
 

@@ -18,11 +18,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Star } from "lucide-react";
 
 // Types
-import type { IProduct } from "@/types/product.type";
+import type { IProductCard } from "@/types/product/index.type";
 
 interface ProductCardsPros {
   className?: string;
-  data: IProduct;
+  data: IProductCard;
 }
 
 const ProductCards = ({ data, className }: ProductCardsPros) => {

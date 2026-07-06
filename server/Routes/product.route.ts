@@ -3,6 +3,7 @@ import express from "express";
 // Controllers
 import {
   getAllProducts,
+  getAllAdminProducts,
   getFeaturedProducts,
   getProduct,
   getAutoSuggestions,
@@ -38,6 +39,7 @@ router.param("slug", productSlugParamHandler);
 
 // Public product routes
 router.get("/", getAllProducts);
+router.get("/admin", protect, authorize("admin"), getAllAdminProducts);
 router.get("/featured", getFeaturedProducts);
 router.get("/auto-suggestions", getAutoSuggestions);
 router.get("/slug/:slug", getProduct); // getProductBySlug
@@ -72,5 +74,6 @@ router.patch(
   toggleFeatured,
 );
 router.delete("/:productId", protect, authorize("admin"), deleteProduct);
+router.delete("/:slug", protect, authorize("admin"), deleteProduct);
 
 export default router;

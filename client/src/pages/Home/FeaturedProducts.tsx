@@ -7,14 +7,14 @@ import ProductCards from "@/components/Cards/ProductCards";
 import useProductStore from "@/store/useProductStore";
 
 // Types
-import type { IProduct } from "@/types/product.type";
+import type { IProductCard } from "@/types/product/index.type";
 
 const FeaturedProducts = () => {
   const { getFeaturedProducts } = useProductStore();
 
-  const [featuredProducts, setFeaturedProducts] = useState<IProduct[] | null>(
-    null,
-  );
+  const [featuredProducts, setFeaturedProducts] = useState<
+    IProductCard[] | null
+  >(null);
 
   const fetchFeaturedProducts = async () => {
     try {

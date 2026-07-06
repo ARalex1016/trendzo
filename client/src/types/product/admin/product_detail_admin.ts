@@ -1,26 +1,15 @@
 // Types
-import type { IColor } from "./color.type";
-import type { ISize } from "./size.types";
+import type { IColor } from "@/types/color.type";
+import type { ISize } from "@/types/size.types";
 
-export interface IInventory {
-  color: string; // ObjectId of Color
-  size: string; // ObjectId of Size
-  stock: number;
-}
+// Shared
+import type {
+  IImage,
+  IInventory,
+  IProductSpecifications,
+} from "../product_shared";
 
-export interface IImage {
-  url: string;
-  publicId: string;
-}
-
-export interface IProductSpecifications {
-  weight?: number;
-  material?: string;
-  countryOfOrigin?: string;
-  warranty?: string;
-}
-
-export interface IProduct {
+export interface IProductDetailAdmin {
   _id: string;
 
   name: string;
@@ -56,9 +45,4 @@ export interface IProduct {
 
   createdAt: string;
   updatedAt: string;
-}
-
-export interface ISuggestion {
-  name: string;
-  slug: string;
 }

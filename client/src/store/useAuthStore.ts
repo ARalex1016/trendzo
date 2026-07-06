@@ -37,7 +37,11 @@ const useAuthStore = create<AuthStore>((set) => ({
       toast.promise(response, {
         loading: "Signing up...",
         success: "Signed up successfully",
-        error: "Failed to sign up",
+        error: (err) => {
+          return (
+            err?.response?.data?.message || err.message || "Failed to sign up"
+          );
+        },
       });
 
       await response;
@@ -61,7 +65,11 @@ const useAuthStore = create<AuthStore>((set) => ({
       toast.promise(response, {
         loading: "Logging in...",
         success: "Logged in successfully",
-        error: "Failed to log in",
+        error: (err) => {
+          return (
+            err?.response?.data?.message || err.message || "Failed to log in"
+          );
+        },
       });
 
       await response;
@@ -70,6 +78,8 @@ const useAuthStore = create<AuthStore>((set) => ({
 
       return (await response).data.data;
     } catch (error: any) {
+      console.log(error.message);
+
       set({ user: null, isAuthenticated: false });
 
       throw new Error(error.message);
@@ -102,7 +112,13 @@ const useAuthStore = create<AuthStore>((set) => ({
       toast.promise(response, {
         loading: "Logging out...",
         success: "Logged out successfully",
-        error: "Failed to log out",
+        error: (err) => {
+          return (
+            err?.response?.data?.message ||
+            err.message ||
+            "Failed to logged out"
+          );
+        },
       });
 
       await response;

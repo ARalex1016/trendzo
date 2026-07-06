@@ -60,7 +60,7 @@ const Header = () => {
               </Avatar>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="bg-primary/20 backdrop-blur-lg p-3 mr-side-spacing">
+            <DropdownMenuContent className="bg-primary/5 backdrop-blur-lg p-3 mr-side-spacing">
               <DropdownMenuItem className="text-xs hover:bg-primary/40! transition-all duration-300 group">
                 <Mail />
 

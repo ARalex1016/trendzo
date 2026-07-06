@@ -15,7 +15,7 @@ import {
 import useProductStore from "@/store/useProductStore";
 
 // Types
-import type { ISuggestion } from "@/types/product.type";
+import type { ISuggestion } from "@/types/product/index.type";
 
 const SearchBox = ({ className }: { className?: string }) => {
   const { getAutoSuggestions } = useProductStore();
