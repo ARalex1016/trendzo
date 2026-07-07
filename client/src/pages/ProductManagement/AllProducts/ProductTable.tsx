@@ -182,10 +182,6 @@ const DropDownMenuAction = ({ slug }: { slug: string }) => {
         <DropdownMenuGroup>
           <DropdownMenuItem>Open</DropdownMenuItem>
           <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>
-            <CopyButton value={slug} />
-            Copy Slug
-          </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
@@ -215,6 +211,16 @@ const TableData = ({ product }: TableDataProps) => {
           image={product.thumbnail}
           slug={product.slug}
         />
+      </Data>
+
+      <Data>
+        <div className="grid grid-cols-[1fr_auto] items-center gap-1">
+          <span className="text-xs text-foreground/60 truncate">
+            {product.slug}
+          </span>
+
+          <CopyButton value={product.slug} size={"sm"} />
+        </div>
       </Data>
 
       <Data className="flex flex-row flex-wrap gap-0.5">
@@ -307,6 +313,7 @@ const ProductTable = () => {
           <tr>
             <Head className="min-w-14"></Head>
             <Head className="min-w-64 text-left!">Product</Head>
+            <Head className="min-w-40">Slug</Head>
             <Head className="min-w-40 text-left!">Categories</Head>
             <Head className="min-w-24">Base Price</Head>
             <Head className="min-w-24">Price</Head>
