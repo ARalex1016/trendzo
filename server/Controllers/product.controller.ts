@@ -28,7 +28,7 @@ export const getAllProducts = asyncHandler(
 // Product Only For Admin
 export const getAllAdminProducts = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await ProductService.getAllForAdmin(req.query);
+    const result = await ProductService.getAllAdminProducts(req.query);
 
     res.status(200).json({
       status: "success",
@@ -183,7 +183,7 @@ export const toggleActive = asyncHandler(
 
     res.status(200).json({
       status: "success",
-      message: `Product is now ${isActive ? "Activated" : "Deactiavted"}`,
+      message: `${isActive ? "Product activated successfully" : "Product deactivated successfully"}`,
     });
   },
 );
@@ -196,13 +196,15 @@ export const toggleFeatured = asyncHandler(
 
     res.status(200).json({
       status: "success",
-      message: `Product is now ${featured ? "Featured" : "Not Featured"}`,
+      message: `${featured ? "Added to featured products" : "Removed from featured products"}`,
     });
   },
 );
 
 export const deleteProduct = asyncHandler(
   async (req: Request, res: Response) => {
+    console.log(1);
+
     await ProductService.delete(req.targetProduct!._id);
 
     res.status(200).json({

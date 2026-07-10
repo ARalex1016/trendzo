@@ -5,7 +5,7 @@ export const sendEmail = async (
   email: string,
   subject: string,
   template: string,
-  category: string
+  category: string,
 ) => {
   await sendNodeMailerMail({
     from: env.EMAIL_USER,

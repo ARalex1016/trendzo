@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import type { TdHTMLAttributes, ThHTMLAttributes } from "react";
 
 // Components
+import AllProductPagination from "./AllProductPagination";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,11 +31,7 @@ import { getTimeAgo } from "@/utils/DateManager";
 import { Ellipsis } from "lucide-react";
 
 // Types
-import type { IProductCardAdmin, IImage } from "@/types/product/index.type";
-
-interface TableDataProps {
-  product: IProductCardAdmin;
-}
+import type { IImage } from "@/types/product/index.type";
 
 interface ProductNameProps {
   name: string;
@@ -78,15 +75,23 @@ const ProductName = ({ name, image, slug }: ProductNameProps) => {
       <img
         src={image.url}
         alt={name}
-        className="size-10 rounded-full shadow shadow-foreground/40"
+        className="size-10 rounded-full shadow shadow-foreground/40 group-hover:scale-110 transition-all duration-300"
       />
 
-      <div className="flex flex-col items-start">
-        <span className="text-sm font-medium line-clamp-1">
+      <div className="w-full flex flex-col items-start">
+        <span className="text-sm font-medium line-clamp-1 group-hover:text-primary transition-all duration-300">
           {capitalize(name)}
         </span>
 
-        <span className="text-xs text-foreground/60 line-clamp-1">{slug}</span>
+        <div className="w-full flex flex-row gap-x-1">
+          <p className="w-2/3 text-xs text-left text-foreground/60 truncate">
+            {slug}
+          </p>
+
+          <CopyButton value={slug} size={"sm"} />
+        </div>
+
+        {/* <span className="text-xs text-foreground/60 line-clamp-1">{slug}</span> */}
       </div>
     </div>
   );
@@ -140,10 +145,16 @@ const Discount = ({ discount }: { discount?: number }) => {
   }
 };
 
-const Switch = ({ state }: { state: boolean }) => {
+const Switch = ({
+  state,
+  onToggle,
+}: {
+  state: boolean;
+  onToggle: () => void;
+}) => {
   return (
     <div
-      // onClick={() => setIsOn((pre) => !pre)}
+      onClick={onToggle}
       className={cn(
         "w-10 h-full flex flex-row items-center rounded-xl overflow-hidden transition-all duration-500 p-0.5",
         state ? "bg-success" : "bg-accent",
@@ -164,12 +175,6 @@ const Switch = ({ state }: { state: boolean }) => {
 const DropDownMenuAction = ({ slug }: { slug: string }) => {
   const { deleteBySlug } = useProductStore();
 
-  const deteleProductBySlug = async () => {
-    try {
-      await deleteBySlug(slug);
-    } catch (error) {}
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -189,7 +194,7 @@ const DropDownMenuAction = ({ slug }: { slug: string }) => {
         <DropdownMenuGroup>
           <DropdownMenuItem
             variant="destructive"
-            onClick={deteleProductBySlug}
+            onClick={() => deleteBySlug(slug)}
             className="py-1!"
           >
             Delete
@@ -200,101 +205,36 @@ const DropDownMenuAction = ({ slug }: { slug: string }) => {
   );
 };
 
-const TableData = ({ product }: TableDataProps) => {
+const TableHead = () => {
   return (
-    <tr className="border-b border-b-border hover:bg-accent/40">
-      <Data></Data>
-
-      <Data>
-        <ProductName
-          name={product.name}
-          image={product.thumbnail}
-          slug={product.slug}
-        />
-      </Data>
-
-      <Data>
-        <div className="grid grid-cols-[1fr_auto] items-center gap-1">
-          <span className="text-xs text-foreground/60 truncate">
-            {product.slug}
-          </span>
-
-          <CopyButton value={product.slug} size={"sm"} />
-        </div>
-      </Data>
-
-      <Data className="flex flex-row flex-wrap gap-0.5">
-        {product.categories.map((categoryId) => {
-          return <Category key={categoryId} id={categoryId} />;
-        })}
-      </Data>
-
-      <Data>
-        <span className="text-sm font-medium text-foreground/80">
-          {BRAND.currency.symbol}
-          {product.baseCostPrice}
-        </span>
-      </Data>
-
-      <Data>
-        <Price
-          sellingPrice={product.baseSellingPrice}
-          discount={product.discount}
-        />
-      </Data>
-
-      <Data>
-        <Discount discount={product.discount} />
-      </Data>
-
-      {/* Inventory */}
-      <Data>{product.stock}</Data>
-
-      {/* Variants  */}
-      <Data>{product.variants}</Data>
-
-      {/* Featured */}
-      <Data>
-        <div className="flex flex-row justify-center items-center">
-          <Switch state={product.featured} />
-        </div>
-      </Data>
-
-      <Data>
-        <div className="flex flex-row justify-center items-center">
-          <Switch state={product.isActive} />
-        </div>
-      </Data>
-
-      <Data>
-        <span className="text-sm">{getTimeAgo(product.updatedAt)}</span>
-      </Data>
-
-      <Data>
-        <div className="flex flex-row justify-center items-center">
-          <DropDownMenuAction slug={product.slug} />
-        </div>
-      </Data>
+    <tr>
+      <Head className="min-w-14"></Head>
+      <Head className="min-w-64 text-left!">Product</Head>
+      <Head className="min-w-40 text-left!">Categories</Head>
+      <Head className="min-w-24">Base Price</Head>
+      <Head className="min-w-24">Price</Head>
+      <Head className="min-w-24">Discount</Head>
+      <Head className="min-w-24">Inventory</Head>
+      <Head className="min-w-24">Variants</Head>
+      <Head className="min-w-32">Featured</Head>
+      <Head className="min-w-32">Active</Head>
+      <Head className="min-w-32">Last Updated</Head>
+      <Head className="min-w-20">Actions</Head>
     </tr>
   );
 };
 
-const ProductTable = () => {
-  const { getAllForAdmin } = useProductStore();
-
-  const [productLists, setProductLists] = useState<IProductCardAdmin[] | null>(
-    null,
-  );
+const TableBody = () => {
+  const {
+    adminProducts,
+    getAllAdminProducts,
+    toggleFeaturedBySlug,
+    toggleActiveBySlug,
+  } = useProductStore();
 
   const fetchAllProducts = async () => {
     try {
-      let res = await getAllForAdmin();
-
-      if (res?.data) {
-        console.log(res.data);
-
-        setProductLists(res.data);
-      }
+      await getAllAdminProducts();
     } catch (error) {}
   };
 
@@ -302,39 +242,111 @@ const ProductTable = () => {
     fetchAllProducts();
   }, []);
 
-  if (!productLists) {
+  if (!adminProducts) {
     return;
   }
-
   return (
-    <div className="bg-accent/30 border border-border rounded-xl overflow-x-auto no-scrollbar">
-      <table>
-        <thead className="bg-accent/50 border-b border-b-border">
-          <tr>
-            <Head className="min-w-14"></Head>
-            <Head className="min-w-64 text-left!">Product</Head>
-            <Head className="min-w-40">Slug</Head>
-            <Head className="min-w-40 text-left!">Categories</Head>
-            <Head className="min-w-24">Base Price</Head>
-            <Head className="min-w-24">Price</Head>
-            <Head className="min-w-24">Discount</Head>
-            <Head className="min-w-24">Inventory</Head>
-            <Head className="min-w-24">Variants</Head>
-            <Head className="min-w-32">Featured</Head>
-            <Head className="min-w-32">Active</Head>
-            <Head className="min-w-32">Last Updated</Head>
-            <Head className="min-w-20">Actions</Head>
-          </tr>
-        </thead>
+    <>
+      {adminProducts &&
+        adminProducts.data.length >= 1 &&
+        adminProducts.data.map((product) => (
+          <tr
+            key={product._id}
+            className="border-b border-b-border hover:bg-accent/40 group"
+          >
+            <Data></Data>
 
-        <tbody>
-          {productLists &&
-            productLists?.length >= 1 &&
-            productLists?.map((product) => {
-              return <TableData key={product._id} product={product} />;
-            })}
-        </tbody>
-      </table>
+            <Data>
+              <ProductName
+                name={product.name}
+                image={product.thumbnail}
+                slug={product.slug}
+              />
+            </Data>
+
+            <Data className="flex flex-row flex-wrap gap-0.5">
+              {product.categories.map((categoryId) => {
+                return <Category key={categoryId} id={categoryId} />;
+              })}
+            </Data>
+
+            <Data>
+              <span className="text-sm font-medium text-foreground/80">
+                {BRAND.currency.symbol}
+                {product.baseCostPrice}
+              </span>
+            </Data>
+
+            <Data>
+              <Price
+                sellingPrice={product.baseSellingPrice}
+                discount={product.discount}
+              />
+            </Data>
+
+            <Data>
+              <Discount discount={product.discount} />
+            </Data>
+
+            {/* Inventory */}
+            <Data>{product.stock}</Data>
+
+            {/* Variants  */}
+            <Data>{product.variants}</Data>
+
+            {/* Featured */}
+            <Data>
+              <div className="flex flex-row justify-center items-center">
+                <Switch
+                  state={product.featured}
+                  onToggle={() => toggleFeaturedBySlug(product.slug)}
+                />
+              </div>
+            </Data>
+
+            <Data>
+              <div className="flex flex-row justify-center items-center">
+                <Switch
+                  state={product.isActive}
+                  onToggle={() => toggleActiveBySlug(product.slug)}
+                />
+              </div>
+            </Data>
+
+            <Data>
+              <span className="text-xs font-medium text-foreground/80">
+                {getTimeAgo(product.updatedAt)}
+              </span>
+            </Data>
+
+            <Data>
+              <div className="flex flex-row justify-center items-center">
+                <DropDownMenuAction slug={product.slug} />
+              </div>
+            </Data>
+          </tr>
+        ))}
+    </>
+  );
+};
+
+const ProductTable = () => {
+  return (
+    <div className="border border-border rounded-xl overflow-hidden">
+      <div className="overflow-x-auto no-scrollbar">
+        <table className="min-w-max w-full">
+          <thead className="bg-accent/50 border-b border-b-border">
+            <TableHead />
+          </thead>
+
+          <tbody>
+            <TableBody />
+          </tbody>
+        </table>
+      </div>
+
+      {/* Table Pagination */}
+      <AllProductPagination />
     </div>
   );
 };

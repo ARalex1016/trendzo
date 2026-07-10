@@ -46,6 +46,7 @@ router.get("/slug/:slug", getProduct); // getProductBySlug
 router.get("/:productId", getProduct); // getProductById
 
 // Admin product management
+// Add/Create
 router.post(
   "/",
   protect,
@@ -54,6 +55,8 @@ router.post(
   validateRequest(addProductSchema, "product"),
   addProduct,
 );
+
+// Update
 router.patch(
   "/:productId",
   protect,
@@ -61,19 +64,37 @@ router.patch(
   validateRequest(updateProductSchema),
   updateProduct,
 );
+
+// Toggle Active
 router.patch(
-  "/:productId/toggle-active",
+  "/toggle-active/id/:productId",
   protect,
   authorize("admin"),
   toggleActive,
 );
 router.patch(
-  "/:productId/toggle-featured",
+  "/toggle-active/slug/:slug",
+  protect,
+  authorize("admin"),
+  toggleActive,
+);
+
+// Toggle Feature
+router.patch(
+  "/toggle-featured/id/:productId",
   protect,
   authorize("admin"),
   toggleFeatured,
 );
-router.delete("/:productId", protect, authorize("admin"), deleteProduct);
-router.delete("/:slug", protect, authorize("admin"), deleteProduct);
+router.patch(
+  "/toggle-featured/slug/:slug",
+  protect,
+  authorize("admin"),
+  toggleFeatured,
+);
+
+// Delete
+router.delete("/id/:productId", protect, authorize("admin"), deleteProduct);
+router.delete("/slug/:slug", protect, authorize("admin"), deleteProduct);
 
 export default router;

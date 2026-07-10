@@ -5,8 +5,8 @@ import type { IOrderRes } from "./order/order_response.type";
 
 export interface Meta {
   page: number;
-  limit?: number;
-  total?: number;
+  limit: number;
+  total: number;
   pages: number;
 }
 
@@ -15,6 +15,7 @@ export interface ApiResponse<T> {
   message?: string;
   meta?: Meta;
   data: T;
+  expiresAt?: number;
 }
 
 export interface ApiErrorResponse {

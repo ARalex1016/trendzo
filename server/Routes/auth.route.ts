@@ -39,8 +39,8 @@ router.post("/check-auth", protect, checkAuth);
 // Verification
 router.post("/verify-email", protect, verifyEmail);
 router.post("/send-email-verification", protect, sendEmailOtp);
-router.post("/verify-phone", verifyPhone);
-router.post("/send-phone-otp", sendPhoneOtp);
+router.post("/verify-phone", protect, verifyPhone);
+router.post("/send-phone-otp", protect, sendPhoneOtp);
 
 // Password reset
 router.post("/forgot-password", forgotPassword);

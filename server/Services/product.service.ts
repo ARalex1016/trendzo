@@ -65,7 +65,7 @@ const ProductService = {
     };
   },
 
-  async getAllForAdmin(reqQuery: any) {
+  async getAllAdminProducts(reqQuery: any) {
     const fields =
       "_id name slug thumbnail images baseCostPrice baseSellingPrice discount categories tags inventory isActive featured createdBy createdAt updatedAt";
 

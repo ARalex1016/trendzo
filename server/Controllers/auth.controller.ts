@@ -17,6 +17,9 @@ import AppError from "../Utils/AppError.ts";
 // Lib
 import { passwordResetTemplate } from "../Lib/emailTemplates.lib.ts";
 
+const cooldownTime = 1 * 60 * 1000; // 1 minutes
+export const expiresAt = 2 * 60 * 1000; // 2 minutes
+
 // Register User
 export const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
@@ -179,6 +182,7 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
   user.isEmailVerified = true;
   user.emailVerificationOTP = undefined;
   user.emailVerificationOTPExpiresAt = undefined;
+
   await user.save();
 
   // Success logic here
@@ -193,12 +197,36 @@ export const sendEmailOtp = asyncHandler(
   async (req: Request, res: Response) => {
     const user = req.user!;
 
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Your email address has already been verified.",
+      });
+    }
+
+    // if (user?.emailVerificationOTP && user?.emailVerificationOTPExpiresAt) {
+    //   const remainingMs =
+    //     user.emailVerificationOTPExpiresAt.getTime() - Date.now();
+
+    //   if (remainingMs > 0) {
+    //     const remainingSeconds = Math.ceil(remainingMs / 1000);
+
+    //     return res.status(400).json({
+    //       status: "fail",
+    //       message: `Please wait ${remainingSeconds} seconds before requesting a new OTP.`,
+    //     });
+    //   }
+    // }
+
     await generateOTPandSendVerificationEmail(user);
 
     // Success logic here
     res.status(200).json({
       status: "success",
-      message: "Email with OTP sent successfully",
+      message: "Verification OTP has been sent to your email.",
+      data: {
+        expiresAt: new Date(Date.now() + cooldownTime).valueOf(),
+      },
     });
   },
 );
@@ -213,10 +241,19 @@ export const verifyPhone = asyncHandler(async (req: Request, res: Response) => {
 
 export const sendPhoneOtp = asyncHandler(
   async (req: Request, res: Response) => {
+    const user = req.user!;
+
+    if (user.isPhoneVerified) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Your phone number has already been verified.",
+      });
+    }
+
     // Success logic here
     res.status(200).json({
       status: "success",
-      message: "",
+      message: "Email with OTP sent successfully",
     });
   },
 );

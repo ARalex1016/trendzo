@@ -32,7 +32,7 @@ const ProductPagePagination = () => {
 
   const { page: currentPage, pages: totalPages } = productsResponse.meta;
 
-  var siblingCount: number;
+  let siblingCount: number;
 
   if (breakpoint === "xs" || breakpoint === "sm") {
     siblingCount = 1;

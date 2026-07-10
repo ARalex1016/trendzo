@@ -23,7 +23,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   isEmailVerified: boolean;
-  emailVerificationOTP?: number | undefined;
+  emailVerificationOTP?: string | undefined;
   emailVerificationOTPExpiresAt?: Date | undefined;
   resetPasswordToken?: string | undefined;
   resetPasswordExpiresAt?: Date | undefined;
@@ -39,6 +39,7 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   addresses: IAddress[];
+
   // Referral fields
   referralId: string;
   displayCode?: string;
@@ -126,7 +127,7 @@ const UserSchema = new Schema<IUser>(
       default: false,
     },
     emailVerificationOTP: {
-      type: Number,
+      type: String,
     },
     emailVerificationOTPExpiresAt: {
       type: Date,
