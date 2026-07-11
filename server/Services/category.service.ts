@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import type { Types } from "mongoose";
 
 // Repository
@@ -7,7 +6,11 @@ import CategoryRepository from "../Repositories/category.repository.ts";
 // Model
 import type { ICategory } from "../Models/category.model.ts";
 
+// Service
+import { SlugService } from "./slug.service.ts";
+
 // Utils
+import { createSlug } from "../Utils/slug.ts";
 import AppError from "../Utils/AppError.ts";
 
 /**
@@ -38,9 +41,11 @@ const CategoryService = {
       throw new AppError("Category with this name already exists.", 400);
 
     // slug
-    const generatedSlug = payload.slug
-      ? slugify(String(payload.slug), { lower: true, strict: true })
-      : slugify(name, { lower: true, strict: true });
+    const generatedSlug = createSlug(payload.slug ?? name);
+
+    if (!generatedSlug) {
+      throw new AppError("Unable to generate a valid slug.", 400);
+    }
 
     const existingSlug = await CategoryRepository.findOne({
       slug: generatedSlug,
@@ -60,8 +65,9 @@ const CategoryService = {
 
       // If Parent also has it's parent category (Only 1 layer is allowed)
       if (parent.parentCategory) {
-        throw new Error(
-          "Cannot create grandchild category. Only one level allowed.",
+        throw new AppError(
+          "Cannot create grandchild category. Only one level is allowed.",
+          400,
         );
       }
     }
@@ -101,10 +107,11 @@ const CategoryService = {
 
     // slug handling
     if (payload.slug) {
-      const slugified = slugify(String(payload.slug), {
-        lower: true,
-        strict: true,
-      });
+      const slugified = createSlug(payload.slug);
+
+      if (!slugified) {
+        throw new AppError("Unable to generate a valid slug.", 400);
+      }
       const existing = await CategoryRepository.findOne({
         slug: slugified,
         _id: { $ne: target._id },
@@ -116,16 +123,22 @@ const CategoryService = {
         );
       target.slug = slugified;
     } else if (payload.name) {
-      target.slug = slugify(payload.name, { lower: true, strict: true });
+      const generatedSlug = createSlug(payload.name);
+
+      if (!generatedSlug) {
+        throw new AppError("Unable to generate a valid slug.", 400);
+      }
+
+      target.slug = generatedSlug;
     }
 
     // optional fields
     if (payload.description !== undefined)
-      target.description = payload.description as string;
+      target.description = payload.description?.trim();
     if (payload.metaTitle !== undefined)
-      target.metaTitle = payload.metaTitle as string;
+      target.metaTitle = payload.metaTitle?.trim();
     if (payload.metaDescription !== undefined)
-      target.metaDescription = payload.metaDescription as string;
+      target.metaDescription = payload.metaDescription?.trim();
     if (payload.isActive !== undefined)
       target.isActive = Boolean(payload.isActive);
     if (payload.image !== undefined) target.image = payload.image as string;
