@@ -23,6 +23,11 @@ declare global {
       targetReview?: IReview;
       targetSize?: ISize;
       targetColor?: IColor;
+
+      file?: Multer.File;
+      files?: Multer.File[];
     }
   }
 }
+
+export {};

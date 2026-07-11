@@ -5,7 +5,7 @@ import AppError from "../Utils/AppError.ts";
 import { generateUniqueSlugs, isSlugAvailable } from "../Utils/slug.ts";
 
 export const SlugService = {
-  async suggestSlugs<T extends Record<string, unknown>>(
+  async suggestSlugs<T extends object>(
     model: Model<T>,
     field: keyof T & string,
     value: string,
@@ -18,7 +18,7 @@ export const SlugService = {
     return generateUniqueSlugs(model, field, value, limit);
   },
 
-  async checkAvailability<T extends Record<string, unknown>>(
+  async checkAvailability<T extends object>(
     model: Model<T>,
     field: keyof T & string,
     slug: string,

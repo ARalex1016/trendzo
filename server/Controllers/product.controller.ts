@@ -96,6 +96,7 @@ export const addProduct = asyncHandler(async (req: Request, res: Response) => {
   }[] = [];
 
   try {
+    // const files = req.files as Express.Multer.File[];
     const files = req.files as Express.Multer.File[];
 
     const imageIds = Array.isArray(req.body.imageIds)

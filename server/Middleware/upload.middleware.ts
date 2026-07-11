@@ -6,7 +6,7 @@ import { uploadConfig } from "../Config/upload.config.ts";
 const storage = multer.memoryStorage();
 
 const fileFilter = (
-  req: any,
+  req: Express.Request,
   file: Express.Multer.File,
   cb: multer.FileFilterCallback,
 ) => {
