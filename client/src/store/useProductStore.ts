@@ -137,8 +137,6 @@ const useProductStore = create<ProductStore>((set) => ({
 
       let response = axiosInstance.post(`/v1/products/`, formData);
 
-      console.log(response);
-
       toast.promise(response, {
         loading: "Creating product...",
         success: (res) => {
@@ -154,6 +152,8 @@ const useProductStore = create<ProductStore>((set) => ({
       });
 
       await response;
+
+      console.log(response);
     } catch (error: any) {}
   },
 
