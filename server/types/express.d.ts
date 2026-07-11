@@ -24,8 +24,8 @@ declare global {
       targetSize?: ISize;
       targetColor?: IColor;
 
-      file?: Multer.File;
-      files?: Multer.File[];
+      file?: Express.Multer.File;
+      files?: Express.Multer.File[];
     }
   }
 }

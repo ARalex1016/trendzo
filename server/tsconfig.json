@@ -12,7 +12,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2020",
-    "types": ["node", "express", "multer"],
+    "types": ["node", "multer"],
     // For nodejs:
     // "lib": ["esnext"],
     // and npm install -D @types/node
@@ -47,5 +47,5 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["./"]
+  "include": ["**/*.ts", "**/*.d.ts"]
 }
