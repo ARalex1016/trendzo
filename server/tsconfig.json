@@ -12,7 +12,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2020",
-    "types": ["node", "express"],
+    "types": ["node", "express", "multer"],
     // For nodejs:
     // "lib": ["esnext"],
     // and npm install -D @types/node
