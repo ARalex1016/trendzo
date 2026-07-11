@@ -96,8 +96,8 @@ export const addProduct = asyncHandler(async (req: Request, res: Response) => {
   }[] = [];
 
   try {
-    // const files = req.files as Express.Multer.File[];
     const files = req.files as Express.Multer.File[];
+    // const files = req.files;
 
     const imageIds = Array.isArray(req.body.imageIds)
       ? req.body.imageIds
@@ -113,7 +113,7 @@ export const addProduct = asyncHandler(async (req: Request, res: Response) => {
     }
 
     uploadedImages = await Promise.all(
-      files.map(async (file, index) => {
+      files?.map(async (file, index) => {
         const result = await uploadToCloudinary(
           file.buffer,
           "trendzo/products",
