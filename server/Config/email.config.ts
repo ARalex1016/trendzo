@@ -38,10 +38,15 @@ export const sendNodeMailerMail = async ({
   };
 
   try {
+    console.log(env.EMAIL_USER);
+    console.log(env.EMAIL_PASS);
+
     let res = await nodemailerTransporter.sendMail(mailOptions);
+    console.log("Res: ", res);
 
     return res;
   } catch (error) {
+    console.error("Email sending failed:", error);
     throw error;
   }
 };

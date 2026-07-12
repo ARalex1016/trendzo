@@ -152,8 +152,6 @@ const useProductStore = create<ProductStore>((set) => ({
       });
 
       await response;
-
-      console.log(response);
     } catch (error: any) {}
   },
 

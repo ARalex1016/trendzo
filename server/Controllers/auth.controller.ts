@@ -204,19 +204,19 @@ export const sendEmailOtp = asyncHandler(
       });
     }
 
-    // if (user?.emailVerificationOTP && user?.emailVerificationOTPExpiresAt) {
-    //   const remainingMs =
-    //     user.emailVerificationOTPExpiresAt.getTime() - Date.now();
+    if (user?.emailVerificationOTP && user?.emailVerificationOTPExpiresAt) {
+      const remainingMs =
+        user.emailVerificationOTPExpiresAt.getTime() - Date.now();
 
-    //   if (remainingMs > 0) {
-    //     const remainingSeconds = Math.ceil(remainingMs / 1000);
+      if (remainingMs > 0) {
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
 
-    //     return res.status(400).json({
-    //       status: "fail",
-    //       message: `Please wait ${remainingSeconds} seconds before requesting a new OTP.`,
-    //     });
-    //   }
-    // }
+        return res.status(400).json({
+          status: "fail",
+          message: `Please wait ${remainingSeconds} seconds before requesting a new OTP.`,
+        });
+      }
+    }
 
     await generateOTPandSendVerificationEmail(user);
 
