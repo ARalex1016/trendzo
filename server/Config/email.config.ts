@@ -13,7 +13,10 @@ interface sendNodeMailerMailParams {
 }
 
 export const nodemailerTransporter = nodemailer.createTransport({
-  service: "gmail",
+  // service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: env.EMAIL_USER,
     pass: env.EMAIL_PASS,
@@ -38,8 +41,8 @@ export const sendNodeMailerMail = async ({
   };
 
   try {
-    console.log(env.EMAIL_USER);
-    console.log(env.EMAIL_PASS);
+    await nodemailerTransporter.verify();
+    console.log("SMTP connected");
 
     let res = await nodemailerTransporter.sendMail(mailOptions);
     console.log("Res: ", res);
