@@ -41,6 +41,13 @@ export const updateProfile = asyncHandler(
 );
 
 // -----------------------------------
+// User : Address Manage
+// -----------------------------------
+export const addAddress = asyncHandler(
+  async (req: Request, res: Response) => {},
+);
+
+// -----------------------------------
 // ADMIN: GET ALL USERS
 // -----------------------------------
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {

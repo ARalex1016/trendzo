@@ -21,6 +21,9 @@ router.param("userId", userIdParamHandler);
 router.get("/me", protect, getMyProfile);
 router.patch("/update-profile", protect, updateProfile);
 
+// User : Address Manage
+// router.patch("/update-profile", protect, addAddress);
+
 // Admin: Manage users
 router.get("/", protect, authorize("admin"), getAllUsers);
 router.delete("/:userId", protect, authorize("admin"), deleteUser);

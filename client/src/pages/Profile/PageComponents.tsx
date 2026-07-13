@@ -1,3 +1,6 @@
+import type React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+
 // Lib
 import { cn } from "@/lib/utils";
 
@@ -11,11 +14,38 @@ interface InputFieldProps extends React.ComponentProps<"input"> {
   isVerified?: boolean;
 }
 
-interface ContainerProps extends React.ComponentProps<"div"> {
+interface ContainerProps
+  extends React.ComponentProps<"div">, VariantProps<typeof iconVariants> {
   title?: string;
   text?: string;
   icon?: LucideIcon;
+  actionText?: React.ReactNode;
+  onActionButtonCLick?: () => void;
 }
+
+export const iconVariants = cva(
+  "size-9 flex items-center justify-center rounded-full p-2",
+  {
+    variants: {
+      iconColor: {
+        primary: "bg-primary/15 text-primary",
+        primary2: "bg-primary2/15 text-primary2",
+        success: "bg-success/15 text-success",
+        warning: "bg-amber-500/15 text-amber-500",
+        danger: "bg-destructive/15 text-destructive",
+        info: "bg-info/15 text-info",
+        purple: "bg-violet-500/15 text-violet-500",
+        pink: "bg-pink-500/15 text-pink-500",
+        orange: "bg-orange-500/15 text-orange-500",
+        teal: "bg-teal-500/15 text-teal-500",
+        muted: "bg-muted text-muted-foreground",
+      },
+    },
+    defaultVariants: {
+      iconColor: "primary",
+    },
+  },
+);
 
 const VerifiedBadge = ({ ok }: { ok: boolean }) => {
   return ok ? (
@@ -67,6 +97,9 @@ export const Container = ({
   title,
   text,
   icon: Icon,
+  iconColor,
+  actionText,
+  onActionButtonCLick,
   children,
   className,
   ...props
@@ -76,17 +109,30 @@ export const Container = ({
       {...props}
       className={cn("bg-accent/40 rounded-xl space-y-5 py-6", className)}
     >
-      <div className="flex flex-row items-center border-b border-border gap-x-4 px-6 pb-6">
-        <div className="size-9 text-primary bg-primary/20 flex flex-row justify-center items-center p-2 rounded-full">
-          {Icon && <Icon />}
+      <div className="flex flex-row justify-between items-center border-b border-border px-6 pb-6">
+        <div className="flex flex-row items-center gap-x-4">
+          {Icon && (
+            <div className={iconVariants({ iconColor })}>
+              {Icon && <Icon />}
+            </div>
+          )}
+
+          {title && (
+            <div className="flex flex-col">
+              <p className="text-base font-medium text-foreground">{title}</p>
+
+              {text && <p className="text-xs text-foreground/40">{text}</p>}
+            </div>
+          )}
         </div>
 
-        {title && (
-          <div className="flex flex-col">
-            <p className="text-base font-medium text-foreground">{title}</p>
-
-            {text && <p className="text-sm text-foreground/40">{text}</p>}
-          </div>
+        {actionText && (
+          <button
+            onClick={onActionButtonCLick}
+            className="text-sm text-foreground/60 font-medium border border-border rounded-xl px-3 py-1 hover:scale-105 hover:shadow hover:shadow-primary/40 hover:text-foreground transition-all duration-300"
+          >
+            {actionText}
+          </button>
         )}
       </div>
 
