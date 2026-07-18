@@ -94,12 +94,7 @@ const router = createBrowserRouter([
       },
       {
         element: <ProtectedRoute />, // Only for Authenticated Users
-        children: [
-          {
-            path: ROUTES.PROFILE,
-            element: <Profile />,
-          },
-        ],
+        children: [],
       },
     ],
   },
@@ -118,6 +113,10 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute />, // Only for Authenticated Users
         children: [
+          {
+            path: ROUTES.PROFILE,
+            element: <Profile />,
+          },
           {
             path: ROUTES.CHECKOUT_SUCCESS(),
             element: <Checkout_Success />,

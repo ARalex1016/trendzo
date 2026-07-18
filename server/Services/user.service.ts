@@ -1,9 +1,19 @@
 import { Types } from "mongoose";
 import { UserRepository } from "../Repositories/user.repository.ts";
 
+// Config
+import { USER_CONFIG } from "../Config/user.config.ts";
+
 // Utils
 import ApiFeatures from "../Utils/apiFeatures/ApiFeatures.ts";
 import AppError from "../Utils/AppError.ts";
+
+// Types
+import type { IUser } from "../Models/user.model.ts";
+import type {
+  AddAddressInput,
+  UpdateAddressInput,
+} from "../Validations/address.validation.ts";
 
 export const UserService = {
   // -----------------------------------
@@ -71,5 +81,47 @@ export const UserService = {
     await UserRepository.deleteUserById(targetUser._id);
 
     return true;
+  },
+
+  // -----------------------------------
+  // ADDRESSES
+  // -----------------------------------
+
+  async addAddress(user: IUser, addressData: AddAddressInput) {
+    console.log(addressData);
+
+    // Maximum addresses per user reached
+    if (user.addresses.length >= USER_CONFIG.address.maxAddresses) {
+      throw new AppError("Maximum address limit reached.", 400);
+    }
+
+    // Deliveries only within Certail Countries
+    if (!USER_CONFIG.address.supportedCountries.includes(addressData.country)) {
+      throw new AppError(
+        `We currently deliver only within ${USER_CONFIG.address.supportedCountries.join(", ")}.`,
+        400,
+      );
+    }
+
+    return UserRepository.addAddress(user._id, addressData);
+  },
+
+  async updateAddress(
+    userId: Types.ObjectId,
+    addressId: Types.ObjectId,
+    addressData: UpdateAddressInput,
+  ) {
+    return UserRepository.updateAddress(userId, addressId, addressData);
+  },
+
+  async removeAddress(userId: Types.ObjectId, addressId: Types.ObjectId) {
+    return UserRepository.removeAddress(userId, addressId);
+  },
+
+  async changeDefaultAddress(
+    userId: Types.ObjectId,
+    addressId: Types.ObjectId,
+  ) {
+    return UserRepository.changeDefaultAddress(userId, addressId);
   },
 };

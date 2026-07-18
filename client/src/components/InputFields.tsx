@@ -32,7 +32,7 @@ export const InputFieldWithLabelNIcon = ({
         </label>
       )}
 
-      <div className="bg-accent rounded-md flex flex-row items-center gap-x-2 border border-border focus-within:border-primary pl-3">
+      <div className="bg-accent rounded-md flex flex-row items-center gap-x-1 sm:gap-x-2 border border-border focus-within:border-primary pl-2 sm:pl-3">
         {Icon && (
           <Icon
             size={"16px"}

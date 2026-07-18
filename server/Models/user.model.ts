@@ -8,7 +8,6 @@ export interface IAddress {
   label?: string; // Home, Work, Mom, etc.
   fullName: string; // recipient name
   phone: string;
-  email: string;
   street: string;
   area?: string; // optional local area / landmark
   city: string;
@@ -59,11 +58,6 @@ const AddressSchema = new Schema<IAddress>(
       trim: true,
     },
     phone: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
       type: String,
       required: true,
       trim: true,
@@ -192,28 +186,24 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Ensure only one default address per user
-UserSchema.pre("save", async function () {
-  if (!this.addresses || this.addresses.length === 0) {
-    return;
-  }
+UserSchema.pre("save", function () {
+  if (this.addresses.length === 0) return;
 
-  const defaultAddresses = this.addresses.filter((addr) => addr.isDefault);
+  let foundDefault = false;
 
-  if (defaultAddresses.length === 0 && this.addresses.length > 0) {
-    this.addresses[0]!.isDefault = true;
-  }
-
-  if (defaultAddresses.length > 1) {
-    let foundFirst = false;
-
-    this.addresses.forEach((addr) => {
-      if (addr.isDefault && !foundFirst) {
-        foundFirst = true;
+  this.addresses.forEach((address, index) => {
+    if (address.isDefault) {
+      if (!foundDefault) {
+        foundDefault = true;
       } else {
-        addr.isDefault = false;
+        address.isDefault = false;
       }
-    });
-  }
+    }
+
+    if (!foundDefault && index === this.addresses.length - 1) {
+      this.addresses[0]!.isDefault = true;
+    }
+  });
 });
 
 const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);

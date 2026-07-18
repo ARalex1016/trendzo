@@ -1,5 +1,5 @@
 import { env } from "../Config/env.config.ts";
-import { sendNodeMailerMail } from "./../Config/email.config.ts";
+import { sendNodeMailerMail } from "../Services/email.service.ts";
 
 export const sendEmail = async (
   email: string,

@@ -4,6 +4,8 @@ import { ZodObject, ZodError, type ZodIssue } from "zod";
 // Utils
 import AppError from "../Utils/AppError.ts";
 
+type ValidationTarget = "body" | "params" | "query";
+
 const parseIfJSON = (value: unknown) => {
   if (typeof value !== "string") return value;
 
@@ -15,10 +17,32 @@ const parseIfJSON = (value: unknown) => {
 };
 
 export const validateRequest =
-  (schema: ZodObject<any>, source?: string) =>
+  (schema: ZodObject<any>, target?: ValidationTarget | string) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      let data = source ? req.body[source] : req.body;
+      let data;
+
+      switch (target) {
+        case "body":
+        case undefined:
+          data = req.body;
+          break;
+
+        case "params":
+          data = req.params;
+          break;
+
+        case "query":
+          data = req.query;
+          break;
+
+        default:
+          // Backward compatibility:
+          // validateRequest(schema, "filters") -> req.body.filters
+          // validateRequest(schema, "address") -> req.body.address
+          data = req.body[target];
+          break;
+      }
 
       // Parse JSON string if needed
       data = parseIfJSON(data);

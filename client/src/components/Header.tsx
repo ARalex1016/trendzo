@@ -47,13 +47,14 @@ const Header = () => {
         {/* Profile */}
         {isAuthenticated && (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Avatar>
+            <DropdownMenuTrigger className="outline-none">
+              <Avatar className="hover:bg-accent/80! hover:shadow hover:shadow-primary transition-all duration-300">
                 <AvatarImage
                   // src={user?.}
                   alt="@shadcn"
                   className="grayscale"
                 />
+
                 <AvatarFallback>
                   {user?.name && getInitials(user.name)}
                 </AvatarFallback>

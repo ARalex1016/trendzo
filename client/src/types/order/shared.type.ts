@@ -18,7 +18,6 @@ export type PaymentMethod = "bank" | "esewa" | "khalti" | "cash";
 export interface DeliveryAddress {
   name: string;
   phone: string;
-  email: string;
   address: string;
   city: string;
   postalCode?: string;

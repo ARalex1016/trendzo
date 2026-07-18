@@ -61,7 +61,6 @@ const CheckOut = () => {
       label: "",
       fullName: "",
       phone: "",
-      email: "",
       street: "",
       area: "",
       city: "",
@@ -109,8 +108,6 @@ const CheckOut = () => {
       deliveryAddress: {
         name: checkOutData.address.fullName, // ✅ mapped
         phone: checkOutData.address.phone,
-        email: checkOutData.address.email,
-
         address: [
           checkOutData.address.street,
           checkOutData.address.area,

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import type { Request, Response } from "express";
 
 // Service
@@ -43,8 +44,59 @@ export const updateProfile = asyncHandler(
 // -----------------------------------
 // User : Address Manage
 // -----------------------------------
-export const addAddress = asyncHandler(
-  async (req: Request, res: Response) => {},
+export const addAddress = asyncHandler(async (req: Request, res: Response) => {
+  const user = await UserService.addAddress(req.user!, req.body);
+
+  return res.status(201).json({
+    success: true,
+    message: "Address added successfully.",
+    data: user.addresses,
+  });
+});
+
+export const updateAddress = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!._id;
+    const addressId = new Types.ObjectId(req.params.addressId);
+
+    const user = await UserService.updateAddress(userId, addressId, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "Address updated successfully.",
+      data: user.addresses,
+    });
+  },
+);
+
+export const changeDefaultAddress = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!._id;
+    const addressId = new Types.ObjectId(req.params.addressId);
+
+    const user = await UserService.changeDefaultAddress(userId, addressId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Default address updated successfully.",
+      data: user.addresses,
+    });
+  },
+);
+
+export const removeAddress = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!._id;
+    const addressId = new Types.ObjectId(req.params.addressId);
+
+    const user = await UserService.removeAddress(userId, addressId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Address removed successfully.",
+      data: user.addresses,
+    });
+  },
 );
 
 // -----------------------------------

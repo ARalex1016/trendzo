@@ -27,8 +27,8 @@ export const VerificationBanner = ({
   onClick,
   veriFicationType,
 }: VerificationBannerProps) => {
+  const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
   const [expireAt, setExpireAt] = useState<number | null>(null);
 
   const handleVerificationClick = async () => {

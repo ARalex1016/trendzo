@@ -8,6 +8,7 @@ import type {
   UserLoginType,
 } from "@/validations/user.validator";
 import type { IUser } from "@/types/user.types";
+import type { IAddress } from "@/types/user.types";
 import type { ApiResponse } from "@/types/response.type";
 
 interface AuthStore {
@@ -24,6 +25,8 @@ interface AuthStore {
   sendEmailOtp: () => Promise<ApiResponse<any>>;
 
   verifyEmail: (otp: number) => Promise<void>;
+
+  setAddresses: (addresses: IAddress[]) => void;
 
   logout: () => Promise<void>;
 }
@@ -164,6 +167,16 @@ const useAuthStore = create<AuthStore>((set) => ({
       throw new Error(error);
     }
   },
+
+  setAddresses: (addresses) =>
+    set((state) => ({
+      user: state.user
+        ? {
+            ...state.user,
+            addresses,
+          }
+        : null,
+    })),
 
   logout: async () => {
     set({ isAuthenticated: true });

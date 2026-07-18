@@ -1,5 +1,5 @@
-// Components
-import { Separator } from "@/components/ui/separator";
+// Store
+import useUserStore from "@/store/useUserStore";
 
 // Types
 import { type IAddress } from "@/types/user.types";
@@ -34,6 +34,14 @@ const InfoField = ({ label, value }: { label: string; value: string }) => {
 };
 
 const SavedAddressCard = ({ address }: SavedAddressCardProps) => {
+  const { removeAddress } = useUserStore();
+
+  const handleRemoveAddress = async () => {
+    try {
+      await removeAddress(address._id);
+    } catch (error) {}
+  };
+
   return (
     <div className="bg-accent/60 border border-border rounded-xl px-5 py-4 transition-all duration-300 hover:shadow-sm hover:shadow-primary/40 group">
       {/* Header */}
@@ -62,7 +70,9 @@ const SavedAddressCard = ({ address }: SavedAddressCardProps) => {
 
           <Pencil className="size-3.5 md:size-4 text-foreground/60" />
 
-          <Trash2 className="size-3.5 md:size-4 text-foreground/60" />
+          <button onClick={handleRemoveAddress}>
+            <Trash2 className="size-3.5 md:size-4 text-foreground/60" />
+          </button>
         </div>
       </div>
 

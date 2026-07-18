@@ -14,7 +14,6 @@ import {
   Check,
   User,
   Phone,
-  Mail,
   Home,
   Building2,
   Globe,
@@ -40,7 +39,6 @@ type SavedAddress = {
   label?: string;
   name: string;
   phone: string;
-  email: string;
   street: string;
   city: string;
   state: string;
@@ -53,7 +51,6 @@ const emptyAddress: CheckoutSchemaType["address"] = {
   label: "",
   fullName: "",
   phone: "",
-  email: "",
   street: "",
   area: "",
   city: "",
@@ -82,7 +79,6 @@ const AddressInfoStep = () => {
         label: address.label ?? "",
         fullName: address.fullName ?? user?.name,
         phone: address.phone ?? user?.phone,
-        email: address.email ?? user?.email,
         street: address.street,
         area: address.area ?? "",
         city: address.city,
@@ -113,7 +109,6 @@ const AddressInfoStep = () => {
       "address.label",
       "address.fullName",
       "address.phone",
-      "address.email",
       "address.street",
       "address.area",
       "address.city",
@@ -132,7 +127,6 @@ const AddressInfoStep = () => {
       label: newAddressValues.label?.trim() || "Other",
       name: newAddressValues.fullName.trim(),
       phone: newAddressValues.phone.trim(),
-      email: newAddressValues.email.trim(),
       street: newAddressValues.street.trim(),
       city: newAddressValues.city.trim(),
       state: newAddressValues.state.trim(),
@@ -149,7 +143,6 @@ const AddressInfoStep = () => {
         label: newAddress.label,
         fullName: newAddress.name,
         phone: newAddress.phone,
-        email: newAddress.email,
         street: newAddress.street,
         city: newAddress.city,
         state: newAddress.state,
@@ -290,23 +283,6 @@ const AddressInfoStep = () => {
                       {...field}
                       value={field.value ?? ""}
                       placeholder="+977 9841234567"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address.email"
-                render={({ field }) => (
-                  <FormItem>
-                    <InputFieldWithLabelNIcon
-                      label="Email Address"
-                      Icon={Mail}
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder="your@email.com"
                     />
                     <FormMessage />
                   </FormItem>

@@ -23,7 +23,6 @@ export const addressStepSchema = z.object({
       .string()
       .min(5, "Phone number is too short")
       .max(20, "Phone number is too long"),
-    email: z.string().email("Invalid email address"),
     street: z.string().min(5, "Street address is too short"),
     area: z.string().optional(),
     city: z.string().min(2, "City is too short"),
@@ -31,6 +30,7 @@ export const addressStepSchema = z.object({
     country: z.string().optional(),
     postalCode: z.string().min(2, "Postal code is required"),
     landmark: z.string().optional(),
+    isDefault: z.boolean(),
   }),
 });
 
