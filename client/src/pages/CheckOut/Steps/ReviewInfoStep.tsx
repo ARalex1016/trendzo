@@ -28,8 +28,8 @@ const ReviewInfoStep = () => {
         <p className="text-lg font-medium">Delivery Details</p>
 
         <p className="text-sm text-foreground/70">
-          {details.address.street},{details.address.area},
-          {details.address.state} - {details.address.postalCode}
+          {details.deliveryAddress.street},{details.deliveryAddress.area},
+          {details.deliveryAddress.state} - {details.deliveryAddress.postalCode}
           {/* Durbar Marg, Ward 3, Kathmandu - 44600 --- NEED UPDATE --- */}
         </p>
       </div>

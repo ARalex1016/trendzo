@@ -31,8 +31,6 @@ export const placeOrderSchema = z.object({
       .min(5, "Phone number is too short")
       .max(20, "Phone number is too long"),
 
-    email: z.string().email("Invalid email"),
-
     address: z.string().min(5, "Address is too short"),
 
     city: z.string().min(2, "City is too short"),

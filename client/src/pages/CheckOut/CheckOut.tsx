@@ -56,7 +56,7 @@ const CheckOut = () => {
       phone: "",
       email: "",
     },
-    address: {
+    deliveryAddress: {
       _id: "",
       label: "",
       fullName: "",
@@ -72,7 +72,6 @@ const CheckOut = () => {
     paymentMethod: "cod",
     orderNote: "",
     couponCode: cart?.coupon && "",
-    addressMode: "saved",
   };
 
   const methods = useForm<CheckoutSchemaType>({
@@ -106,19 +105,20 @@ const CheckOut = () => {
       })),
       paymentMethod: checkOutData.paymentMethod,
       deliveryAddress: {
-        name: checkOutData.address.fullName, // ✅ mapped
-        phone: checkOutData.address.phone,
+        id: checkOutData.deliveryAddress._id, // ✅ mapped
+        name: checkOutData.deliveryAddress.fullName,
+        phone: checkOutData.deliveryAddress.phone,
         address: [
-          checkOutData.address.street,
-          checkOutData.address.area,
-          checkOutData.address.landmark,
+          checkOutData.deliveryAddress.street,
+          checkOutData.deliveryAddress.area,
+          checkOutData.deliveryAddress.landmark,
         ]
           .filter(Boolean)
           .join(", "), // ✅ flattened
 
-        city: checkOutData.address.city,
-        postalCode: checkOutData.address.postalCode,
-        country: checkOutData.address.country,
+        city: checkOutData.deliveryAddress.city,
+        postalCode: checkOutData.deliveryAddress.postalCode,
+        country: checkOutData.deliveryAddress.country,
       },
       orderNote: checkOutData.orderNote || undefined,
       couponCode: checkOutData.couponCode || undefined,

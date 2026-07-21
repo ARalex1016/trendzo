@@ -1,3 +1,8 @@
+import toast from "react-hot-toast";
+
+// Components
+import { Separator } from "@/components/ui/separator";
+
 // Store
 import useUserStore from "@/store/useUserStore";
 
@@ -34,7 +39,18 @@ const InfoField = ({ label, value }: { label: string; value: string }) => {
 };
 
 const SavedAddressCard = ({ address }: SavedAddressCardProps) => {
-  const { removeAddress } = useUserStore();
+  const { changeDefaultAddress, removeAddress } = useUserStore();
+
+  const handleChangeDefaultAddress = async () => {
+    if (address.isDefault) {
+      toast.error("This is already your default address.");
+      return;
+    }
+
+    try {
+      await changeDefaultAddress(address._id);
+    } catch (error) {}
+  };
 
   const handleRemoveAddress = async () => {
     try {
@@ -43,13 +59,13 @@ const SavedAddressCard = ({ address }: SavedAddressCardProps) => {
   };
 
   return (
-    <div className="bg-accent/60 border border-border rounded-xl px-5 py-4 transition-all duration-300 hover:shadow-sm hover:shadow-primary/40 group">
+    <div className="bg-accent/60 border border-border rounded-xl px-3 sm:px-5 py-4 transition-all duration-300 hover:shadow-sm hover:shadow-primary/40 space-y-2 group">
       {/* Header */}
-      <div className="flex flex-row justify-between items-start mb-2">
+      <div className="flex flex-row justify-between items-start">
         <div className="flex flex-col">
           <div className="flex flex-row items-center gap-x-3">
             <p className="text-base md:text-lg font-medium text-foreground">
-              {address.label}Home
+              {address.label}
             </p>
 
             {address.isDefault && <DefaultBadge />}
@@ -63,18 +79,25 @@ const SavedAddressCard = ({ address }: SavedAddressCardProps) => {
         {/* Action */}
         <div className="flex md:hidden group-hover:flex transition-all duration-300 flex-row items-center gap-x-4">
           {!address.isDefault && (
-            <p className="text-xs md:text-sm font-medium text-foreground/60 text-nowrap">
+            <button
+              onClick={handleChangeDefaultAddress}
+              className="text-xs md:text-sm font-medium text-foreground/60 text-nowrap"
+            >
               Set Default
-            </p>
+            </button>
           )}
 
-          <Pencil className="size-3.5 md:size-4 text-foreground/60" />
+          <button>
+            <Pencil className="size-3.5 md:size-4 text-foreground/60" />
+          </button>
 
           <button onClick={handleRemoveAddress}>
             <Trash2 className="size-3.5 md:size-4 text-foreground/60" />
           </button>
         </div>
       </div>
+
+      <Separator />
 
       {/* Details */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 space-y-1">

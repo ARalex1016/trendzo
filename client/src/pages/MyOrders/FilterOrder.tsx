@@ -50,9 +50,13 @@ const FilterOrder = () => {
       </div>
 
       <div className="flex flex-row gap-x-3 overflow-auto no-scrollbar">
-        {statusList.map((status) => {
+        {statusList.map((status, index) => {
           return (
-            <StatusBadge variant="gray" className="text-sm md:text-base">
+            <StatusBadge
+              key={`${status}-${index}`}
+              variant="gray"
+              className="text-sm md:text-base"
+            >
               {capitalize(status)}
             </StatusBadge>
           );

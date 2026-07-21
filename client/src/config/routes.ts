@@ -1,5 +1,8 @@
 export const ROUTES = {
   HOME: "/",
+
+  PROFILE: "/profile",
+
   PRODUCTS: "/products",
   PRODUCT_DETAILS: (slug: string = ":productSlug") => `/products/${slug}`,
 
@@ -11,7 +14,7 @@ export const ROUTES = {
   MYORDERS: "/myorders",
   MYORDER_DETAILS: (slug: string = ":orderNumber") => `/myorders/${slug}`,
 
-  PROFILE: "/profile",
+  MYREFERRAL: "/myreferrals",
 
   // Admin
   PRODUCT_MANAGEMENT: "/products-management",

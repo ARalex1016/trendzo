@@ -6,15 +6,17 @@ import toast from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
 
 // Types
-import type { AddressStepSchemaType } from "@/validations/checkout.validator";
+import type { AddAddressSchemaType } from "@/validations/address.validator";
 
 interface UserStore {
-  addAddress: (addressData: AddressStepSchemaType) => Promise<void>;
+  addAddress: (addressData: AddAddressSchemaType) => Promise<void>;
 
   removeAddress: (addressId: string) => Promise<void>;
+
+  changeDefaultAddress: (addressId: string) => Promise<void>;
 }
 
-const useUserStore = create<UserStore>((set) => ({
+const useUserStore = create<UserStore>(() => ({
   addAddress: async (addressData) => {
     try {
       let promise = axiosInstance.patch(
@@ -63,6 +65,34 @@ const useUserStore = create<UserStore>((set) => ({
       });
 
       const response = await promise;
+
+      useAuthStore.getState().setAddresses(response.data.data);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  },
+
+  changeDefaultAddress: async (addressId) => {
+    try {
+      let promise = axiosInstance.patch(
+        `/v1/users/addresses/${addressId}/default`,
+      );
+
+      toast.promise(promise, {
+        loading: "Updating default address...",
+        success: (res) => {
+          return res.data.message;
+        },
+        error: (err) => {
+          return (
+            err?.response?.data?.message ||
+            err.message ||
+            "Failed to update default address."
+          );
+        },
+      });
+
+      let response = await promise;
 
       useAuthStore.getState().setAddresses(response.data.data);
     } catch (error: any) {

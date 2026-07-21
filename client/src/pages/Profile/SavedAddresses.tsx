@@ -31,9 +31,9 @@ const SavedAddresses = () => {
       icon={MapPin}
       iconColor={"primary2"}
       actionText={"+ Add New"}
-      onActionButtonCLick={handleOpenNewAddress}
+      onActionButtonClick={handleOpenNewAddress}
     >
-      <div className="space-y-3 px-6">
+      <div className="space-y-4 px-4 sm:px-6">
         {user &&
           user?.addresses.map((address) => {
             return <SavedAddressCard key={address._id} address={address} />;

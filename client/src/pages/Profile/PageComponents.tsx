@@ -20,7 +20,7 @@ interface ContainerProps
   text?: string;
   icon?: LucideIcon;
   actionText?: React.ReactNode;
-  onActionButtonCLick?: () => void;
+  onActionButtonClick?: () => void;
 }
 
 export const iconVariants = cva(
@@ -99,7 +99,7 @@ export const Container = ({
   icon: Icon,
   iconColor,
   actionText,
-  onActionButtonCLick,
+  onActionButtonClick,
   children,
   className,
   ...props
@@ -109,32 +109,45 @@ export const Container = ({
       {...props}
       className={cn("bg-accent/40 rounded-xl space-y-5 py-6", className)}
     >
-      <div className="flex flex-row justify-between items-center border-b border-border px-6 pb-6">
-        <div className="flex flex-row items-center gap-x-4">
-          {Icon && (
-            <div className={iconVariants({ iconColor })}>
-              {Icon && <Icon />}
-            </div>
+      {title && (
+        <div
+          className={cn(
+            "flex flex-row justify-between items-center gap-x-1 sm:gap-x-3 px-4 sm:px-6 pb-4 sm:pb-6",
+            title && "border-b border-border",
           )}
+        >
+          <div className="flex flex-row items-center gap-x-3 sm:gap-x-4">
+            {Icon && (
+              <div className={iconVariants({ iconColor })}>
+                {Icon && <Icon className="size-6 sm:size-8" />}
+              </div>
+            )}
 
-          {title && (
-            <div className="flex flex-col">
-              <p className="text-base font-medium text-foreground">{title}</p>
+            {title && (
+              <div className="flex flex-col">
+                <p className="text-sm sm:text-base font-medium text-foreground">
+                  {title}
+                </p>
 
-              {text && <p className="text-xs text-foreground/40">{text}</p>}
-            </div>
+                {text && (
+                  <p className="text-[10px] sm:text-xs line-clamp-1 text-foreground/40">
+                    {text}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {actionText && (
+            <button
+              onClick={onActionButtonClick}
+              className="flex-none text-xs sm:text-sm text-foreground/60 font-medium border border-border rounded-xl px-2 sm:px-3 py-1 hover:scale-105 hover:shadow hover:shadow-primary/40 hover:text-foreground transition-all duration-300"
+            >
+              {actionText}
+            </button>
           )}
         </div>
-
-        {actionText && (
-          <button
-            onClick={onActionButtonCLick}
-            className="text-sm text-foreground/60 font-medium border border-border rounded-xl px-3 py-1 hover:scale-105 hover:shadow hover:shadow-primary/40 hover:text-foreground transition-all duration-300"
-          >
-            {actionText}
-          </button>
-        )}
-      </div>
+      )}
 
       {children}
     </div>

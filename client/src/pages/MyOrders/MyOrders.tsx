@@ -30,8 +30,6 @@ const Orders = () => {
       let res = await getMyOrders();
 
       if (res) {
-        console.log(res);
-
         setMyOrders(res?.data);
       }
     } catch (error) {}

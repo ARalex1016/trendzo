@@ -32,13 +32,13 @@ import {
 } from "lucide-react";
 
 // Validation
-import { addressStepSchema } from "@/validations/checkout.validator";
+import {
+  addAddressSchema,
+  type AddAddressSchemaType,
+} from "@/validations/address.validator";
 
 // Store
 import useUserStore from "@/store/useUserStore";
-
-// Types
-import type { AddressStepSchemaType } from "@/validations/checkout.validator";
 
 interface NewAddressProps {
   open: boolean;
@@ -80,7 +80,7 @@ const NewAddress = ({ open, onClose }: NewAddressProps) => {
 
   const [isSavingAddress, setIsSavingAddress] = useState<boolean>(false);
 
-  const defaultValues: AddressStepSchemaType = {
+  const defaultValues: AddAddressSchemaType = {
     address: {
       label: "",
       fullName: "",
@@ -96,8 +96,8 @@ const NewAddress = ({ open, onClose }: NewAddressProps) => {
     },
   };
 
-  const methods = useForm<AddressStepSchemaType>({
-    resolver: zodResolver(addressStepSchema),
+  const methods = useForm<AddAddressSchemaType>({
+    resolver: zodResolver(addAddressSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     shouldUnregister: false, // important for multi-step forms
@@ -108,7 +108,7 @@ const NewAddress = ({ open, onClose }: NewAddressProps) => {
 
   const { control, handleSubmit, reset } = methods;
 
-  const handleSaveNewAddress = async (data: AddressStepSchemaType) => {
+  const handleSaveNewAddress = async (data: AddAddressSchemaType) => {
     setIsSavingAddress(true);
 
     try {

@@ -6,6 +6,7 @@ import Layout from "@/Layouts/Layout";
 
 // Pages
 import Home from "@/pages/Home/Home";
+import Profile from "@/pages/Profile/Profile";
 import Products from "@/pages/Products/Products";
 import ProductDetails from "@/pages/ProductDetails/ProductDetails";
 import Cart from "@/pages/Cart/Cart";
@@ -13,7 +14,8 @@ import CheckOut from "@/pages/CheckOut/CheckOut";
 import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success";
 import MyOrders from "@/pages/MyOrders/MyOrders";
 import MyOrderDetails from "@/pages/MyOrderDetails/MyOrderDetails";
-import Profile from "@/pages/Profile/Profile";
+import MyReferral from "@/pages/MyReferral/MyReferral";
+
 // Admin
 import AllProducts from "@/pages/ProductManagement/AllProducts/AllProducts";
 import AddProduct from "@/pages/ProductManagement/AddProduct/AddProduct";
@@ -118,16 +120,25 @@ const router = createBrowserRouter([
             element: <Profile />,
           },
           {
-            path: ROUTES.CHECKOUT_SUCCESS(),
-            element: <Checkout_Success />,
-          },
-          {
-            path: ROUTES.MYORDERS,
-            element: <MyOrders />,
-          },
-          {
-            path: ROUTES.MYORDER_DETAILS(),
-            element: <MyOrderDetails />,
+            element: <RoleRoute allowedRoles={["customer"]} />,
+            children: [
+              {
+                path: ROUTES.CHECKOUT_SUCCESS(),
+                element: <Checkout_Success />,
+              },
+              {
+                path: ROUTES.MYORDERS,
+                element: <MyOrders />,
+              },
+              {
+                path: ROUTES.MYORDER_DETAILS(),
+                element: <MyOrderDetails />,
+              },
+              {
+                path: ROUTES.MYREFERRAL,
+                element: <MyReferral />,
+              },
+            ],
           },
           {
             element: <RoleRoute allowedRoles={["admin"]} />,

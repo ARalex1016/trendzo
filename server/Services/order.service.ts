@@ -227,7 +227,6 @@ export const OrderService = {
         orderData.deliveryAddress = {
           name: "In-Store",
           phone: "N/A",
-          email: "N/A",
           address: "N/A",
           city: "N/A",
           postalCode: "N/A",

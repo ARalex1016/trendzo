@@ -15,8 +15,8 @@ export const userStepSchema = z.object({
 });
 
 export const addressStepSchema = z.object({
-  address: z.object({
-    _id: z.string().optional(),
+  deliveryAddress: z.object({
+    _id: z.string().min(1, "Please select a delivery address"),
     label: z.string().max(30, "Label is too long").optional(),
     fullName: z.string().min(2, "Recipient name is required"),
     phone: z
@@ -30,7 +30,6 @@ export const addressStepSchema = z.object({
     country: z.string().optional(),
     postalCode: z.string().min(2, "Postal code is required"),
     landmark: z.string().optional(),
-    isDefault: z.boolean(),
   }),
 });
 
@@ -50,12 +49,10 @@ export const paymentStepSchema = z.object({
 
 export const checkoutSchema = z.object({
   user: userStepSchema.shape.user,
-  address: addressStepSchema.shape.address,
+  deliveryAddress: addressStepSchema.shape.deliveryAddress,
   paymentMethod: paymentStepSchema.shape.paymentMethod,
   orderNote: paymentStepSchema.shape.orderNote,
   couponCode: paymentStepSchema.shape.couponCode,
-  // selectedAddressId: z.string().optional(),
-  addressMode: z.enum(["saved", "new"]).default("saved"),
 });
 
 export type UserStepSchemaType = z.infer<typeof userStepSchema>;

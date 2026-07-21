@@ -23,7 +23,7 @@ export const PersonalInformation = () => {
       icon={User}
     >
       {/* Input Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 px-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 px-4 sm:px-6">
         <InputField
           label={"Full Name"}
           icon={User}
@@ -61,7 +61,7 @@ export const PersonalInformation = () => {
       </div>
 
       {/* Verification Action Section */}
-      <div className="space-y-4 px-6">
+      <div className="space-y-4 px-4 sm:px-6">
         {!user?.isEmailVerified && (
           <VerificationBanner
             text="Your email is not verified."

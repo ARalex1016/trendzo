@@ -122,6 +122,12 @@ const menuItemsList: MenuGroup[] = [
         icon: ClipboardList,
         roles: ["customer"],
       },
+      {
+        title: "My Referrals",
+        url: "/myreferrals",
+        icon: Users,
+        roles: ["customer"],
+      },
     ],
   },
   {

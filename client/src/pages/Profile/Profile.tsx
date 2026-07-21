@@ -2,6 +2,7 @@
 import { PageShell, TitleTextContainer } from "@/components/Container";
 import { PersonalInformation } from "./PersonalInformation";
 import SavedAddresses from "./SavedAddresses";
+import LogoutCard from "./LogoutCard";
 
 const Profile = () => {
   return (
@@ -13,6 +14,8 @@ const Profile = () => {
       <PersonalInformation />
 
       <SavedAddresses />
+
+      <LogoutCard />
     </PageShell>
   );
 };
