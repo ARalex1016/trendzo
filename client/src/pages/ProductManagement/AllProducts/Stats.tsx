@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 // Components
-import { StatsContainer } from "@/components/Stats/StatsContainer";
+import { StatsGrid } from "@/components/Stats/StatsGrid";
 
 // Icons
 import { Grid3x3, Power, Star, Filter, Archive, List } from "lucide-react";
@@ -59,7 +59,7 @@ const kpiCards = [
 
 const Stats = () => {
   return (
-    <StatsContainer className="w-full">
+    <StatsGrid className="w-full">
       {kpiCards.length >= 1 &&
         kpiCards.map((kpi) => {
           const Icon = kpi.icon;
@@ -86,7 +86,7 @@ const Stats = () => {
             </div>
           );
         })}
-    </StatsContainer>
+    </StatsGrid>
   );
 };
 

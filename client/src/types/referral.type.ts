@@ -43,11 +43,12 @@ export interface IReferralHistory {
 }
 
 export interface IReferralStats {
-  successfulReferrals: number;
-  pendingReferrals: number;
-  totalReferrals: number;
-  referralCode: string;
-  referralLink: string;
+  total: 0; // Total Referrals
+  pending: 0; // Referree Registered but not yet purchased
+  qualified: 0; // Referree Purchased (still need to wait for holding period)
+  holding: 0; // Purchased and hold until waiting period (e.g. 7 days)
+  completed: 0; // Referral reward credited (success)
+  cancelled: 0; // Order cancelled by referree
 }
 
 export interface ReferralPagination {

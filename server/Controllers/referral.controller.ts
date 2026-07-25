@@ -40,6 +40,7 @@ export const getReferralStats = asyncHandler(
     const user = req.user!;
 
     const stats = await ReferralService.getReferralStats(user._id);
+
     res.status(200).json({
       status: "success",
       data: stats,

@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 // Components
 import { PageShell } from "@/components/Container";
 import { TitleTextContainer } from "@/components/Container";
-import { StatsCard } from "@/components/Stats/StatsCard";
-import { StatsContainer } from "@/components/Stats/StatsContainer";
+import { StatsGrid, StatsCard } from "@/components/Stats";
 import FilterOrder from "./FilterOrder";
 import OrderCard from "@/components/Cards/OrderCard";
 import NoOrders from "./NoOrders";
@@ -47,12 +46,12 @@ const Orders = () => {
         Track and manage all your purchases
       </TitleTextContainer>
 
-      <StatsContainer>
+      <StatsGrid>
         <StatsCard
           title={"Total Orders"}
           value={20}
           icon={Package}
-          variant="purple"
+          variant="primary"
         />
 
         <StatsCard
@@ -62,14 +61,8 @@ const Orders = () => {
           variant="success"
         />
 
-        <StatsCard
-          title={"Pending"}
-          value={3}
-          icon={Clock}
-          variant="warning"
-          className="col-span-full lg:col-span-1"
-        />
-      </StatsContainer>
+        <StatsCard title={"Pending"} value={3} icon={Clock} variant="warning" />
+      </StatsGrid>
 
       <FilterOrder />
 

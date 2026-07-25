@@ -8,7 +8,7 @@ const periodOfOrderHold = 7; // days
 export const ReferralRepository = {
   async create(
     data: Partial<IReferral>,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<IReferral> {
     const referral = new Referral(data);
     if (session) referral.$session(session);
@@ -23,7 +23,7 @@ export const ReferralRepository = {
 
   async findByInvitee(
     inviteeId: Types.ObjectId,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<IReferral | null> {
     const query = Referral.findOne({ invitee: inviteeId });
     if (session) query.session(session);
@@ -39,7 +39,7 @@ export const ReferralRepository = {
     referralId: Types.ObjectId,
     orderId: Types.ObjectId,
     amount: number,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     return Referral.findByIdAndUpdate(
       referralId,
@@ -49,7 +49,7 @@ export const ReferralRepository = {
         qualifyingOrderAmount: amount,
         qualifiedAt: new Date(),
       },
-      { new: true, session: session ?? null }
+      { new: true, session: session ?? null },
     );
   },
 
@@ -57,7 +57,7 @@ export const ReferralRepository = {
   async markHolding(
     referralId: Types.ObjectId,
     deliveredAt: Date,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     const holdUntil = new Date(deliveredAt);
     holdUntil.setDate(holdUntil.getDate() + periodOfOrderHold);
@@ -69,7 +69,7 @@ export const ReferralRepository = {
         deliveredAt,
         holdUntil,
       },
-      { new: true, session: session ?? null }
+      { new: true, session: session ?? null },
     );
   },
 
@@ -95,7 +95,7 @@ export const ReferralRepository = {
   // Complete referral (after reward is credited to ledger)
   async markCompleted(
     referralId: Types.ObjectId,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<IReferral | null> {
     // Build options object dynamically
     const options: mongoose.QueryOptions<IReferral> = { new: true };
@@ -104,7 +104,7 @@ export const ReferralRepository = {
     return Referral.findByIdAndUpdate(
       referralId,
       { status: "completed" },
-      options
+      options,
     )
       .lean<IReferral>()
       .exec();
@@ -114,7 +114,7 @@ export const ReferralRepository = {
   async cancel(
     referralId: Types.ObjectId,
     reason: string,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     const options: mongoose.QueryOptions<IReferral> = { new: true };
     if (session) options.session = session; // only add session if defined
@@ -125,7 +125,7 @@ export const ReferralRepository = {
         status: "cancelled",
         cancelReason: reason,
       },
-      options
+      options,
     );
   },
 
@@ -147,6 +147,8 @@ export const ReferralRepository = {
         },
       },
     ]);
+
+    console.log(stats);
 
     const result: Record<string, number> = {
       total: 0,
@@ -176,7 +178,7 @@ export const ReferralRepository = {
   async findById(referralId: Types.ObjectId) {
     return Referral.findById(referralId).populate(
       "inviter invitee",
-      "name email"
+      "name email",
     );
   },
 

@@ -3,9 +3,10 @@ import { axiosInstance } from "./axios";
 import toast from "react-hot-toast";
 
 // Types
+import type { IReferralStats } from "@/types/referral.type";
 
 interface ReferralStore {
-  getReferralStats: () => Promise<void>;
+  getReferralStats: () => Promise<IReferralStats>;
 
   getMyReferrals: () => Promise<void>;
 }
@@ -14,6 +15,8 @@ const useReferralStore = create<ReferralStore>((set) => ({
   getReferralStats: async () => {
     try {
       let response = await axiosInstance.get("/v1/referrals/stats");
+
+      return response.data.data;
     } catch (error) {}
   },
 
