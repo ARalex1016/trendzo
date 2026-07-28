@@ -1,6 +1,7 @@
 // Types
 import type { IColor } from "./color.type";
 import type { ISize } from "./size.types";
+import type { IImage } from "./product/product_shared";
 
 export type CartColor = Pick<IColor, "_id" | "name" | "hexCode">;
 export type CartSize = Pick<ISize, "_id" | "name">;
@@ -23,7 +24,7 @@ export interface ICartItem {
   productName: string; // snapshot
   slug: string;
 
-  productImage: string;
+  productImage: IImage;
 
   sku?: string;
   variantId?: string;

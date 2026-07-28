@@ -3,6 +3,7 @@ import { PageShell } from "@/components/Container";
 import ReferralHeader from "./Components/ReferralHeader";
 import ReferralStats from "./Components/ReferralStats";
 import ReferralShare from "./Components/ReferralShare";
+import ReferralWorks from "./Components/ReferralWorks";
 
 const MyReferral = () => {
   return (
@@ -12,6 +13,8 @@ const MyReferral = () => {
       <ReferralStats />
 
       <ReferralShare />
+
+      <ReferralWorks />
     </PageShell>
   );
 };

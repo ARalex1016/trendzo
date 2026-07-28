@@ -11,7 +11,7 @@ interface ReferralStore {
   getMyReferrals: () => Promise<void>;
 }
 
-const useReferralStore = create<ReferralStore>((set) => ({
+const useReferralStore = create<ReferralStore>(() => ({
   getReferralStats: async () => {
     try {
       let response = await axiosInstance.get("/v1/referrals/stats");

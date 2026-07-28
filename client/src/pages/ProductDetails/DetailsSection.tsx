@@ -5,6 +5,9 @@ import TrustBadges from "./TrustBadges";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
+// Config
+import { BRAND } from "@/config/brand";
+
 // Icons
 import { ShoppingCart, Share2 } from "lucide-react";
 
@@ -16,11 +19,11 @@ import useCartStore from "@/store/useCartStore";
 import { cn } from "@/lib/utils";
 
 // Types
-import type { IProduct } from "@/types/product.type";
+import type { IProductDetail } from "@/types/product/index.type";
 import type { ICartItem } from "@/types/cart.type";
 
 interface DetailsSectionProps {
-  product: IProduct;
+  product: IProductDetail;
 }
 
 const DetailsSection = ({ product }: DetailsSectionProps) => {
@@ -93,7 +96,7 @@ const DetailsSection = ({ product }: DetailsSectionProps) => {
 
       {/* Price */}
       <p className="text-2xl text-primary font-bold">
-        <span>NPR</span> {product.baseSellingPrice}
+        <span>{BRAND.currency.code}</span> {product.baseSellingPrice}
       </p>
 
       {/* Description */}
