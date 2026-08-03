@@ -15,7 +15,7 @@ export const ReferralService = {
     inviterId: Types.ObjectId,
     inviteeId: Types.ObjectId,
     referralCodeUsed?: string,
-    rewardAmount = 50
+    rewardAmount = 50,
   ) {
     const existing = await ReferralRepository.findByInvitee(inviteeId);
 
@@ -40,7 +40,7 @@ export const ReferralService = {
     inviteeId: Types.ObjectId,
     orderId: Types.ObjectId,
     orderAmount: number,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     const referral = await ReferralRepository.findByInvitee(inviteeId, session);
     if (!referral) throw new AppError("Referral not found", 404);
@@ -55,7 +55,7 @@ export const ReferralService = {
       referral._id,
       orderId,
       orderAmount,
-      session
+      session,
     );
   },
 
@@ -107,8 +107,8 @@ export const ReferralService = {
     return ReferralRepository.cancel(referral._id, reason);
   },
 
-  async getMyReferrals(userId: Types.ObjectId) {
-    return ReferralRepository.findByInviter(userId);
+  async getMyReferrals(userId: Types.ObjectId, page: number, limit: number) {
+    return ReferralRepository.findByInviter(userId, page, limit);
   },
 
   async getReferralEarnings(userId: Types.ObjectId) {
@@ -131,7 +131,7 @@ export const ReferralService = {
   async getReferralById(
     referralId: Types.ObjectId,
     userId: Types.ObjectId,
-    role: string
+    role: string,
   ) {
     const referral = await ReferralRepository.findById(referralId);
     if (!referral) throw new AppError("Referral not found", 404);

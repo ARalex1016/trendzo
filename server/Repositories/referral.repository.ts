@@ -3,6 +3,9 @@ import mongoose, { Types, type ClientSession } from "mongoose";
 // Models
 import Referral, { type IReferral } from "../Models/referral.model.ts";
 
+// Types
+import type { PaginatedResult } from "../types/response.types.ts";
+
 const periodOfOrderHold = 7; // days
 
 export const ReferralRepository = {
@@ -15,10 +18,32 @@ export const ReferralRepository = {
     return referral.save();
   },
 
-  async findByInviter(inviterId: Types.ObjectId): Promise<IReferral[]> {
-    return Referral.find({ inviter: inviterId })
-      .populate("invitee", "name email")
-      .sort({ createdAt: -1 });
+  async findByInviter(
+    inviterId: Types.ObjectId,
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResult<IReferral>> {
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      Referral.find({ inviter: inviterId })
+        .populate("invitee", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Referral.countDocuments({ inviter: inviterId }),
+    ]);
+
+    return {
+      data: items,
+      meta: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    };
   },
 
   async findByInvitee(

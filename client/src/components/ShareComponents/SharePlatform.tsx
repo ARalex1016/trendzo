@@ -102,7 +102,7 @@ const SharePlatform = ({ link, platform }: SharePlatformProps) => {
   return (
     <button
       onClick={handleShare}
-      className="text-xs sm:text-sm font-medium bg-accent/80 border border-border/80 rounded-xl flex flex-row items-center gap-x-2 px-3 py-1.5 sm:py-2 hover:bg-accent hover:border-border transition-all duration-200 hover:scale-105 cursor-pointer"
+      className="text-xs sm:text-sm font-medium bg-accent/80 border border-border/80 rounded-xl flex flex-row items-center gap-x-2 px-3 py-1.5 sm:py-2 hover:bg-accent hover:border-border transition-all duration-200 hover:scale-105 group cursor-pointer"
       style={
         {
           "--brand-color": config.color,
@@ -113,11 +113,11 @@ const SharePlatform = ({ link, platform }: SharePlatformProps) => {
         } as React.CSSProperties
       }
     >
-      <span className="transition-colors duration-200 group-hover:text-white">
+      <span className="group-hover:scale-125 transition-all duration-200">
         {config.icon}
       </span>
 
-      <span className="transition-colors duration-200 group-hover:text-white">
+      <span className="transition-colors duration-200">
         {capitalize(config.label)}
       </span>
     </button>

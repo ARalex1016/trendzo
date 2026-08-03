@@ -4,6 +4,7 @@ import ReferralHeader from "./Components/ReferralHeader";
 import ReferralStats from "./Components/ReferralStats";
 import ReferralShare from "./Components/ReferralShare";
 import ReferralWorks from "./Components/ReferralWorks";
+import ReferralHistory from "./Components/ReferralHistory";
 
 const MyReferral = () => {
   return (
@@ -15,6 +16,8 @@ const MyReferral = () => {
       <ReferralShare />
 
       <ReferralWorks />
+
+      <ReferralHistory />
     </PageShell>
   );
 };

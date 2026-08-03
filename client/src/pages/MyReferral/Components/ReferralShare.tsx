@@ -79,7 +79,7 @@ const ReferralLink = ({ className }: React.ComponentProps<"div">) => {
 
         <button
           onClick={handleCopy}
-          className="text-sm sm:text-base font-medium bg-primary-gradient flex flex-row items-center gap-x-2 rounded-xl px-4 sm:px-5 py-2 sm:py-3"
+          className="text-sm sm:text-base font-medium bg-primary-gradient flex flex-row items-center gap-x-2 rounded-xl px-4 sm:px-5 py-2 sm:py-3 hover:scale-105 transition-all duration-200"
         >
           {isCopied ? <Check /> : <Copy />}
 
@@ -143,7 +143,7 @@ const QRShare = ({ className }: React.ComponentProps<"div">) => {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-x-2 sm:gap-x-3">
+      <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4">
         <button
           onClick={downloadQRCode}
           className="text-base font-medium bg-primary flex flex-row gap-x-2 justify-center items-center rounded-xl px-4 py-1 hover:scale-105 transition-all duration-200"

@@ -41,11 +41,13 @@ const ShareButton = ({
     <button
       onClick={handleShare}
       className={cn(
-        "text-xs sm:text-sm font-medium bg-accent/80 border border-border/80 rounded-xl flex flex-row items-center gap-x-2 px-3 py-1.5 sm:py-2 hover:bg-accent hover:border-border transition-all duration-200 hover:scale-105 cursor-pointer",
+        "text-xs sm:text-sm font-medium bg-accent/80 border border-border/80 rounded-xl flex flex-row items-center gap-x-2 px-3 py-1.5 sm:py-2 hover:bg-accent hover:border-border transition-all duration-200 hover:scale-105 group cursor-pointer",
         className,
       )}
     >
-      <Share2 className="size-3.5 sm:size-4" />
+      <span className="group-hover:scale-125 transition-all duration-200">
+        <Share2 className="size-3.5 sm:size-4" />
+      </span>
 
       <span>{label}</span>
     </button>

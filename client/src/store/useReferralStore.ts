@@ -3,12 +3,15 @@ import { axiosInstance } from "./axios";
 import toast from "react-hot-toast";
 
 // Types
-import type { IReferralStats } from "@/types/referral.type";
+import type { ApiResponse } from "@/types/response.type";
+import type { IReferralStats, IReferralHistory } from "@/types/referral.type";
 
 interface ReferralStore {
   getReferralStats: () => Promise<IReferralStats>;
 
-  getMyReferrals: () => Promise<void>;
+  getMyReferrals: (
+    page?: number,
+  ) => Promise<ApiResponse<IReferralHistory[]> | null>;
 }
 
 const useReferralStore = create<ReferralStore>(() => ({
@@ -20,9 +23,14 @@ const useReferralStore = create<ReferralStore>(() => ({
     } catch (error) {}
   },
 
-  getMyReferrals: async () => {
+  getMyReferrals: async (page) => {
+    let pageQry = `page=${page}`;
     try {
-      let response = await axiosInstance.get("/v1/referrals/my-referrals");
+      let response = await axiosInstance.get(
+        `/v1/referrals/my-referrals${page ? `?${pageQry}` : ""}`,
+      );
+
+      return response.data;
     } catch (error) {}
   },
 }));
