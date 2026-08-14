@@ -4,10 +4,32 @@ import { Types, type ClientSession } from "mongoose";
 import { ReferralRepository } from "../Repositories/referral.repository.ts";
 
 // Models
-import { type IReferral } from "../Models/referral.model.ts";
+import User from "../Models/user.model.ts";
+import {
+  type IReferral,
+  type ReferralStatus,
+} from "../Models/referral.model.ts";
+
+import ApiFeatures from "../Utils/apiFeatures/ApiFeatures.ts";
 
 // Utils
 import AppError from "./../Utils/AppError.ts";
+import { maskEmail } from "../Utils/emailManager.ts";
+
+export interface ReferralQueryOptions {
+  page: number;
+  limit: number;
+
+  search?: string;
+
+  status?: ReferralStatus;
+
+  sortBy?: "createdAt" | "rewardAmount" | "status";
+  sortOrder?: "asc" | "desc";
+
+  dateFrom?: string;
+  dateTo?: string;
+}
 
 export const ReferralService = {
   // Create referral when a user registers via referral link
@@ -107,8 +129,76 @@ export const ReferralService = {
     return ReferralRepository.cancel(referral._id, reason);
   },
 
-  async getMyReferrals(userId: Types.ObjectId, page: number, limit: number) {
-    return ReferralRepository.findByInviter(userId, page, limit);
+  async getMyReferrals(reqQuery: any, userId: Types.ObjectId) {
+    const fields =
+      "_id inviter invitee referralCodeUsed rewardAmount qualifyingOrder qualifyingOrderAmount minPurchaseRequired qualifiedAt deliveredAt holdUntil status cancelR eason createdAt";
+
+    let query = ReferralRepository.findByInviter(userId, fields);
+
+    const features = new ApiFeatures(query, reqQuery);
+
+    // --------------------------------
+    // FILTER
+    // --------------------------------
+
+    features.filter();
+
+    // --------------------------------
+    // SEARCH
+    // --------------------------------
+
+    features.search(["referralCodeUsed", "status"]);
+
+    await features.searchRelations([
+      {
+        field: "invitee",
+        model: User,
+        searchFields: ["name", "email"],
+      },
+    ]);
+
+    // --------------------------------
+    // SORT
+    // --------------------------------
+
+    features.sort("-createdAt");
+
+    // --------------------------------
+    // FIELDS
+    // --------------------------------
+
+    features.limitFields();
+
+    // --------------------------------
+    // PAGINATION
+    // --------------------------------
+
+    await features.paginate(10);
+
+    // --------------------------------
+    // EXECUTE
+    // --------------------------------
+
+    const data = await features.query.populate("invitee", "name email");
+
+    // --------------------------------
+    // MASK EMAIL
+    // --------------------------------
+
+    const mappedData = data.map((referral: any) => {
+      const referralObject = referral.toObject();
+
+      if (referralObject.invitee) {
+        referralObject.invitee.email = maskEmail(referralObject.invitee.email);
+      }
+
+      return referralObject;
+    });
+
+    return {
+      data: mappedData,
+      meta: features.meta,
+    };
   },
 
   async getReferralEarnings(userId: Types.ObjectId) {

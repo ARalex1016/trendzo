@@ -3,17 +3,20 @@ import type { Column } from "./types";
 
 interface Props<T> {
   columns: Column<T>[];
+  expandable?: boolean;
 }
 
-export function DataTableHeader<T>({ columns }: Props<T>) {
+export function DataTableHeader<T>({ columns, expandable }: Props<T>) {
   return (
     <thead className="bg-zinc-950 sticky top-0">
       <tr>
+        {expandable && <th className="w-12 text-center"></th>}
+
         {columns.map((column) => (
           <th
             key={String(column.key)}
             className={`
-              px-6
+              px-4
               py-4
               text-sm
               font-semibold
@@ -25,6 +28,7 @@ export function DataTableHeader<T>({ columns }: Props<T>) {
 
               ${column.align === "center" ? "text-center" : ""}
               ${column.align === "right" ? "text-right" : ""}
+              ${column.align === "left" ? "text-left" : ""}
               ${column.width ?? ""}
               ${column.hideOnMobile ? "hidden md:table-cell" : ""}
             `}

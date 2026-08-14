@@ -6,7 +6,11 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 
-export function SearchInput() {
+export function SearchInput({
+  value,
+  onChange,
+  placeholder,
+}: React.ComponentProps<"input">) {
   return (
     <InputGroup className="bg-background! rounded-lg">
       <InputGroupAddon>
@@ -15,7 +19,9 @@ export function SearchInput() {
 
       <InputGroupInput
         type="text"
-        placeholder="Search..."
+        value={value}
+        placeholder={placeholder ?? "Search..."}
+        onChange={onChange}
         className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
       />
     </InputGroup>

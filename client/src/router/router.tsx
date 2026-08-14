@@ -15,6 +15,8 @@ import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success
 import MyOrders from "@/pages/MyOrders/MyOrders";
 import MyOrderDetails from "@/pages/MyOrderDetails/MyOrderDetails";
 import MyReferral from "@/pages/MyReferral/MyReferral";
+import Wallet from "@/pages/Wallet/Wallet";
+import Withdraw from "@/pages/Withdraw/Withdraw";
 
 // Admin
 import AllProducts from "@/pages/ProductManagement/AllProducts/AllProducts";
@@ -137,6 +139,14 @@ const router = createBrowserRouter([
               {
                 path: ROUTES.MYREFERRAL,
                 element: <MyReferral />,
+              },
+              {
+                path: ROUTES.WALLET,
+                element: <Wallet />,
+              },
+              {
+                path: ROUTES.WITHDRAW,
+                element: <Withdraw />,
               },
             ],
           },

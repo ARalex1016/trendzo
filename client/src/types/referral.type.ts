@@ -27,15 +27,15 @@ export interface IReferralHistory {
 
   minPurchaseRequired?: number;
 
-  qualifiedAt?: string;
+  qualifiedAt?: string | Date;
 
-  deliveredAt?: string;
+  deliveredAt?: string | Date;
 
-  holdUntil?: string;
+  holdUntil?: string | Date;
 
-  createdAt: string;
+  createdAt: string | Date;
 
-  updatedAt: string;
+  updatedAt: string | Date;
 
   status: ReferralStatus;
 

@@ -37,14 +37,21 @@ const Button = ({
 };
 
 export function DataTablePagination({ pagination, onPageChange }: Props) {
-  const { page, pages } = pagination;
+  const { page, pages, limit, total } = pagination;
 
   const { isMobile } = useResponsive();
+
+  const start = total === 0 ? 0 : (page - 1) * limit + 1;
+  const end = Math.min(page * limit, total);
 
   return (
     <div className="flex items-center justify-between border-t border-zinc-800 px-6 py-3">
       <p className="text-sm text-zinc-400">
-        Page {page} of {pages}
+        Showing{" "}
+        <span className="font-medium text-zinc-200">
+          {start}-{end}
+        </span>{" "}
+        of <span className="font-medium text-zinc-200">{total}</span>
       </p>
 
       <div className="flex gap-2">

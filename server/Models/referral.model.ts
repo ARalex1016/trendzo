@@ -1,11 +1,11 @@
 import mongoose, { Schema, Document, Types, Model } from "mongoose";
 
-type ReferralStatus =
-  | "pending"
-  | "qualified"
-  | "holding"
-  | "completed"
-  | "cancelled";
+export type ReferralStatus =
+  | "pending" // When Invitee Registered
+  | "qualified" // When Invitee Made Qualifying Order (with referral requirements)
+  | "holding" // After Order Delivered, and Holding until Holding Period
+  | "completed" // After Holding Period Finished
+  | "cancelled"; // Referral Never Receives Reward (Maybe Because Invitee Cancelled, Refund, etc)
 
 export interface IReferral extends Document {
   inviter: Types.ObjectId;
@@ -54,13 +54,13 @@ const referralSchema = new Schema<IReferral>(
 
     cancelReason: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 referralSchema.index({ invitee: 1 }, { unique: true }); // prevent abuse
 
 const Referral: Model<IReferral> = mongoose.model<IReferral>(
   "Referral",
-  referralSchema
+  referralSchema,
 );
 export default Referral;

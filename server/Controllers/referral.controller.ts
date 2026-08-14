@@ -11,10 +11,7 @@ export const getMyReferrals = asyncHandler(
   async (req: Request, res: Response) => {
     const user = req.user!;
 
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-
-    const result = await ReferralService.getMyReferrals(user._id, page, limit);
+    const result = await ReferralService.getMyReferrals(req.query, user._id);
 
     // Success
     res.status(200).json({

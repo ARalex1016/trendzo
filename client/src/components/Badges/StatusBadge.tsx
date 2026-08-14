@@ -51,7 +51,6 @@ export function StatusBadge({
   baseColor,
   size = "md",
   rounded = true,
-  glow = true,
   className,
   style,
   ...props
@@ -74,14 +73,12 @@ export function StatusBadge({
         "inline-flex items-center justify-center border font-medium transition-colors",
         rounded ? "rounded-full" : "rounded-lg",
         sizes[size],
-        glow && "shadow-sm",
         className,
       )}
       style={{
         color,
         backgroundColor,
         borderColor,
-        boxShadow: glow ? `0 0 10px ${shadowColor}` : undefined,
         ...style,
       }}
       {...props}

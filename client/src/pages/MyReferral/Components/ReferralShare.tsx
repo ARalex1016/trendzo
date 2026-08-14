@@ -146,9 +146,11 @@ const QRShare = ({ className }: React.ComponentProps<"div">) => {
       <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4">
         <button
           onClick={downloadQRCode}
-          className="text-base font-medium bg-primary flex flex-row gap-x-2 justify-center items-center rounded-xl px-4 py-1 hover:scale-105 transition-all duration-200"
+          className="text-sm lg:text-base font-medium bg-primary flex flex-row gap-x-2 justify-center items-center rounded-xl px-3 py-1 hover:scale-105 transition-all duration-200 group"
         >
-          <Download className="size-4 sm:size-5" />
+          <span className="group-hover:scale-125 transition-all duration-200">
+            <Download className="size-3.5 sm:size-4" />
+          </span>
 
           <span>Download</span>
         </button>

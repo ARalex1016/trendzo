@@ -79,3 +79,71 @@ export const getTimeAgo = (isoDate: DateInput): string => {
   const years = Math.floor(diff / YEAR);
   return `${years} year${years === 1 ? "" : "s"} ago`;
 };
+
+type FormatRelativeDateOptions = {
+  locale?: string;
+  timeZone?: string;
+};
+
+export function formatRelativeDate(
+  date: string | Date,
+  options: FormatRelativeDateOptions = {},
+): string {
+  const inputDate = date instanceof Date ? date : new Date(date);
+
+  if (Number.isNaN(inputDate.getTime())) {
+    throw new Error(`Invalid date: ${date}`);
+  }
+
+  const {
+    locale = "en-US",
+    timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  } = options;
+
+  const getCalendarDate = (value: Date): string =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(value);
+
+  const today = getCalendarDate(new Date());
+  const target = getCalendarDate(inputDate);
+
+  if (target === today) {
+    return "Today";
+  }
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (target === getCalendarDate(yesterday)) {
+    return "Yesterday";
+  }
+
+  const currentYear = new Intl.DateTimeFormat("en", {
+    timeZone,
+    year: "numeric",
+  }).format(new Date());
+
+  const targetYear = new Intl.DateTimeFormat("en", {
+    timeZone,
+    year: "numeric",
+  }).format(inputDate);
+
+  if (currentYear === targetYear) {
+    return new Intl.DateTimeFormat(locale, {
+      timeZone,
+      month: "short",
+      day: "numeric",
+    }).format(inputDate);
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(inputDate);
+}

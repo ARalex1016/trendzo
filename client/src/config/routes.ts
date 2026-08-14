@@ -1,9 +1,11 @@
 export const ROUTES = {
   HOME: "/",
 
+  PRODUCTS: "/products",
+
+  // Customer
   PROFILE: "/profile",
 
-  PRODUCTS: "/products",
   PRODUCT_DETAILS: (slug: string = ":productSlug") => `/products/${slug}`,
 
   CART: "/cart",
@@ -16,11 +18,16 @@ export const ROUTES = {
 
   MYREFERRAL: "/myreferrals",
 
+  WALLET: "/wallet",
+
+  WITHDRAW: "/wallet/withdraw",
+
   // Admin
   PRODUCT_MANAGEMENT: "/products-management",
   ALL_PRODUCTS: "/products-management/all",
   ADD_PRODUCTS: "/products-management/add",
 
+  // Guest
   LOGIN: "/login",
   SIGNUP: "/signup",
 

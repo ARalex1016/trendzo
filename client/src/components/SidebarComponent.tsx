@@ -39,6 +39,8 @@ import {
   Boxes,
   PlusCircle,
   Users,
+  Wallet,
+  BanknoteArrowUp,
 } from "lucide-react";
 
 // Config
@@ -126,6 +128,12 @@ const menuItemsList: MenuGroup[] = [
         title: "My Referrals",
         url: "/myreferrals",
         icon: Users,
+        roles: ["customer"],
+      },
+      {
+        title: "Wallet",
+        url: "/wallet",
+        icon: Wallet,
         roles: ["customer"],
       },
     ],
