@@ -180,45 +180,34 @@ export const OrderService = {
 
     orderNote?: string;
   }) {
-    console.log("Service");
-
-    console.log(10);
-
     const session = await mongoose.startSession();
-
-    console.log(11);
 
     try {
       session.startTransaction();
-      console.log(12);
+
       /* ---------------------------------------------------
          BASIC VALIDATION
       --------------------------------------------------- */
 
       if (!input.items || input.items.length === 0) {
-        console.log(13);
         throw new AppError("Order must contain at least one item", 400);
       }
 
       if (input.orderType === "online" && !input.userId) {
-        console.log(14);
         throw new AppError("User is required for online orders", 400);
       }
 
       if (input.orderType === "in_store" && !input.cashierId) {
-        console.log(15);
         throw new AppError("Cashier is required for in-store orders", 400);
       }
 
       if (input.orderType === "online" && !input.deliveryAddress) {
-        console.log(16);
         throw new AppError("Delivery address is required", 400);
       }
 
       /* ---------------------------------------------------
          IDS
       --------------------------------------------------- */
-      console.log(17);
 
       const userId = input.userId
         ? new Types.ObjectId(input.userId)
@@ -231,7 +220,6 @@ export const OrderService = {
       /* ---------------------------------------------------
          COUPON
       --------------------------------------------------- */
-      console.log(18);
 
       const coupon = input.couponCode
         ? await CouponService.validateAndConsumeCoupon(
@@ -253,8 +241,6 @@ export const OrderService = {
           )
         : null;
 
-      console.log(19);
-
       /* ---------------------------------------------------
          ORDER ITEM PROCESSING
       --------------------------------------------------- */
@@ -262,35 +248,29 @@ export const OrderService = {
       let subtotal = 0;
       let totalCost = 0;
 
-      console.log(20);
-
       const orderItemIds: Types.ObjectId[] = [];
 
       for (const item of input.items) {
         if (item.quantity <= 0) {
-          console.log(20);
           throw new AppError("Item quantity must be greater than zero", 400);
         }
 
-        console.log(21);
         const product = await ProductRepository.findById(
           new Types.ObjectId(item.product),
         ).lean();
 
         if (!product) {
-          console.log(22);
           throw new AppError("Product not found", 404);
         }
 
         if (!product.isActive) {
-          console.log(23);
           throw new AppError("Product is not available", 400);
         }
 
         /* -----------------------------------------------
            FIND INVENTORY
         ------------------------------------------------ */
-        console.log(24);
+
         const inventory = product.inventory.find(
           (inventoryItem: any) =>
             inventoryItem.color.toString() === item.color &&
@@ -298,12 +278,10 @@ export const OrderService = {
         );
 
         if (!inventory) {
-          console.log(25);
           throw new AppError("Product variant not found", 400);
         }
 
         if (inventory.stock < item.quantity) {
-          console.log(26);
           throw new AppError(`Insufficient stock for ${product.name}`, 400);
         }
 
@@ -313,10 +291,7 @@ export const OrderService = {
 
         const color = await ColorRepository.findById(item.color);
 
-        console.log(27);
-
         if (!color) {
-          console.log(28);
           throw new AppError("Color not found", 404);
         }
 
@@ -324,13 +299,9 @@ export const OrderService = {
            SIZE
         ------------------------------------------------ */
 
-        console.log(29);
         const size = await SizeRepository.findById(item.size);
 
-        console.log(30);
-
         if (!size) {
-          console.log(31);
           throw new AppError("Size not found", 404);
         }
 
@@ -342,8 +313,6 @@ export const OrderService = {
           product.baseSellingPrice,
           product.discount,
         );
-
-        console.log(32);
 
         const costPrice = product.baseCostPrice;
 
@@ -357,7 +326,6 @@ export const OrderService = {
            DECREMENT STOCK
         ------------------------------------------------ */
 
-        console.log(32);
         const stockUpdate = await ProductRepository.decrementStock(
           product._id,
           new Types.ObjectId(item.color),
@@ -367,14 +335,13 @@ export const OrderService = {
         );
 
         if (stockUpdate.modifiedCount === 0) {
-          console.log(33);
           throw new AppError("Stock update failed", 400);
         }
 
         /* -----------------------------------------------
            CREATE ORDER ITEM
         ------------------------------------------------ */
-        console.log(34);
+
         const orderItem = await OrderItemRepository.create(
           {
             product: product._id,
@@ -415,7 +382,7 @@ export const OrderService = {
       /* ---------------------------------------------------
          DISCOUNT
       --------------------------------------------------- */
-      console.log(35);
+
       const discount = coupon
         ? Math.min(
             coupon.type === "percentage"
@@ -431,13 +398,12 @@ export const OrderService = {
          Product amount AFTER discount
       --------------------------------------------------- */
 
-      console.log(36);
       const orderAmount = Math.max(0, subtotal - discount);
 
       /* ---------------------------------------------------
          DELIVERY CHARGE
       --------------------------------------------------- */
-      console.log(37);
+
       const deliveryCharge =
         input.orderType === "in_store"
           ? 0
@@ -465,7 +431,7 @@ export const OrderService = {
       /* ---------------------------------------------------
          PAYMENT CONFIGURATION
       --------------------------------------------------- */
-      console.log(38);
+
       const paymentConfiguration = getPaymentConfiguration(
         input.paymentMethod,
         input.orderType,
@@ -477,7 +443,7 @@ export const OrderService = {
       /* ---------------------------------------------------
          DELIVERY ADDRESS
       --------------------------------------------------- */
-      console.log(39);
+
       const deliveryAddress =
         input.orderType === "in_store"
           ? {
@@ -496,9 +462,9 @@ export const OrderService = {
       /* ---------------------------------------------------
          ORDER DATA
       --------------------------------------------------- */
-      console.log(40);
+
       const orderNumber = await OrderRepository.getNextOrderNumber();
-      console.log(41);
+
       const orderData: CreateOrderData = {
         orderNumber,
 
@@ -594,10 +560,9 @@ export const OrderService = {
       /* ---------------------------------------------------
          REFERRAL
       --------------------------------------------------- */
-      console.log(42);
+
       if (input.orderType === "online" && userId) {
         try {
-          console.log(43);
           await ReferralService.qualifyReferral(
             userId,
             order._id,
@@ -618,13 +583,11 @@ export const OrderService = {
       --------------------------------------------------- */
 
       if (userId) {
-        console.log(44);
         await UserStatsService.onOrderPlaced(userId);
       }
 
       await session.commitTransaction();
 
-      console.log(45);
       return order;
     } catch (err) {
       await session.abortTransaction();

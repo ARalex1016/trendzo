@@ -13,19 +13,13 @@ import AppError from "../Utils/AppError.ts";
 
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const user = req.user!;
-  console.log("controller");
-
-  console.log(1);
 
   if (!user.isEmailVerified) {
-    console.log(2);
     throw new AppError(
       "You must verify your email address to continue with checkout.",
       403,
     );
   }
-
-  console.log(3);
 
   const order = await OrderService.placeOrder({
     ...req.body,
@@ -34,8 +28,6 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     userId: user._id.toString(),
     orderType: "online",
   });
-
-  console.log("return Controller");
 
   res.status(201).json({
     status: "success",
