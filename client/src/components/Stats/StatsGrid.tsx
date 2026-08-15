@@ -9,7 +9,7 @@ const statsGridVariants = cva("grid gap-3 sm:gap-4", {
       default: "grid-cols-2 lg:grid-cols-3",
       large: "grid-cols-1 lg:grid-cols-2",
       compact: "grid-cols-2 md:grid-cols-4 lg:grid-cols-6",
-      balanced: "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4",
+      balanced: "grid-cols-2 lg:grid-cols-4",
       auto: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
       single: "grid-cols-1",
     },

@@ -3,7 +3,8 @@ import type {
   OrderStatus,
   OrderType,
   PaymentMethodOnline,
-  PaymentMethod,
+  PaymentMethodInStore,
+  PaymentCollectionType,
   DeliveryAddress,
 } from "./shared.type";
 
@@ -36,23 +37,54 @@ export interface IOrderItemRes {
 }
 
 export interface IOrderRes {
-  orderNumber: string;
   _id: string;
-  items: IOrderItemRes[];
-  totalAmount: number;
-  totalCost?: number;
-  totalProfit?: number;
-  discount?: number;
-  deliveryCharge?: number;
-  paymentStatus: PaymentStatus;
-  status: OrderStatus;
-  couponCode?: string;
-  orderNote?: string;
-  paymentMethod: PaymentMethodOnline | PaymentMethod;
-  orderType: OrderType;
-  deliveryAddress?: DeliveryAddress;
+  orderNumber: string;
+
   user?: string;
   cashier?: string;
+
+  orderType: OrderType;
+
+  items: IOrderItemRes[];
+
+  // Financial snapshot
+  subtotal: number; // Sum of all products prices (with discount)
+  discount?: number;
+  orderAmount: number; // Subtotal - Discount
+  deliveryCharge?: number;
+  totalAmount: number; // OrderAmount + deliveryCharge
+
+  // Cost & profit
+  totalCost?: number;
+  totalProfit?: number;
+
+  // Payment
+  paymentMethod: PaymentMethodOnline | PaymentMethodInStore;
+  paymentCollectionType: PaymentCollectionType;
+  paymentStatus: PaymentStatus;
+
+  confirmationPaymentDue: number;
+  prepaidAmount: number;
+  amountDueOnDelivery: number;
+
+  // Coupon
+  coupon?: string;
+
+  // Order
+  status: OrderStatus;
+
+  deliveryAddress?: DeliveryAddress;
+
+  orderNote?: string;
+
+  // Dates
+  deliveredAt?: string;
+  shippedAt?: string;
+  cancellationDate?: string;
+
+  cancelledBy?: string;
+  cancellationReason?: string;
+
   createdAt: string;
   updatedAt: string;
 }

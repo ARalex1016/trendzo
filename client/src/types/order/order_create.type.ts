@@ -1,6 +1,4 @@
 import type {
-  PaymentStatus,
-  OrderStatus,
   DeliveryAddress,
   PaymentMethodOnline,
   PaymentMethod,

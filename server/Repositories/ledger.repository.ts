@@ -46,7 +46,7 @@ export const LedgerRepository = {
     return Ledger.updateMany(
       { _id: { $in: ids }, status: "pending" },
       { $set: { status: "locked" } },
-      { session }
+      { session },
     );
   },
 
@@ -54,7 +54,7 @@ export const LedgerRepository = {
     return Ledger.updateMany(
       { _id: { $in: ids } },
       { $set: { status: "withdrawn" } },
-      { session }
+      { session },
     );
   },
 
@@ -62,7 +62,7 @@ export const LedgerRepository = {
     return Ledger.updateMany(
       { _id: { $in: ids } },
       { $set: { status: "reversed" } },
-      { session }
+      { session },
     );
   },
 

@@ -7,7 +7,10 @@ import { OrderService } from "../Services/order.service.ts";
 import { asyncHandler } from "../Utils/asyncHandler.ts";
 import AppError from "../Utils/AppError.ts";
 
-// USER ROUTES
+/* =========================================================
+   USER ROUTES
+========================================================= */
+
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const user = req.user!;
 
@@ -19,9 +22,11 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const order = await OrderService.placeOrder({
-    userId: user._id,
-    orderType: "online",
     ...req.body,
+
+    // These values MUST come from the authenticated user/server.
+    userId: user._id.toString(),
+    orderType: "online",
   });
 
   res.status(201).json({
@@ -37,16 +42,20 @@ export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
     ...req.query,
   });
 
-  res.status(200).json({ status: "success", ...result });
+  res.status(200).json({
+    status: "success",
+    ...result,
+  });
 });
 
 export const getSingleOrder = asyncHandler(
   async (req: Request, res: Response) => {
-    const orderId = req.targetOrder!._id;
+    const order = req.targetOrder!;
 
-    const order = await OrderService.getSingleOrder(orderId, req.user);
-
-    res.status(200).json({ status: "success", data: order });
+    res.status(200).json({
+      status: "success",
+      data: order,
+    });
   },
 );
 
@@ -62,11 +71,18 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-// ADMIN / OPERATOR ROUTES
+/* =========================================================
+   ADMIN / OPERATOR ROUTES
+========================================================= */
+
 export const getAllOrders = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await OrderService.getAllOrders(req.query);
-    res.status(200).json({ status: "success", ...result });
+
+    res.status(200).json({
+      status: "success",
+      ...result,
+    });
   },
 );
 
@@ -81,23 +97,54 @@ export const placeStoreOrder = asyncHandler(
       );
     }
 
-    if (!user.isEmailVerified) {
-      throw new AppError(
-        "You must verify your email address to continue with checkout.",
-        403,
-      );
-    }
-
     const order = await OrderService.placeOrder({
-      cashierId: user._id,
-      orderType: "in_store",
       ...req.body,
+
+      // In-store order is created by the authenticated
+      // admin/operator.
+      cashierId: user._id.toString(),
+
+      orderType: "in_store",
     });
 
     res.status(201).json({
       status: "success",
-      message: "Order placed successfully",
+      message: "In-store order created successfully",
       data: order,
+    });
+  },
+);
+
+export const verifyManualPayment = asyncHandler(
+  async (req: Request, res: Response) => {
+    const order = req.targetOrder!;
+
+    const { amount } = req.body;
+
+    const updatedOrder = await OrderService.verifyManualPayment({
+      order: order,
+      amount,
+      verifiedBy: req.user!._id,
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Manual payment verified successfully",
+      data: updatedOrder,
+    });
+  },
+);
+
+export const confirmOrder = asyncHandler(
+  async (req: Request, res: Response) => {
+    const order = req.targetOrder!;
+
+    const confirmedOrder = await OrderService.confirmOrder(order._id);
+
+    res.status(200).json({
+      status: "success",
+      message: "Order confirmed successfully",
+      data: confirmedOrder,
     });
   },
 );
@@ -110,6 +157,7 @@ export const markOrderDelivered = asyncHandler(
 
     res.status(200).json({
       status: "success",
+      message: "Order marked as delivered",
       data: order,
     });
   },
@@ -126,8 +174,8 @@ export const updateOrderStatus = asyncHandler(
 
     res.status(200).json({
       status: "success",
-      message: "Order status updated",
-      order,
+      message: "Order status updated successfully",
+      data: order,
     });
   },
 );

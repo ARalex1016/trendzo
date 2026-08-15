@@ -61,3 +61,9 @@ export const placeStoreOrderSchema = z.object({
 
   couponCode: z.string().optional(),
 });
+
+export const verifyManualPaymentSchema = z.object({
+  amount: z.coerce
+    .number({ message: "Payment amount must be a number" })
+    .positive("Payment amount must be greater than 0"),
+});

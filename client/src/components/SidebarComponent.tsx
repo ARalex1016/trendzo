@@ -29,6 +29,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+// Lib
+import { cn } from "@/lib/utils";
+
 import {
   Home,
   Package,
@@ -40,7 +43,6 @@ import {
   PlusCircle,
   Users,
   Wallet,
-  BanknoteArrowUp,
 } from "lucide-react";
 
 // Config
@@ -269,6 +271,7 @@ const SidebarLinkItem = ({ item, pathname }: SidebarLinkItemProps) => {
       >
         <Link to={item.url} className="flex items-center gap-x-2">
           {item.icon && <item.icon className="h-5 w-5 shrink-0" />}
+
           <span className="text-base">{item.title}</span>
         </Link>
       </SidebarMenuButton>

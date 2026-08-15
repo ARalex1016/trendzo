@@ -85,6 +85,11 @@ type FormatRelativeDateOptions = {
   timeZone?: string;
 };
 
+interface FormatDateTimeOptions {
+  locale?: string;
+  timeZone?: string;
+}
+
 export function formatRelativeDate(
   date: string | Date,
   options: FormatRelativeDateOptions = {},
@@ -146,4 +151,36 @@ export function formatRelativeDate(
     day: "numeric",
     year: "numeric",
   }).format(inputDate);
+}
+
+export function formatDateTime(
+  value: DateInput,
+  options: FormatDateTimeOptions = {},
+): string {
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Invalid date: ${String(value)}`);
+  }
+
+  const {
+    locale = "en-US",
+    timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  } = options;
+
+  const formatted = new Intl.DateTimeFormat(locale, {
+    timeZone,
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).formatToParts(date);
+
+  const parts = Object.fromEntries(
+    formatted.map(({ type, value }) => [type, value]),
+  );
+
+  return `${parts.month} ${parts.day}, ${parts.year} at ${parts.hour}:${parts.minute} ${parts.dayPeriod}`;
 }

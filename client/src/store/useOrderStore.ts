@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "./axios";
+import toast from "react-hot-toast";
 
 // Type
 import type { OnlineOrder } from "@/types/order/order_create.type";
@@ -33,9 +34,7 @@ const useOrderStore = create<OrderStore>(() => ({
 
   getOrderByOrderNumber: async (orderNumber) => {
     try {
-      let res = await axiosInstance.get(
-        `/v1/orders/orderNumber/${orderNumber}`,
-      );
+      let res = await axiosInstance.get(`/v1/orders/by-number/${orderNumber}`);
 
       return res.data;
     } catch (error: any) {
@@ -55,9 +54,25 @@ const useOrderStore = create<OrderStore>(() => ({
 
   placeOrder: async (orderData) => {
     try {
-      let res = await axiosInstance.post("/v1/orders", orderData);
+      let response = axiosInstance.post("/v1/orders", orderData);
 
-      return res.data;
+      toast.promise(response, {
+        loading: "Placing Order...",
+        success: (res) => {
+          return res.data.message;
+        },
+        error: (err) => {
+          return (
+            err?.response?.data?.message ||
+            err.message ||
+            "Failed to place order"
+          );
+        },
+      });
+
+      await response;
+
+      return (await response).data;
     } catch (error: any) {
       throw new Error(error.message);
     }

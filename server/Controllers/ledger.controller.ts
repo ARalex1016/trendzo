@@ -22,14 +22,14 @@ export const getMyLedgerSummary = asyncHandler(
   async (req: Request, res: Response) => {
     const user = req.user!;
 
-    const data = await LedgerService.getUserLedger(user._id);
+    const data = await LedgerService.getUserBalance(user._id);
 
     // Success
     res.status(200).json({
       status: "success",
       data,
     });
-  }
+  },
 );
 
 export const getUserLedger = asyncHandler(
@@ -43,5 +43,5 @@ export const getUserLedger = asyncHandler(
       status: "success",
       data,
     });
-  }
+  },
 );

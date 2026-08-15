@@ -176,7 +176,7 @@ const Checkout_Success = () => {
 
           <Button
             variant={"outline"}
-            onClick={() => navigate("/orders")}
+            onClick={() => navigate(`/myorders/${orderNumber}`)}
             className="flex-1 py-0 sm:py-6"
           >
             Track Order

@@ -5,25 +5,25 @@ import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
 import Layout from "@/Layouts/Layout";
 
 // Pages
-import Home from "@/pages/Home/Home";
-import Profile from "@/pages/Profile/Profile";
-import Products from "@/pages/Products/Products";
-import ProductDetails from "@/pages/ProductDetails/ProductDetails";
-import Cart from "@/pages/Cart/Cart";
-import CheckOut from "@/pages/CheckOut/CheckOut";
-import Checkout_Success from "@/pages/CheckOut/Checkout_Success/Checkout_Success";
-import MyOrders from "@/pages/MyOrders/MyOrders";
-import MyOrderDetails from "@/pages/MyOrderDetails/MyOrderDetails";
-import MyReferral from "@/pages/MyReferral/MyReferral";
-import Wallet from "@/pages/Wallet/Wallet";
-import Withdraw from "@/pages/Withdraw/Withdraw";
+import Home from "@/pages/Public/Home/Home";
+import Profile from "@/pages/Shared/Profile/Profile";
+import Products from "@/pages/Public/Products/Products";
+import ProductDetails from "@/pages/Public/ProductDetails/ProductDetails";
+import Cart from "@/pages/Customer/Cart/Cart";
+import CheckOut from "@/pages/Customer/CheckOut/CheckOut";
+import Checkout_Success from "@/pages/Customer/CheckOut/Checkout_Success/Checkout_Success";
+import MyOrders from "@/pages/Customer/MyOrders/MyOrders";
+import MyOrderDetails from "@/pages/Customer/MyOrderDetails/MyOrderDetails";
+import MyReferral from "@/pages/Customer/MyReferral/MyReferral";
+import Wallet from "@/pages/Customer/Wallet/Wallet";
+import Withdraw from "@/pages/Customer/Withdraw/Withdraw";
 
 // Admin
-import AllProducts from "@/pages/ProductManagement/AllProducts/AllProducts";
-import AddProduct from "@/pages/ProductManagement/AddProduct/AddProduct";
+import AllProducts from "@/pages/Admin/ProductManagement/AllProducts/AllProducts";
+import AddProduct from "@/pages/Admin/ProductManagement/AddProduct/AddProduct";
 
-import Signup from "@/pages/Signup/Signup";
-import Login from "@/pages/Login/Login";
+import Signup from "@/pages/Auth/Signup/Signup";
+import Login from "@/pages/Auth/Login/Login";
 import NotFound from "@/pages/NotFound/NotFound";
 
 // Config

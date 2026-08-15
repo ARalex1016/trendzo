@@ -9,7 +9,7 @@ import type {
   IReferralHistory,
   ReferralStatus,
 } from "@/types/referral.type";
-import type { ReferralSort } from "@/pages/MyReferral/Components/ReferralHistory/ReferralHistory";
+import type { ReferralSort } from "@/pages/Customer/MyReferral/Components/ReferralHistory/ReferralHistory";
 
 export type GetMyReferralsParams = {
   page?: number;

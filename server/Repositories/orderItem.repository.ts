@@ -37,6 +37,7 @@ export const OrderItemRepository = {
   ) {
     const item = new OrderItem(data);
     if (session) item.$session(session);
+
     return item.save();
   },
 

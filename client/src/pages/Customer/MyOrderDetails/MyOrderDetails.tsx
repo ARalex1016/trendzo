@@ -1,11 +1,24 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+
+// Config
+import { BRAND } from "@/config/brand";
 
 // Components
 import { PageShell } from "@/components/Container";
 import { StatusBadge } from "@/components/Badges/StatusBadge";
 import { TextWithIcon } from "@/components/Text";
 import { OrderTimeline } from "@/components/OrderTimeline";
+
+// Store
+import useOrderStore from "@/store/useOrderStore";
+
+// Utils
+import { formatDateTime } from "@/utils/DateManager";
+import { capitalize } from "@/utils/StringManager";
+
+// Types
+import type { IOrderRes } from "@/types/order/order_response.type";
 
 // Icons
 import {
@@ -29,10 +42,25 @@ const Wrapper = ({ children, className }: React.ComponentProps<"div">) => {
 };
 
 const MyOrderDetails = () => {
+  const { getOrderByOrderNumber } = useOrderStore();
+
   const { orderNumber } = useParams();
+
+  const [order, setOrder] = useState<IOrderRes | null>(null);
+
+  const fetchOrderByOrderNumber = async (orderNumber: string) => {
+    try {
+      let res = await getOrderByOrderNumber(orderNumber);
+
+      if (res?.data) {
+        setOrder(res?.data);
+      }
+    } catch (error) {}
+  };
 
   const orderItems = [
     {
+      _id: 1,
       image:
         "https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dfa628f5-3f72-457b-b7ec-17e685f6b979/W+NIKE+AIR+ZOOM+PEGASUS+42.png",
       name: "Designer Sunglasses",
@@ -42,6 +70,7 @@ const MyOrderDetails = () => {
       quantity: 3,
     },
     {
+      _id: 2,
       image:
         "https://img.magnific.com/free-photo/sport-running-shoes_1203-3414.jpg?semt=ais_hybrid&w=740&q=80",
       name: "Canvas Sneakers",
@@ -52,7 +81,17 @@ const MyOrderDetails = () => {
     },
   ];
 
-  useEffect(() => {}, [orderNumber]);
+  console.log(order);
+
+  useEffect(() => {
+    if (!orderNumber) return;
+
+    fetchOrderByOrderNumber(orderNumber);
+  }, [orderNumber]);
+
+  if (!order) {
+    return;
+  }
 
   return (
     <PageShell
@@ -65,20 +104,20 @@ const MyOrderDetails = () => {
         <div className="flex flex-row justify-between">
           <div className="flex flex-col gap-y-3">
             <p className="text-xl text-foreground/90 font-medium">
-              ORD-2026-5003 - Need Change
+              {order?.orderNumber}
             </p>
 
             <div className="flex flex-row gap-x-3">
               <TextWithIcon
                 icon={Calendar}
-                text="May 2, 2026 at 04:45 PM"
+                text={formatDateTime(order?.createdAt)}
                 iconClassName="text-muted-foreground font-medium"
                 textClassName="text-muted-foreground font-medium"
               />
 
               <TextWithIcon
                 icon={Dot}
-                text="Online Order"
+                text={capitalize(order.orderType)}
                 iconClassName="text-muted-foreground font-medium"
                 textClassName="text-muted-foreground font-medium"
               />
@@ -88,11 +127,11 @@ const MyOrderDetails = () => {
           {/* Status Badges */}
           <div className="h-fit flex flex-row gap-x-3">
             <StatusBadge size="lg" className="rounded-xl">
-              Confirmed
+              {capitalize(order.status)}
             </StatusBadge>
 
             <StatusBadge variant="success" size="lg" className="rounded-xl">
-              Paid
+              Paid -- Need Change
             </StatusBadge>
           </div>
         </div>
@@ -101,19 +140,25 @@ const MyOrderDetails = () => {
           <div className="w-full bg-background border-2 border-border rounded-xl flex flex-col gap-y-1 px-4 py-3">
             <p className="text-muted-foreground">Payment Method</p>
 
-            <p className="text-primary font-medium">Bank Transfer</p>
+            <p className="text-primary font-medium">
+              {capitalize(order.paymentMethod)}
+            </p>
           </div>
 
           <div className="w-full bg-background border-2 border-border rounded-xl flex flex-col gap-y-1 px-4 py-3">
             <p className="text-muted-foreground">Total Items</p>
 
-            <p className="text-primary font-medium">2 items</p>
+            <p className="text-primary font-medium">
+              {order.items.length} items
+            </p>
           </div>
 
           <div className="w-full bg-background border-2 border-border rounded-xl flex flex-col gap-y-1 px-4 py-3">
             <p className="text-muted-foreground">Final Total</p>
 
-            <p className="text-primary font-medium">NPR 5,100</p>
+            <p className="text-primary font-medium">
+              {BRAND.currency.symbol} {order.totalAmount}
+            </p>
           </div>
         </div>
       </Wrapper>
@@ -122,7 +167,7 @@ const MyOrderDetails = () => {
       <Wrapper className="flex flex-col gap-y-3">
         <p className="text-lg text-foreground font-medium">Order Timeline</p>
 
-        <OrderTimeline currentStatus="confirmed" orientation="horizontal" />
+        <OrderTimeline currentStatus={order.status} orientation="horizontal" />
       </Wrapper>
 
       {/* Order Items */}
@@ -135,37 +180,40 @@ const MyOrderDetails = () => {
         />
 
         <div className="space-y-4">
-          {orderItems &&
-            orderItems.length >= 1 &&
-            orderItems.map((orderItem) => {
+          {order.items &&
+            order.items.length >= 1 &&
+            order.items.map((orderItem, index) => {
               return (
-                <div className="flex gap-4 p-4 bg-background rounded-xl border-2 border-border">
+                <div
+                  key={`${orderItem.productName}-${index}`}
+                  className="flex gap-4 p-4 bg-background rounded-xl border-2 border-border"
+                >
                   <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0">
                     <img
-                      src={orderItem.image}
-                      alt={orderItem.name}
+                      src={orderItem.productImage}
+                      alt={orderItem.productName}
                       className="w-full h-full object-cover"
                     />
                   </div>
 
                   <div className="flex-1">
                     <p className="text-foreground font-medium mb-2">
-                      {orderItem.name}
+                      {orderItem.productName}
                     </p>
 
                     <div className="flex flex-wrap gap-3 text-muted-foreground">
                       <div className="flex items-center gap-1.5">
                         <div
                           className="w-4 h-4 rounded-full border-2 border-border"
-                          style={{ backgroundColor: orderItem.color }}
+                          // style={{ backgroundColor: orderItem.color.hexCode }}
                         />
 
-                        <span>{orderItem.color}</span>
+                        {/* <span>{orderItem.color.name}</span> */}
                       </div>
 
                       <span>•</span>
 
-                      <span>Size: {orderItem.size}</span>
+                      {/* <span>Size: {orderItem.size.name}</span> */}
 
                       <span>•</span>
 
@@ -175,7 +223,7 @@ const MyOrderDetails = () => {
 
                   <div className="text-right shrink-0">
                     <p className="text-primary">
-                      NPR {orderItem.price.toLocaleString()}
+                      {BRAND.currency.symbol} {orderItem.sellingPrice}
                     </p>
                   </div>
                 </div>
@@ -199,7 +247,7 @@ const MyOrderDetails = () => {
               <User className="w-5 h-5 text-gray-400 mt-0.5" />
               <div>
                 <p className="text-gray-400">Name</p>
-                <p>Aslam Sheikh</p>
+                <p>{order.deliveryAddress?.name}</p>
               </div>
             </div>
 
@@ -207,17 +255,19 @@ const MyOrderDetails = () => {
               <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
               <div>
                 <p className="text-gray-400">Phone</p>
-                <p>+977-9861234567</p>
+                <p>{order.deliveryAddress?.phone}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-gray-400">Email</p>
-                <p>aslamsheikh1016@gmail.com</p>
+            {order.deliveryAddress?.email && (
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                <div>
+                  <p className="text-gray-400">Email</p>
+                  <p>{order.deliveryAddress?.email}</p>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
@@ -225,8 +275,13 @@ const MyOrderDetails = () => {
                 <p className="text-gray-400">Address</p>
 
                 <p>Newroad, Building 15</p>
-                <p className="text-gray-400">Kathmandu, 44600</p>
-                <p className="text-gray-400">Nepal</p>
+                <p className="text-gray-400">
+                  {order.deliveryAddress?.city},{" "}
+                  {order.deliveryAddress?.postalCode}
+                </p>
+                <p className="text-gray-400">
+                  {order.deliveryAddress?.country}
+                </p>
               </div>
             </div>
           </div>
@@ -241,25 +296,39 @@ const MyOrderDetails = () => {
           <div className="space-y-3">
             <div className="flex justify-between text-gray-400">
               <span>Subtotal</span>
-              <span>NPR {Number(5500).toLocaleString()}</span>
+              <span>
+                {BRAND.currency.symbol} {order.orderAmount}
+              </span>
             </div>
-            {/* {order.discount > 0 && (
-                <div className="flex justify-between text-green-400">
-                  <span>Discount</span>
-                  <span>- NPR {order.discount.toLocaleString()}</span>
-                </div>
-              )} */}
+
+            {order.discount && order.discount > 0 ? (
+              <div className="flex justify-between text-green-400">
+                <span>Discount</span>
+
+                <span>
+                  {BRAND.currency.symbol} {order.discount}
+                </span>
+              </div>
+            ) : (
+              ""
+            )}
+
             <div
               className="flex justify-between text-gray-400
             "
             >
               <span>Delivery Charge</span>
-              {/* <span>{order.deliveryCharge === 0 ? 'FREE' : `NPR ${order.deliveryCharge}`}</span> */}
+              <span>
+                {order.deliveryCharge === 0
+                  ? "FREE"
+                  : `${BRAND.currency.symbol} ${order.deliveryCharge}`}
+              </span>
             </div>
+
             <div className="border-t border-[#2A2A2E] pt-3 flex justify-between">
               <span>Final Total</span>
               <span className="text-primary font-medium">
-                NPR {Number(5000).toLocaleString()}
+                {BRAND.currency.symbol} {order.totalAmount}
               </span>
             </div>
           </div>

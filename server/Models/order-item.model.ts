@@ -1,9 +1,11 @@
 import mongoose, { Schema, Document, Types, Model } from "mongoose";
 
+import type { IImage } from "./product.model.ts";
+
 export interface IOrderItem extends Document {
   product: Types.ObjectId;
   productName: string;
-  productImage: string;
+  productImage: IImage;
 
   color: {
     id: Types.ObjectId;
@@ -28,6 +30,20 @@ export interface IOrderItem extends Document {
   updatedAt: Date;
 }
 
+const imageSchema = new Schema<IImage>(
+  {
+    url: {
+      type: String,
+      required: true,
+    },
+    publicId: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false },
+);
+
 const orderItemSchema = new Schema<IOrderItem>(
   {
     product: {
@@ -40,7 +56,7 @@ const orderItemSchema = new Schema<IOrderItem>(
       required: true,
     },
     productImage: {
-      type: String,
+      type: imageSchema,
       required: true,
     },
     color: {

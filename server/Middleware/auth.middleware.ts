@@ -4,11 +4,13 @@ import type { Request, Response, NextFunction } from "express";
 // Services
 import { AuthService } from "../Services/auth.service.ts";
 
+// Types
+import type { Role } from "../Models/user.model.ts";
+
 // Utils
 import { asyncHandler } from "../Utils/asyncHandler.ts";
 import { verifyToken } from "../Utils/generateToken.utils.ts";
 import AppError from "../Utils/AppError.ts";
-import { env } from "../Config/env.config.ts";
 
 // Protects, if user is not logged in
 export const protect = asyncHandler(
@@ -60,7 +62,7 @@ export const optionalAuth = asyncHandler(
 );
 
 export const authorize =
-  (...role: string[]) =>
+  (...role: Role[]) =>
   (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !role.includes(req.user.role)) {
       throw new AppError(

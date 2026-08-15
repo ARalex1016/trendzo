@@ -9,7 +9,7 @@ import StatusLegend from "./Components/StatusLegend";
 
 const MyReferral = () => {
   return (
-    <PageShell className="flex flex-col gap-y-6 sm:gap-y-7">
+    <PageShell className="space-y-6 sm:space-y-7">
       <ReferralHeader />
 
       <ReferralStats />

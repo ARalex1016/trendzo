@@ -9,15 +9,20 @@ export type OrderStatus =
   | "returned"
   | "refunded";
 
-export type PaymentStatus = "pending" | "completed" | "failed";
+export type PaymentStatus = "pending" | "partial" | "completed" | "failed";
 
-export type PaymentMethodOnline = "bank" | "esewa" | "khalti" | "cod";
+export type PaymentMethod = "bank" | "esewa" | "khalti";
 
-export type PaymentMethod = "bank" | "esewa" | "khalti" | "cash";
+export type PaymentMethodOnline = PaymentMethod | "cod";
+
+export type PaymentMethodInStore = PaymentMethod | "cash";
+
+export type PaymentCollectionType = "delivery_only" | "full" | "none";
 
 export interface DeliveryAddress {
   name: string;
   phone: string;
+  email?: string;
   address: string;
   city: string;
   postalCode?: string;

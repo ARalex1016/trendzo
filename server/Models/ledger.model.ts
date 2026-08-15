@@ -36,7 +36,7 @@ const ledgerSchema = new Schema<ILedger>(
       default: "pending",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 ledgerSchema.index({ user: 1, status: 1 });
