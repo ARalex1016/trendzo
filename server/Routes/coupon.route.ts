@@ -43,7 +43,7 @@ router.post(
 router.post(
   "/apply",
   protect,
-  authorize("user"),
+  authorize("customer"),
   validateRequest(applyCouponBodySchema),
   applyCoupon,
 );
