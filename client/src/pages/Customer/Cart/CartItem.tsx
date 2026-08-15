@@ -12,6 +12,9 @@ import { Trash2 } from "lucide-react";
 // Store
 import useCartStore from "@/store/useCartStore";
 
+// Utils
+import { capitalize } from "@/utils/StringManager";
+
 interface CartItemProps {
   item: ICartItem;
   index: number;
@@ -39,12 +42,12 @@ const CartItem = ({ item, index }: CartItemProps) => {
   const { updateQuantity, removeFromCart } = useCartStore();
 
   return (
-    <div className="w-full bg-background1 border flex flex-row gap-x-4 sm:gap-x-6 rounded-xl hover:border-primary hover:shadow-sm hover:shadow-primary/60 p-3 xs:p-4 sm:p-6">
+    <div className="w-full bg-background1 border flex flex-row gap-x-4 sm:gap-x-6 rounded-xl hover:border-primary/20 hover:shadow-sm hover:shadow-primary/60 p-3 xs:p-4 sm:p-6 transition-all duration-200 group">
       {/* Image */}
       <img
-        src={item.productImage}
+        src={item.productImage.url}
         alt={`${item.productName}-img`}
-        className="size-20 xs:size-24 sm:size-28 rounded-inherit"
+        className="size-20 xs:size-24 sm:size-28 rounded-inherit group-hover:scale-105 transition-all duration-200"
       />
 
       <div className="w-full flex flex-col">
@@ -53,7 +56,7 @@ const CartItem = ({ item, index }: CartItemProps) => {
           {/* Name, Size & Color */}
           <div className="flex flex-col gap-y-2">
             <p className="text-sm xs:text-[15px] sm:text-base font-medium line-clamp-1">
-              {item.productName}
+              {capitalize(item.productName)}
             </p>
 
             {/* Size and Color */}

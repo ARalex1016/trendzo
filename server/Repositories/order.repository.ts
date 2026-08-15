@@ -136,7 +136,12 @@ export const OrderRepository = {
     data: CreateOrderData,
     session?: ClientSession,
   ): Promise<IOrder> {
+    console.log("Repository");
+
+    console.log(100);
     const orderNumber = data.orderNumber ?? (await this.getNextOrderNumber());
+
+    console.log(101);
 
     const order = new Order({
       ...data,
@@ -149,10 +154,14 @@ export const OrderRepository = {
       status: data.status ?? "pending",
     });
 
+    console.log(102);
+
     if (session) {
+      console.log(103);
       order.$session(session);
     }
 
+    console.log(104);
     return order.save();
   },
 
