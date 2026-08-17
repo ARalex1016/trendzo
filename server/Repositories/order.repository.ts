@@ -222,19 +222,11 @@ export const OrderRepository = {
      FIND BY USER
   ======================================================= */
 
-  findByUser(
-    userId: Types.ObjectId,
-    filter: OrderFilter = {},
-    pagination: OrderPagination,
-    session?: ClientSession,
-  ) {
+  findByUser(userId: Types.ObjectId, fields?: string, session?: ClientSession) {
     return Order.find({
       user: userId,
-      ...filter,
     })
-      .sort({ createdAt: -1 })
-      .skip(pagination.skip)
-      .limit(pagination.limit)
+      .select(fields ?? "-__v")
       .populate({
         path: "items",
         populate: {

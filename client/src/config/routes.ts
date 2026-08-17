@@ -27,6 +27,8 @@ export const ROUTES = {
   ALL_PRODUCTS: "/products-management/all",
   ADD_PRODUCTS: "/products-management/add",
 
+  ORDER_MANAGEMENT: "/orders-management",
+
   // Guest
   LOGIN: "/login",
   SIGNUP: "/signup",

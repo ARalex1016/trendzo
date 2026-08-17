@@ -29,9 +29,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-// Lib
-import { cn } from "@/lib/utils";
-
 import {
   Home,
   Package,
@@ -43,6 +40,7 @@ import {
   PlusCircle,
   Users,
   Wallet,
+  ShoppingBag,
 } from "lucide-react";
 
 // Config
@@ -159,6 +157,11 @@ const menuItemsList: MenuGroup[] = [
             icon: PlusCircle,
           },
         ],
+      },
+      {
+        title: "Orders Management",
+        url: "/orders-management",
+        icon: ShoppingBag,
       },
       {
         title: "User Management",

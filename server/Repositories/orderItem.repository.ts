@@ -41,7 +41,7 @@ export const OrderItemRepository = {
     return item.save();
   },
 
-  findManyByIds(ids: any[], session?: any) {
+  findManyByIds(ids: Types.ObjectId[], session?: ClientSession) {
     return OrderItem.find({ _id: { $in: ids } }).session(session ?? null);
   },
 };

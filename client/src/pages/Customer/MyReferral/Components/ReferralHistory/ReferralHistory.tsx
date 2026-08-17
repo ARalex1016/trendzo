@@ -15,6 +15,7 @@ import type { Column } from "@/components/DataTable/types";
 import type { IReferralHistory } from "@/types/referral.type";
 import type { Meta } from "@/types/response.type";
 import type { ReferralStatus } from "@/types/referral.type";
+import type { ReferralFilterStatus } from "./FilterReferral";
 
 export interface Referral {
   id: string;
@@ -56,7 +57,7 @@ export type ReferralSort =
 
 export type ReferralFilters = {
   search: string;
-  status: ReferralStatus | "all";
+  status: ReferralFilterStatus;
   sort: ReferralSort;
 };
 
@@ -141,8 +142,6 @@ const ReferralHistory = () => {
           status: currentFilters.status,
           sort: currentFilters.sort,
         });
-
-        console.log(res);
 
         if (!res) return;
 

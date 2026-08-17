@@ -5,7 +5,7 @@ import Filter from "@/components/Filter";
 import type { ReferralStatus } from "@/types/referral.type";
 import type { ReferralFilters } from "./ReferralHistory";
 
-type ReferralFilterStatus = ReferralStatus | "all";
+export type ReferralFilterStatus = ReferralStatus | "all";
 
 const referralStatuses = [
   { label: "All", value: "all" },

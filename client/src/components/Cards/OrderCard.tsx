@@ -6,8 +6,11 @@ import { Button } from "../ui/button";
 import { StatusBadge } from "../Badges/StatusBadge";
 import { PaymentMethodBadge } from "../Badges/PaymentMethodBadge";
 
+// Config
+import { BRAND } from "@/config/brand";
+
 // Icons
-import { Calendar, Banknote } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 // Utils
 import { formatDateToReadable } from "@/utils/DateManager";
@@ -27,9 +30,9 @@ const ItemContainer = ({ orderItem }: { orderItem: IOrderItemRes }) => {
   return (
     <div className="min-w-20 max-w-24 flex flex-col gap-y-0.5">
       <img
-        src={orderItem.productImage}
+        src={orderItem.productImage.url}
         alt={`${orderItem.productName}-${orderItem.size}-Img`}
-        className="w-full aspect-square object-cover rounded-lg"
+        className="w-full aspect-square object-cover rounded-lg group-hover:scale-105 transition-all duration-200"
       />
 
       <p className="text-xs text-muted-foreground font-medium line-clamp-1">
@@ -54,7 +57,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
   return (
     <Link
       to={order.orderNumber}
-      className="w-full bg-background1 border border-border rounded-2xl flex flex-col gap-y-4 p-5 transition-all duration-300 hover:shadow-xs hover:shadow-primary hover:translate-x-0.5 hover:-translate-y-0.5"
+      className="w-full bg-background1 border border-border rounded-2xl flex flex-col gap-y-4 p-5 transition-all duration-300 hover:shadow-xs hover:shadow-primary/40 hover:translate-x-0.5 hover:-translate-y-0.5 group"
     >
       <div className="flex flex-row justify-between">
         {/* ORD Number & Date */}
@@ -103,7 +106,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
           <p className="text-sm text-muted-foreground">Total Amount</p>
 
           <p className="text-primary text-lg font-medium">
-            NPR {order.totalAmount}
+            {BRAND.currency.symbol} {order.totalAmount}
           </p>
         </div>
 

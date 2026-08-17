@@ -38,35 +38,20 @@ const useReferralStore = create<ReferralStore>(() => ({
 
   getMyReferrals: async (params = {}) => {
     try {
-      const {
-        page = 1,
-        limit = 10,
-        search = "",
-        status = "all",
-        sort = "latestFirst",
-      } = params;
+      const res = await axiosInstance.get("/v1/referrals/my-referrals", {
+        params: {
+          ...params,
+          ...(params.status === "all" && {
+            status: undefined,
+          }),
+          sortBy: params.sort,
+        },
+      });
 
-      const queryParams = new URLSearchParams();
-
-      queryParams.set("page", String(page));
-      queryParams.set("limit", String(limit));
-
-      if (search.trim()) {
-        queryParams.set("search", search.trim());
-      }
-
-      if (status !== "all") {
-        queryParams.set("status", status);
-      }
-
-      queryParams.set("sortBy", sort);
-
-      const response = await axiosInstance.get(
-        `/v1/referrals/my-referrals?${queryParams.toString()}`,
-      );
-
-      return response.data;
-    } catch (error) {}
+      return res.data;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   },
 }));
 

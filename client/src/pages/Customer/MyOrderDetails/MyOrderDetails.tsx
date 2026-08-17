@@ -53,35 +53,12 @@ const MyOrderDetails = () => {
       let res = await getOrderByOrderNumber(orderNumber);
 
       if (res?.data) {
+        console.log(res.data);
+
         setOrder(res?.data);
       }
     } catch (error) {}
   };
-
-  const orderItems = [
-    {
-      _id: 1,
-      image:
-        "https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dfa628f5-3f72-457b-b7ec-17e685f6b979/W+NIKE+AIR+ZOOM+PEGASUS+42.png",
-      name: "Designer Sunglasses",
-      price: 3500,
-      color: "467294",
-      size: "sm",
-      quantity: 3,
-    },
-    {
-      _id: 2,
-      image:
-        "https://img.magnific.com/free-photo/sport-running-shoes_1203-3414.jpg?semt=ais_hybrid&w=740&q=80",
-      name: "Canvas Sneakers",
-      price: 2000,
-      color: "ffffff",
-      size: "sm",
-      quantity: 6,
-    },
-  ];
-
-  console.log(order);
 
   useEffect(() => {
     if (!orderNumber) return;
@@ -131,7 +108,7 @@ const MyOrderDetails = () => {
             </StatusBadge>
 
             <StatusBadge variant="success" size="lg" className="rounded-xl">
-              Paid -- Need Change
+              {capitalize(order.paymentStatus)}
             </StatusBadge>
           </div>
         </div>
@@ -190,7 +167,7 @@ const MyOrderDetails = () => {
                 >
                   <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0">
                     <img
-                      src={orderItem.productImage}
+                      // src={orderItem.productImage.url}
                       alt={orderItem.productName}
                       className="w-full h-full object-cover"
                     />

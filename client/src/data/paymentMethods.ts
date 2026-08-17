@@ -5,7 +5,7 @@ import { EsewaIcon, KhaltiIcon, BankIcon } from "@/components/ImgIconComp";
 
 // Types
 import type {
-  PaymentMethod,
+  PaymentMethodInStore,
   PaymentMethodOnline,
 } from "@/types/order/shared.type";
 
@@ -15,7 +15,7 @@ type PaymentMethodConfig = {
 };
 
 export const PAYMENT_METHODS: Record<
-  PaymentMethod | PaymentMethodOnline,
+  PaymentMethodInStore | PaymentMethodOnline,
   PaymentMethodConfig
 > = {
   bank: {

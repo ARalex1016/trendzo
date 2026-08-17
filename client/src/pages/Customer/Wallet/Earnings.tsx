@@ -66,7 +66,10 @@ const Earnings = () => {
             const { icon: Icon } = earning;
 
             return (
-              <div className="w-full flex flex-row justify-between items-center rounded-2xl p-3 hover:bg-accent transition-all duration-200">
+              <div
+                key={earning.source}
+                className="w-full flex flex-row justify-between items-center rounded-2xl p-3 hover:bg-accent transition-all duration-200"
+              >
                 <div className="flex flex-row items-center gap-x-2">
                   {/* Icon */}
                   {Icon && (

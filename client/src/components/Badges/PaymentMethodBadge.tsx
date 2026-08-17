@@ -2,12 +2,12 @@ import { PAYMENT_METHODS } from "@/data/paymentMethods";
 
 // Types
 import type {
-  PaymentMethod,
+  PaymentMethodInStore,
   PaymentMethodOnline,
 } from "@/types/order/shared.type";
 
 type Props = {
-  method: PaymentMethod | PaymentMethodOnline;
+  method: PaymentMethodInStore | PaymentMethodOnline;
   variant?: "default" | "minimal";
 };
 

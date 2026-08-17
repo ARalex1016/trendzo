@@ -7,11 +7,12 @@ import type {
   PaymentCollectionType,
   DeliveryAddress,
 } from "./shared.type";
+import type { IImage } from "../product/product_shared";
 
 export interface IOrderItemRes {
   product: string;
   productName: string;
-  productImage: string;
+  productImage: IImage;
 
   color: {
     id: string;

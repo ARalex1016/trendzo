@@ -38,8 +38,8 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
 
 export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
   const result = await OrderService.getMyOrders({
-    userId: req.user!._id,
     ...req.query,
+    userId: req.user!._id,
   });
 
   res.status(200).json({
@@ -50,11 +50,13 @@ export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
 
 export const getSingleOrder = asyncHandler(
   async (req: Request, res: Response) => {
-    const order = req.targetOrder!;
+    const data = await OrderService.getSingleOrder({
+      order: req.targetOrder!,
+    });
 
     res.status(200).json({
       status: "success",
-      data: order,
+      data,
     });
   },
 );

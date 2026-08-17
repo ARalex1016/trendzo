@@ -24,9 +24,11 @@ import type {
   PaymentCollectionType,
   PaymentStatus,
 } from "../Models/order.model.ts";
+import type { IOrderItem } from "../Models/order-item.model.ts";
 import type { CreateOrderData } from "./../Repositories/order.repository.ts";
 
 // Utils
+import ApiFeatures from "../Utils/apiFeatures/ApiFeatures.ts";
 import AppError from "./../Utils/AppError.ts";
 
 /* =========================================================
@@ -685,49 +687,89 @@ export const OrderService = {
 
   async getMyOrders({
     userId,
-    page = 1,
-    limit = 10,
-    status,
+    ...reqQuery
   }: {
-    userId: string | Types.ObjectId;
-    page?: number | string;
-    limit?: number | string;
-    status?: OrderStatus;
+    userId: Types.ObjectId;
+    [key: string]: unknown;
   }) {
-    const pageNumber = Math.max(1, Number(page));
+    const fields = `
+    _id
+    orderNumber
+    user
+    items
+    subtotal
+    discount
+    deliveryCharge
+    totalAmount
+    paymentMethod
+    paymentStatus
+    status
+    shippingAddress
+    createdAt
+    updatedAt
+  `;
 
-    const limitNumber = Math.min(100, Math.max(1, Number(limit)));
+    // --------------------------------
+    // BASE QUERY
+    // --------------------------------
 
-    const skip = (pageNumber - 1) * limitNumber;
+    const query = OrderRepository.findByUser(userId, fields);
 
-    const filter = status ? { status } : {};
+    const features = new ApiFeatures(query, reqQuery);
 
-    const objectUserId = new Types.ObjectId(userId);
+    // --------------------------------
+    // FILTER
+    // --------------------------------
 
-    const [orders, total] = await Promise.all([
-      OrderRepository.findUserOrders(objectUserId, filter, {
-        skip,
-        limit: limitNumber,
-      }),
+    features.filter();
 
-      OrderRepository.count({
-        user: objectUserId,
-        ...filter,
-      }),
+    // --------------------------------
+    // SEARCH
+    // --------------------------------
+
+    features.search([
+      "orderNumber",
+      "status",
+      "paymentMethod",
+      "paymentStatus",
     ]);
 
+    // --------------------------------
+    // SORT
+    // --------------------------------
+
+    features.sort("-createdAt");
+
+    // --------------------------------
+    // FIELDS
+    // --------------------------------
+
+    features.limitFields();
+
+    // --------------------------------
+    // PAGINATION
+    // --------------------------------
+
+    await features.paginate(10);
+
+    // --------------------------------
+    // EXECUTE
+    // --------------------------------
+
+    const data = await features.query;
+
     return {
-      data: orders,
+      data,
+      meta: features.meta,
+    };
+  },
 
-      meta: {
-        total,
+  async getSingleOrder({ order }: { order: IOrder }) {
+    const orderItems = await OrderItemRepository.findManyByIds(order.items);
 
-        page: pageNumber,
-
-        limit: limitNumber,
-
-        pages: Math.ceil(total / limitNumber),
-      },
+    return {
+      ...order.toObject(),
+      items: orderItems,
     };
   },
 
@@ -736,7 +778,7 @@ export const OrderService = {
   ======================================================= */
 
   // For Admin Only
-  async getSingleOrder(orderId: string | Types.ObjectId, user: IUser) {
+  async getAdminSingleOrder(orderId: string | Types.ObjectId, user: IUser) {
     const order = await OrderRepository.findById(new Types.ObjectId(orderId));
     console.log(order);
 

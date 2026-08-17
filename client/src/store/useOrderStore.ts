@@ -5,7 +5,17 @@ import toast from "react-hot-toast";
 // Type
 import type { OnlineOrder } from "@/types/order/order_create.type";
 import type { IOrderRes } from "@/types/order/order_response.type";
+import type { OrderStatus } from "@/types/order/shared.type";
 import type { IOrderResponse, ApiResponse } from "@/types/response.type";
+
+interface GetMyOrdersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  status?: OrderStatus;
+  fields?: string;
+}
 
 interface OrderStore {
   getSingleOrder: (orderId: string) => Promise<ApiResponse<IOrderRes> | null>;
@@ -14,7 +24,7 @@ interface OrderStore {
     orderNumber: string,
   ) => Promise<ApiResponse<IOrderRes> | null>;
 
-  getMyOrders: () => Promise<IOrderResponse | null>;
+  getMyOrders: (params?: GetMyOrdersParams) => Promise<IOrderResponse | null>;
 
   placeOrder: (
     orderData: OnlineOrder,
@@ -42,9 +52,11 @@ const useOrderStore = create<OrderStore>(() => ({
     }
   },
 
-  getMyOrders: async () => {
+  getMyOrders: async (params = {}) => {
     try {
-      let res = await axiosInstance.get(`/v1/orders/my-orders`);
+      const res = await axiosInstance.get("/v1/orders/my-orders", {
+        params,
+      });
 
       return res.data;
     } catch (error: any) {
