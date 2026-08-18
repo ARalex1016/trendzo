@@ -21,7 +21,8 @@ import Withdraw from "@/pages/Customer/Withdraw/Withdraw";
 // Admin
 import AllProducts from "@/pages/Admin/ProductManagement/AllProducts/AllProducts";
 import AddProduct from "@/pages/Admin/ProductManagement/AddProduct/AddProduct";
-import OrderManagement from "@/pages/Admin/OrderManagement/OrderManagement";
+import OrderManagement from "@/pages/Admin/OrderManagement/OrderManagement/OrderManagement";
+import AdminOrderDetails from "@/pages/Admin/OrderManagement/AdminOrderDetails/AdminOrderDetails";
 
 // Auth
 import Signup from "@/pages/Auth/Signup/Signup";
@@ -166,6 +167,10 @@ const router = createBrowserRouter([
               {
                 path: ROUTES.ORDER_MANAGEMENT,
                 element: <OrderManagement />,
+              },
+              {
+                path: ROUTES.ADMIN_ORDER_DETAILS(),
+                element: <AdminOrderDetails />,
               },
             ],
           },

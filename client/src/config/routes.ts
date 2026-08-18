@@ -28,6 +28,8 @@ export const ROUTES = {
   ADD_PRODUCTS: "/products-management/add",
 
   ORDER_MANAGEMENT: "/orders-management",
+  ADMIN_ORDER_DETAILS: (slug: string = ":orderNumber") =>
+    `/orders-management/${slug}`,
 
   // Guest
   LOGIN: "/login",

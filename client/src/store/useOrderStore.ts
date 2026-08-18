@@ -8,7 +8,7 @@ import type { IOrderRes } from "@/types/order/order_response.type";
 import type { OrderStatus } from "@/types/order/shared.type";
 import type { IOrderResponse, ApiResponse } from "@/types/response.type";
 
-interface GetMyOrdersParams {
+interface GetOrdersParams {
   page?: number;
   limit?: number;
   search?: string;
@@ -24,7 +24,11 @@ interface OrderStore {
     orderNumber: string,
   ) => Promise<ApiResponse<IOrderRes> | null>;
 
-  getMyOrders: (params?: GetMyOrdersParams) => Promise<IOrderResponse | null>;
+  getMyOrders: (params?: GetOrdersParams) => Promise<IOrderResponse | null>;
+
+  getAllOrders: (
+    params?: GetOrdersParams,
+  ) => Promise<ApiResponse<IOrderRes[]> | null>;
 
   placeOrder: (
     orderData: OnlineOrder,
@@ -55,6 +59,19 @@ const useOrderStore = create<OrderStore>(() => ({
   getMyOrders: async (params = {}) => {
     try {
       const res = await axiosInstance.get("/v1/orders/my-orders", {
+        params,
+      });
+
+      return res.data;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  },
+
+  // Admin
+  getAllOrders: async (params = {}) => {
+    try {
+      const res = await axiosInstance.get("/v1/orders/", {
         params,
       });
 

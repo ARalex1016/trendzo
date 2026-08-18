@@ -88,6 +88,7 @@ type FormatRelativeDateOptions = {
 interface FormatDateTimeOptions {
   locale?: string;
   timeZone?: string;
+  short?: boolean;
 }
 
 export function formatRelativeDate(
@@ -166,21 +167,18 @@ export function formatDateTime(
   const {
     locale = "en-US",
     timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+    short = false,
   } = options;
 
-  const formatted = new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(locale, {
     timeZone,
-    month: "long",
+    month: short ? "short" : "long",
     day: "numeric",
-    year: "numeric",
+    year: short ? undefined : "numeric",
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
-  }).formatToParts(date);
-
-  const parts = Object.fromEntries(
-    formatted.map(({ type, value }) => [type, value]),
-  );
-
-  return `${parts.month} ${parts.day}, ${parts.year} at ${parts.hour}:${parts.minute} ${parts.dayPeriod}`;
+  })
+    .format(date)
+    .replace(",", ",");
 }

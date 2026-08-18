@@ -28,7 +28,11 @@ export const Title = ({ text, className }: TitleProps) => {
 };
 
 export const BaseText = ({ children, className }: BaseTextComponentProps) => {
-  return <p className={`text-foreground/60 ${className}`}>{children}</p>;
+  return (
+    <p className={`text-sm sm:text-base text-foreground/60 ${className}`}>
+      {children}
+    </p>
+  );
 };
 
 export const TextWithIcon = ({

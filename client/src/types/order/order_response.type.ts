@@ -9,6 +9,14 @@ import type {
 } from "./shared.type";
 import type { IImage } from "../product/product_shared";
 
+export interface IOrderUser {
+  _id: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  avatar?: string;
+}
+
 export interface IOrderItemRes {
   product: string;
   productName: string;
@@ -41,7 +49,7 @@ export interface IOrderRes {
   _id: string;
   orderNumber: string;
 
-  user?: string;
+  user?: IOrderUser;
   cashier?: string;
 
   orderType: OrderType;

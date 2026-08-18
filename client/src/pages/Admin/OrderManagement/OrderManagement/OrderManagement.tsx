@@ -2,15 +2,18 @@
 import { PageShell } from "@/components/Container";
 import { TitleTextContainer } from "@/components/Container";
 import StatsContainer from "./StatsContainer";
+import OrderHistory from "./OrderHistory/OrderHistory";
 
 const OrderManagement = () => {
   return (
-    <PageShell className="space-y-6 sm:space-y-7">
+    <PageShell>
       <TitleTextContainer title="Orders">
         Manage, verify, process and track customer orders.
       </TitleTextContainer>
 
       <StatsContainer />
+
+      <OrderHistory />
     </PageShell>
   );
 };

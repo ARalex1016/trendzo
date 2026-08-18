@@ -25,12 +25,12 @@ const Cart = () => {
   };
 
   return (
-    <PageShell className="min-h-svh flex flex-col gap-x-8 relative">
+    <PageShell className="min-h-svh relative">
       <TitleTextContainer title="Shopping Cart">
         {cart?.items.length} items in your cart
       </TitleTextContainer>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-4">
         <CartList />
 
         <OrderSummary oncheckOut={handleCheckout} />

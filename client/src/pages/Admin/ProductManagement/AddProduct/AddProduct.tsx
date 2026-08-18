@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -100,7 +100,7 @@ const AddProduct = () => {
   }, [methods, currentStepIndex]);
 
   return (
-    <PageShell className="flex flex-col lg:flex-row gap-5">
+    <PageShell>
       <ResponsiveStepper
         steps={steps}
         currentStepIndex={currentStepIndex}

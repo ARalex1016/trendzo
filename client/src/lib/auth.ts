@@ -1,6 +1,9 @@
 // Type
 import type { IUser, Role } from "@/types/user.types";
-import type { IProduct } from "@/types/product.type";
+import type {
+  IProductCard,
+  IProductCardAdmin,
+} from "@/types/product/index.type";
 import type { ICategory } from "@/types/category.type";
 
 type PermissionCheck<Key extends keyof Permissions> =
@@ -18,7 +21,7 @@ type RolesWithPermissions = {
 type Permissions = {
   product: {
     // Can do something like Pick<Todo, "userId"> to get just the rows you use
-    dataType: IProduct;
+    dataType: IProductCard | IProductCardAdmin;
     action: "view" | "create" | "update" | "delete";
   };
   category: {

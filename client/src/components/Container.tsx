@@ -44,7 +44,9 @@ export const PageShell = ({
     <section className="w-full flex flex-col items-start gap-y-2 px-side-spacing py-4">
       {to && back && <BackButton to={to} label={back} />}
 
-      <div className={cn("w-full", className)}>{children}</div>
+      <div className={cn("w-full space-y-6 sm:space-y-7", className)}>
+        {children}
+      </div>
     </section>
   );
 };

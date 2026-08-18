@@ -19,7 +19,7 @@ const Wallet = () => {
   }, []);
 
   return (
-    <PageShell className="space-y-6 sm:space-y-7">
+    <PageShell>
       <TitleTextContainer title="My Wallet">
         Manage your earnings, balance and transactions.
       </TitleTextContainer>

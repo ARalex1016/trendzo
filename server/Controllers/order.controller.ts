@@ -83,7 +83,8 @@ export const getAllOrders = asyncHandler(
 
     res.status(200).json({
       status: "success",
-      ...result,
+      data: result.orders,
+      meta: result.meta,
     });
   },
 );

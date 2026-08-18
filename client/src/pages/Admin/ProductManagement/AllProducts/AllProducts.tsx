@@ -6,7 +6,7 @@ import ProductTable from "./ProductTable";
 
 const AllProducts = () => {
   return (
-    <PageShell className="flex flex-col gap-y-5 relative">
+    <PageShell>
       <TitleTextContainer title="Product Catalog">
         Manage your luxury fashion inventory
       </TitleTextContainer>

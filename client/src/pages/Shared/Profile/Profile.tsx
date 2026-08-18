@@ -6,7 +6,7 @@ import LogoutCard from "./LogoutCard";
 
 const Profile = () => {
   return (
-    <PageShell className="max-w-xl mx-auto flex flex-col gap-y-5 relative">
+    <PageShell className="max-w-xl mx-auto">
       <TitleTextContainer title="My Profile">
         Manage your personal information, saved addresses, and account security.
       </TitleTextContainer>

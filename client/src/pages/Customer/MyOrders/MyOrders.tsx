@@ -80,13 +80,13 @@ const Orders = () => {
         }),
       });
 
-      if (res) {
-        setMyOrders(res?.data);
+      if (!res) return;
 
-        if (res.meta) {
-          setPagination(res?.meta);
-        }
-      }
+      setMyOrders(res?.data);
+
+      if (!res.meta) return;
+
+      setPagination(res?.meta);
     } catch (error) {
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ const Orders = () => {
   }, [pagination.page, filters, isAuthenticated]);
 
   return (
-    <PageShell className="flex flex-col gap-y-5 relative">
+    <PageShell>
       <TitleTextContainer title="My Orders">
         Track and manage all your purchases
       </TitleTextContainer>

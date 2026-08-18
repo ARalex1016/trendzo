@@ -52,11 +52,9 @@ const MyOrderDetails = () => {
     try {
       let res = await getOrderByOrderNumber(orderNumber);
 
-      if (res?.data) {
-        console.log(res.data);
+      if (!res?.data) return;
 
-        setOrder(res?.data);
-      }
+      setOrder(res?.data);
     } catch (error) {}
   };
 
@@ -71,11 +69,7 @@ const MyOrderDetails = () => {
   }
 
   return (
-    <PageShell
-      back="Back to My Orders"
-      to="/myorders"
-      className="flex flex-col gap-y-5"
-    >
+    <PageShell back="Back to My Orders" to="/myorders">
       {/* Order Details */}
       <Wrapper className="flex flex-col gap-y-2">
         <div className="flex flex-row justify-between">
@@ -102,7 +96,7 @@ const MyOrderDetails = () => {
           </div>
 
           {/* Status Badges */}
-          <div className="h-fit flex flex-row gap-x-3">
+          <div className="h-fit flex flex-col sm:flex-row gap-2 sm:gap-3">
             <StatusBadge size="lg" className="rounded-xl">
               {capitalize(order.status)}
             </StatusBadge>

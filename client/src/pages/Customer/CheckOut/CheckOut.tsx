@@ -172,7 +172,7 @@ const CheckOut = () => {
     <PageShell
       back="Back to Cart"
       to="/cart"
-      className="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-2 xs:gap-y-5"
+      className="space-y-0! grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-4 xs:gap-y-5"
     >
       {/* Title */}
       <TitleTextContainer title="Checkout" className="col-span-full">

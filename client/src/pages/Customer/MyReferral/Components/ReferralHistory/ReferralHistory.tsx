@@ -145,15 +145,15 @@ const ReferralHistory = () => {
 
         if (!res) return;
 
-        if (res.meta) {
-          setPagination(res.meta);
-        }
+        if (!res.meta) return;
 
         const mapReferralToTableRow = convertReferralToTableData();
 
         const tableData: Referral[] = res.data.map(mapReferralToTableRow);
 
         setReferrals(tableData);
+
+        setPagination(res.meta);
       } catch (error) {
         console.error("Failed to fetch referral history:", error);
       } finally {
