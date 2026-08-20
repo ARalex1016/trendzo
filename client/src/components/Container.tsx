@@ -14,8 +14,8 @@ interface TitleTextContainerProps {
 }
 
 interface PageShellProps {
-  back?: string;
-  to?: string;
+  back?: string; // Back to Cart Page
+  to?: string; // URL
   children?: ReactNode;
   className?: string;
 }

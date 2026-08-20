@@ -27,7 +27,7 @@ export const OrderNumber = ({
     <div className="w-40 flex flex-row items-center gap-x-2">
       <p
         title="View Order Detaisl"
-        onClick={() => navigate("orderNumber")}
+        onClick={() => navigate(`${orderNumber}`)}
         className="text-xs text-primary/80 font-medium hover:text-primary hover:underline transition-all duration-200"
       >
         {orderNumber}
@@ -124,7 +124,7 @@ export const ActionButtons = ({
     <div className="flex flex-row gap-x-4">
       <div
         title="View Order Detaisl"
-        onClick={() => navigate("orderNumber")}
+        onClick={() => navigate(`${orderNumber}`)}
         className="size-7 rounded-full flex justify-center items-center hover:bg-accent transition-all duration-200 group"
       >
         <Eye className="size-3.5 text-foreground/60 group-hover:text-foreground transition-all duration-200" />
