@@ -6,11 +6,14 @@ import {
   placeStoreOrder,
   getMyOrders,
   getSingleOrder,
-  cancelOrder,
   getAllOrders,
-  verifyManualPayment,
+  verifyOrderPaymentController,
   confirmOrder,
-  markOrderDelivered,
+  shipOrder,
+  deliverOrder,
+  cancelOrder,
+  returnOrder,
+  refundOrder,
   updateOrderStatus,
 } from "../Controllers/order.controller.ts";
 
@@ -59,7 +62,7 @@ router.get(
   getSingleOrder,
 ); // getOrderByOrderNumber
 
-router.patch("/cancel/:orderId", protect, authorize("customer"), cancelOrder);
+// router.patch("/cancel/:orderId", protect, authorize("customer"), cancelOrder);
 
 // ADMIN / OPERATOR ROUTES
 router.get("/", protect, authorize("operator", "admin"), getAllOrders);
@@ -75,25 +78,53 @@ router.post(
 
 // Verify Manual Payment
 router.patch(
-  "/:orderId/payment/verify",
+  "/:orderNumber/payment/verify",
   protect,
   authorize("operator", "admin"),
   validateRequest(verifyManualPaymentSchema),
-  verifyManualPayment,
+  verifyOrderPaymentController,
 );
 
 router.patch(
-  "/:orderId/confirm",
+  "/:orderNumber/confirm",
   protect,
   authorize("operator", "admin"),
   confirmOrder,
 );
 
 router.patch(
-  "/:orderId/deliver",
+  "/:orderNumber/ship",
+  protect,
+  authorize("operator", "admin"),
+  shipOrder,
+);
+
+router.patch(
+  "/:orderNumber/deliver",
   protect,
   authorize("admin", "operator"),
-  markOrderDelivered,
+  deliverOrder,
+);
+
+router.post(
+  "/:orderNumber/cancel",
+  protect,
+  authorize("admin", "operator"),
+  cancelOrder,
+);
+
+router.post(
+  "/:orderNumber/return",
+  protect,
+  authorize("admin", "operator"),
+  returnOrder,
+);
+
+router.post(
+  "/:orderNumber/refund",
+  protect,
+  authorize("admin", "operator"),
+  refundOrder,
 );
 
 router.patch(
@@ -102,13 +133,5 @@ router.patch(
   authorize("admin", "operator"),
   updateOrderStatus,
 );
-
-// Refund
-// router.patch(
-//   "/:orderId/refund",
-//   protect,
-//   authorize("admin", "operator"),
-//   refund,
-// );
 
 export default router;

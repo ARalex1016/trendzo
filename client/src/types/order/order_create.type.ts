@@ -3,12 +3,30 @@ import type {
   PaymentMethodOnline,
   PaymentMethod,
 } from "./shared.type";
+import type { IImage } from "../product/product_shared";
+
+export interface Color {
+  hexCode: string;
+  id: string;
+  name: string;
+}
+
+export interface Size {
+  id: string;
+  name: string;
+}
 
 export interface OrderItem {
+  _id: string;
   product: string;
-  color: string;
-  size: string;
+  productName: string;
+  productImage: IImage;
+  color: Color;
+  size: Size;
   quantity: number;
+  price: number;
+  discount?: number;
+  totalPrice: number;
 }
 
 interface BaseOrder {

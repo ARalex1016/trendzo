@@ -18,8 +18,15 @@ export const UserRepository = {
     return User.findOne({ email }).select("+password");
   },
 
-  async getUserById(userId: Types.ObjectId): Promise<IUser> {
-    const user = await User.findById(userId).select("-password");
+  async getUserById(userId: Types.ObjectId, fields?: string): Promise<IUser> {
+    const selectFields = fields
+      ? fields
+          .split(/\s+/)
+          .filter((field) => field !== "password" && field !== "-password")
+          .join(" ")
+      : "-password";
+
+    const user = await User.findById(userId).select(selectFields);
 
     if (!user) {
       throw new Error("User not found");

@@ -8,16 +8,33 @@ import type {
   DeliveryAddress,
 } from "./shared.type";
 import type { IImage } from "../product/product_shared";
+import type { Role } from "../user.types";
+
+export type OrderAction =
+  | "verify_payment"
+  | "confirm"
+  | "ship"
+  | "deliver"
+  | "cancel"
+  | "return"
+  | "refund";
 
 export interface IOrderUser {
   _id: string;
-  name?: string;
-  email?: string;
-  phone?: string;
+  name: string;
+  email: string;
+  phone: string;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  verified: boolean;
+  role: Role;
   avatar?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IOrderItemRes {
+  _id: string;
   product: string;
   productName: string;
   productImage: IImage;
@@ -40,6 +57,7 @@ export interface IOrderItemRes {
   totalCost?: number;
   totalPrice: number;
   profit?: number;
+  discount?: number;
 
   createdAt: Date;
   updatedAt: Date;
@@ -49,7 +67,7 @@ export interface IOrderRes {
   _id: string;
   orderNumber: string;
 
-  user?: IOrderUser;
+  user?: IOrderUser | string;
   cashier?: string;
 
   orderType: OrderType;
@@ -96,4 +114,8 @@ export interface IOrderRes {
 
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OrderWithAction extends IOrderRes {
+  availableActions?: OrderAction[];
 }

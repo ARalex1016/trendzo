@@ -11,9 +11,21 @@ import { ReferralService } from "../Services/referral.service.ts";
 import { OrderRepository } from "./../Repositories/order.repository.ts";
 import { OrderItemRepository } from "../Repositories/orderItem.repository.ts";
 import ProductRepository from "./../Repositories/product.repository.ts";
+import { UserRepository } from "../Repositories/user.repository.ts";
 import { UserStatsService } from "./user-stats.service.ts";
 import ColorRepository from "../Repositories/color.repository.ts";
 import SizeRepository from "../Repositories/size.repository.ts";
+
+// Transitions
+import { assertValidOrderTransition } from "../modules/Order/order.transition.ts";
+
+// Errors
+import {
+  InvalidOrderOperationError,
+  InvalidOrderTransitionError,
+  OrderNotFoundError,
+  OrderPaymentRequiredError,
+} from "../modules/Order/order.errors.ts";
 
 // Types
 import type { IUser } from "../Models/user.model.ts";
@@ -30,6 +42,11 @@ import type { CreateOrderData } from "./../Repositories/order.repository.ts";
 // Utils
 import ApiFeatures from "../Utils/apiFeatures/ApiFeatures.ts";
 import AppError from "./../Utils/AppError.ts";
+
+interface TransitionOptions {
+  performedBy?: Types.ObjectId;
+  reason?: string;
+}
 
 /* =========================================================
    ORDER STATUS TRANSITIONS
@@ -764,13 +781,26 @@ export const OrderService = {
     };
   },
 
-  async getSingleOrder({ order }: { order: IOrder }) {
+  async getSingleOrder({ order, user }: { order: IOrder; user: IUser }) {
     const orderItems = await OrderItemRepository.findManyByIds(order.items);
 
-    return {
+    const isAdmin = user.role === "admin" || user.role === "operator";
+
+    let userFields =
+      "name email phone isEmailVerified isPhoneVerified verified role createdAt updatedAt";
+
+    const orderData = {
       ...order.toObject(),
       items: orderItems,
+      ...(isAdmin && {
+        user: await UserRepository.getUserById(order.user, userFields),
+        availableActions: await OrderRepository.getAvailableOrderActions(
+          order.status,
+        ),
+      }),
     };
+
+    return orderData;
   },
 
   /* =======================================================
@@ -852,6 +882,82 @@ export const OrderService = {
     };
   },
 
+  // Mark as confirmed
+  async confirmOrder(order: IOrder, user: IUser) {
+    if (order.status !== "pending") {
+      throw new InvalidOrderTransitionError(order.status, "confirmed");
+    }
+
+    const confirmationRemaining = Math.max(
+      order.confirmationPaymentDue - order.prepaidAmount,
+      0,
+    );
+
+    if (confirmationRemaining > 0) {
+      throw new OrderPaymentRequiredError(
+        `Order cannot be confirmed. ${confirmationRemaining} must be paid first.`,
+      );
+    }
+
+    const updatedOrder = await OrderRepository.transitionOrderStatus(
+      user,
+      order.orderNumber,
+      "pending",
+      "confirmed",
+    );
+
+    if (!updatedOrder) {
+      throw new InvalidOrderTransitionError("pending", "confirmed");
+    }
+
+    return updatedOrder;
+  },
+
+  async transitionOrder(
+    user: IUser,
+    order: IOrder,
+    nextStatus: OrderStatus,
+    options: TransitionOptions = {},
+  ) {
+    assertValidOrderTransition(order.status, nextStatus);
+
+    const update: Record<string, unknown> = {};
+
+    if (nextStatus === "shipped") {
+      update.shippedAt = new Date();
+    }
+
+    if (nextStatus === "delivered") {
+      update.deliveredAt = new Date();
+    }
+
+    if (nextStatus === "cancelled") {
+      update.cancellationDate = new Date();
+
+      if (options.performedBy) {
+        update.cancelledBy = options.performedBy;
+      }
+
+      if (options.reason) {
+        update.cancellationReason = options.reason;
+      }
+    }
+
+    const updatedOrder = await OrderRepository.transitionOrderStatus(
+      user,
+      order.orderNumber,
+      order.status,
+      nextStatus,
+      update,
+    );
+
+    if (!updatedOrder) {
+      throw new InvalidOrderTransitionError(order.status, nextStatus);
+    }
+
+    return updatedOrder;
+  },
+
   // Verify Delivery Charge or Whole Payment
   async verifyManualPayment({
     order,
@@ -900,23 +1006,6 @@ export const OrderService = {
       });
 
       return updatedOrder!;
-    } finally {
-      await session.endSession();
-    }
-  },
-
-  // Mark as confirmed
-  async confirmOrder(orderId: Types.ObjectId): Promise<IOrder> {
-    const session = await mongoose.startSession();
-
-    try {
-      let confirmedOrder: IOrder | null = null;
-
-      await session.withTransaction(async () => {
-        confirmedOrder = await OrderRepository.confirmOrder(orderId, session);
-      });
-
-      return confirmedOrder!;
     } finally {
       await session.endSession();
     }

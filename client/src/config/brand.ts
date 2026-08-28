@@ -9,8 +9,10 @@ export const BRAND = {
 
   currency: {
     code: "NPR",
-    symbol: "Rs.",
+    symbol: "रू",
+    alternateSymbol: "Rs.",
     name: "Nepalese Rupee",
+    locale: "en-NP",
   },
 
   contact: {

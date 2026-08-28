@@ -3,32 +3,33 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // Components
 import { PageShell } from "@/components/Container";
-import { LoadingOrderDetails } from "./LoadingOrderDetails";
+import { LoadingOrderDetails } from "./LoadingOrderDetail/LoadingOrderDetails";
 import { OrderNotFound } from "./OrderNotFound";
+import OrderHeader from "./SectionOrderDetails/OrderHeader";
+import { OrderProgress } from "./SectionOrderDetails/OrderProgress";
+import OrderItems from "./SectionOrderDetails/OrderItemsSection";
+import FinancialSummary from "./SectionOrderDetails/FinancialSummary";
+import { PaymentDetails } from "./SectionOrderDetails/PaymentDetails";
+import { OrderCustomerCard } from "./SectionOrderDetails/OrderCustomerCard";
+import { OrderDeliveryCard } from "./SectionOrderDetails/OrderDeliveryCard";
+import { OrderActions } from "./Action/OrderActions";
 
 // Store
 import useOrderStore from "@/store/useOrderStore";
-
-// Types
-import type { IOrderRes } from "@/types/order/order_response.type";
 
 const AdminOrderDetails = () => {
   const { orderNumber } = useParams();
   const navigate = useNavigate();
 
-  const { getOrderByOrderNumber } = useOrderStore();
+  const { orderDetails, getOrderByOrderNumber } = useOrderStore();
 
-  const [order, setOrder] = useState<IOrderRes | null>(null);
   const [searching, setSearching] = useState(false);
 
   const fetchOrder = async (orderNum: string) => {
     setSearching(true);
+
     try {
-      let res = await getOrderByOrderNumber(orderNum);
-
-      if (!res?.data) return;
-
-      setOrder(res?.data);
+      await getOrderByOrderNumber(orderNum);
     } catch (error) {
     } finally {
       setSearching(false);
@@ -45,7 +46,7 @@ const AdminOrderDetails = () => {
     return <LoadingOrderDetails />;
   }
 
-  if (!searching && !order) {
+  if (!searching && !orderDetails) {
     return (
       <OrderNotFound
         orderNumber={orderNumber ?? ""}
@@ -59,11 +60,31 @@ const AdminOrderDetails = () => {
     );
   }
 
-  if (!orderNumber) return;
+  if (!orderDetails || !orderDetails?.orderNumber) return;
 
   return (
     <PageShell back="Back to Order Management" to="/orders-management">
-      <p>{order?.orderNumber}</p>
+      <OrderHeader order={orderDetails} />
+
+      <OrderProgress status={orderDetails.status} />
+
+      <OrderItems items={orderDetails.items} />
+
+      <PaymentDetails order={orderDetails} />
+
+      <FinancialSummary order={orderDetails} />
+
+      <OrderCustomerCard user={orderDetails.user} />
+
+      <OrderDeliveryCard
+        orderType={orderDetails.orderType}
+        status={orderDetails.status}
+        shippedAt={orderDetails.shippedAt}
+        deliveredAt={orderDetails.deliveredAt}
+        deliveryAddress={orderDetails.deliveryAddress}
+        deliveryCharge={orderDetails.deliveryCharge}
+        orderNote={orderDetails.orderNote}
+      />
     </PageShell>
   );
 };

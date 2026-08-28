@@ -1,6 +1,7 @@
 import { Types, type ClientSession } from "mongoose";
 
 // Models
+import { type IUser } from "../Models/user.model.ts";
 import Order, {
   type IOrder,
   type OrderStatus,
@@ -9,8 +10,14 @@ import Order, {
   type PaymentStatus,
   type PaymentCollectionType,
 } from "../Models/order.model.ts";
-
 import OrderCounter from "../Models/order-counter.model.ts";
+
+// Repositories
+import { OrderItemRepository } from "./orderItem.repository.ts";
+import { UserRepository } from "./user.repository.ts";
+
+// Transitions
+import { ORDER_STATUS_TRANSITIONS } from "../modules/Order/order.transition.ts";
 
 // Utils
 import AppError from "../Utils/AppError.ts";
@@ -18,6 +25,18 @@ import AppError from "../Utils/AppError.ts";
 /* =========================================================
    Types
 ========================================================= */
+export type OrderAction =
+  | "verify_payment"
+  | "confirm"
+  | "ship"
+  | "deliver"
+  | "cancel"
+  | "return"
+  | "refund";
+
+export interface OrderWithAction extends IOrder {
+  availableActions?: OrderAction[];
+}
 
 export interface CreateOrderData {
   user?: Types.ObjectId;
@@ -162,6 +181,28 @@ export const OrderRepository = {
 
   findById(orderId: Types.ObjectId, session?: ClientSession) {
     return Order.findById(orderId)
+      .populate({
+        path: "items",
+        populate: {
+          path: "product",
+          select: "name slug variants",
+        },
+      })
+      .populate("user", "name email phone")
+      .populate("cashier", "name email")
+      .populate("coupon")
+      .session(session ?? null);
+  },
+
+  /* =======================================================
+     FIND BY ORDER NUMBER
+  ======================================================= */
+
+  findByNumber(
+    orderNumber: string,
+    session?: ClientSession,
+  ): Promise<IOrder | null> {
+    return Order.findOne({ orderNumber })
       .populate({
         path: "items",
         populate: {
@@ -670,6 +711,34 @@ export const OrderRepository = {
     return `ORD-${datePart}-${sequence}`;
   },
 
+  async getAvailableOrderActions(status: OrderStatus): Promise<OrderAction[]> {
+    switch (status) {
+      case "pending":
+        return ["verify_payment", "confirm", "cancel"];
+
+      case "confirmed":
+        return ["ship", "cancel"];
+
+      case "shipped":
+        return ["deliver"];
+
+      case "delivered":
+        return ["return"];
+
+      case "returned":
+        return ["refund"];
+
+      case "cancelled":
+        return ["refund"];
+
+      case "refunded":
+        return [];
+
+      default:
+        return [];
+    }
+  },
+
   async confirmOrder(
     orderId: Types.ObjectId,
     session?: ClientSession,
@@ -722,5 +791,58 @@ export const OrderRepository = {
     return order.save({
       session: session ?? null,
     });
+  },
+
+  async transitionOrderStatus(
+    user: IUser,
+    orderNumber: string,
+    currentStatus: OrderStatus,
+    nextStatus: OrderStatus,
+    update: Record<string, unknown> = {},
+    session?: ClientSession,
+  ) {
+    const order = await Order.findOneAndUpdate(
+      {
+        orderNumber,
+        status: currentStatus,
+      },
+      {
+        $set: {
+          status: nextStatus,
+          ...update,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+        ...(session ? { session } : {}),
+      },
+    );
+
+    if (!order) {
+      return null;
+    }
+
+    const orderItems = await OrderItemRepository.findManyByIds(order.items);
+
+    const isActionAllowed = user.role === "admin" || user.role === "customer";
+
+    let userFields =
+      "name email phone isEmailVerified isPhoneVerified verified role createdAt updatedAt";
+
+    const orderData = {
+      ...order.toObject(),
+      items: orderItems,
+      ...(isActionAllowed
+        ? {
+            user: await UserRepository.getUserById(order.user, userFields),
+            availableActions: await OrderRepository.getAvailableOrderActions(
+              order.status,
+            ),
+          }
+        : {}),
+    };
+
+    return orderData;
   },
 };

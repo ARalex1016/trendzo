@@ -50,3 +50,12 @@ export const PageShell = ({
     </section>
   );
 };
+
+export const SkeletonBackButton = () => {
+  return (
+    <div className="mb-5 flex items-center gap-2">
+      <div className="h-4 w-4 rounded bg-white/[0.08]" />
+      <div className="h-4 w-20 rounded bg-white/[0.08]" />
+    </div>
+  );
+};

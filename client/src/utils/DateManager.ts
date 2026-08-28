@@ -154,6 +154,21 @@ export function formatRelativeDate(
   }).format(inputDate);
 }
 
+export function formatDate(date: DateInput) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
+export function formatTime(date: DateInput) {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(date));
+}
+
 export function formatDateTime(
   value: DateInput,
   options: FormatDateTimeOptions = {},

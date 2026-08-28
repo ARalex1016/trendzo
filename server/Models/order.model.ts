@@ -38,7 +38,7 @@ export interface IOrder extends Document {
 
   orderNumber: string;
 
-  user?: Types.ObjectId;
+  user: Types.ObjectId;
 
   items: Types.ObjectId[];
 

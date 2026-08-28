@@ -2,6 +2,10 @@ import type { Request, Response } from "express";
 
 // Services
 import { OrderService } from "../Services/order.service.ts";
+import { verifyOrderPayment } from "../modules/Order/order.payment.service.ts";
+
+// Errors
+import { InvalidOrderOperationError } from "../modules/Order/order.errors.ts";
 
 // Utils
 import { asyncHandler } from "../Utils/asyncHandler.ts";
@@ -50,8 +54,11 @@ export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
 
 export const getSingleOrder = asyncHandler(
   async (req: Request, res: Response) => {
+    const user = req?.user!;
+
     const data = await OrderService.getSingleOrder({
       order: req.targetOrder!,
+      user,
     });
 
     res.status(200).json({
@@ -61,17 +68,17 @@ export const getSingleOrder = asyncHandler(
   },
 );
 
-export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
-  const orderId = req.targetOrder!._id;
+// export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
+//   const orderId = req.targetOrder!._id;
 
-  const order = await OrderService.cancelOrder(orderId, req.user!._id);
+//   const order = await OrderService.cancelOrder(orderId, req.user!._id);
 
-  res.status(200).json({
-    status: "success",
-    message: "Order cancelled successfully",
-    data: order,
-  });
-});
+//   res.status(200).json({
+//     status: "success",
+//     message: "Order cancelled successfully",
+//     data: order,
+//   });
+// });
 
 /* =========================================================
    ADMIN / OPERATOR ROUTES
@@ -118,53 +125,39 @@ export const placeStoreOrder = asyncHandler(
   },
 );
 
-export const verifyManualPayment = asyncHandler(
-  async (req: Request, res: Response) => {
-    const order = req.targetOrder!;
+// export const verifyManualPayment = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     const order = req.targetOrder!;
 
-    const { amount } = req.body;
+//     const { amount } = req.body;
 
-    const updatedOrder = await OrderService.verifyManualPayment({
-      order: order,
-      amount,
-      verifiedBy: req.user!._id,
-    });
+//     const updatedOrder = await OrderService.verifyManualPayment({
+//       order: order,
+//       amount,
+//       verifiedBy: req.user!._id,
+//     });
 
-    res.status(200).json({
-      status: "success",
-      message: "Manual payment verified successfully",
-      data: updatedOrder,
-    });
-  },
-);
+//     res.status(200).json({
+//       status: "success",
+//       message: "Manual payment verified successfully",
+//       data: updatedOrder,
+//     });
+//   },
+// );
 
-export const confirmOrder = asyncHandler(
-  async (req: Request, res: Response) => {
-    const order = req.targetOrder!;
+// export const markOrderDelivered = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     const orderId = req.targetOrder!._id;
 
-    const confirmedOrder = await OrderService.confirmOrder(order._id);
+//     const order = await OrderService.markDelivered(orderId);
 
-    res.status(200).json({
-      status: "success",
-      message: "Order confirmed successfully",
-      data: confirmedOrder,
-    });
-  },
-);
-
-export const markOrderDelivered = asyncHandler(
-  async (req: Request, res: Response) => {
-    const orderId = req.targetOrder!._id;
-
-    const order = await OrderService.markDelivered(orderId);
-
-    res.status(200).json({
-      status: "success",
-      message: "Order marked as delivered",
-      data: order,
-    });
-  },
-);
+//     res.status(200).json({
+//       status: "success",
+//       message: "Order marked as delivered",
+//       data: order,
+//     });
+//   },
+// );
 
 export const updateOrderStatus = asyncHandler(
   async (req: Request, res: Response) => {
@@ -182,3 +175,132 @@ export const updateOrderStatus = asyncHandler(
     });
   },
 );
+
+// Update Status
+export const confirmOrder = asyncHandler(
+  async (req: Request, res: Response) => {
+    const order = req.targetOrder!;
+
+    const user = req?.user!;
+
+    const updatedOrder = await OrderService.confirmOrder(order, user);
+
+    res.status(200).json({
+      status: "success",
+      message: "Order confirmed successfully",
+      data: updatedOrder,
+    });
+  },
+);
+
+export const verifyOrderPaymentController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const order = req.targetOrder!;
+
+    const { amount } = req.body;
+
+    let updatedOrder = await verifyOrderPayment(order, amount);
+
+    res.status(200).json({
+      status: "success",
+      message: "Payment verified successfully",
+      data: updatedOrder,
+    });
+  },
+);
+
+export const shipOrder = asyncHandler(async (req: Request, res: Response) => {
+  let order = req.targetOrder!;
+
+  const user = req?.user!;
+
+  let updatedOrder = await OrderService.transitionOrder(user, order, "shipped");
+
+  res.status(201).json({
+    status: "success",
+    message: "",
+    data: updatedOrder,
+  });
+});
+
+export const deliverOrder = asyncHandler(
+  async (req: Request, res: Response) => {
+    let order = req.targetOrder!;
+
+    const user = req?.user!;
+
+    let updatedOrder = await OrderService.transitionOrder(
+      user,
+      order,
+      "delivered",
+    );
+
+    res.status(201).json({
+      status: "success",
+      message: "",
+      data: updatedOrder,
+    });
+  },
+);
+
+export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
+  let { targetOrder, user } = req;
+
+  let { reason } = req.body;
+
+  if (!reason.trim()) {
+    throw new InvalidOrderOperationError("Cancellation reason is required.");
+  }
+
+  let updatedOrder = await OrderService.transitionOrder(
+    user!,
+    targetOrder!,
+    "cancelled",
+    {
+      performedBy: user!._id,
+      reason: reason.trim(),
+    },
+  );
+
+  res.status(201).json({
+    status: "success",
+    message: "",
+    data: updatedOrder,
+  });
+});
+
+export const returnOrder = asyncHandler(async (req: Request, res: Response) => {
+  let order = req.targetOrder!;
+
+  const user = req?.user!;
+
+  let updatedOrder = await OrderService.transitionOrder(
+    user,
+    order,
+    "returned",
+  );
+
+  res.status(201).json({
+    status: "success",
+    message: "",
+    data: updatedOrder,
+  });
+});
+
+export const refundOrder = asyncHandler(async (req: Request, res: Response) => {
+  let order = req.targetOrder!;
+
+  const user = req?.user!;
+
+  let updatedOrder = await OrderService.transitionOrder(
+    user,
+    order,
+    "refunded",
+  );
+
+  res.status(201).json({
+    status: "success",
+    message: "",
+    data: updatedOrder,
+  });
+});
