@@ -36,8 +36,13 @@ export const CouponService = {
     return coupon;
   },
 
-  async getAllCoupons(filter: any = {}) {
-    return CouponRepository.findAll(filter);
+  async getAllCoupons(filter: Record<string, unknown> = {}) {
+    const page = Number(filter.page) || 1;
+    const limit = Number(filter.limit) || 10;
+
+    const { page: _, limit: __, ...query } = filter;
+
+    return CouponRepository.findAll(query, page, limit);
   },
 
   async updateCoupon(id: Types.ObjectId, updates: any) {

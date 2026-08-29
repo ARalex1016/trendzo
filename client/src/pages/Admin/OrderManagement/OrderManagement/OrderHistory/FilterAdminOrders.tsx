@@ -3,7 +3,7 @@ import Filter from "@/components/Filter";
 
 // Types
 import type { OrderStatus } from "@/types/order/shared.type";
-import type { AdminOrdersFilters } from "./OrderManagement/OrderHistory/OrderHistory";
+import type { AdminOrdersFilters } from "./OrderHistory";
 
 export type AdminOrderStatusProps = OrderStatus | "all";
 
@@ -41,34 +41,32 @@ const FilterAdminOrders = ({
   };
 
   return (
-    <div>
-      <Filter
-        search={{
-          value: filters.search,
-          onChange: (value) => updateFilter("search", value),
-          placeholder: "Search orders...",
-        }}
-        sort={{
-          value: filters.sort,
-          onChange: (value) => updateFilter("sort", value),
-          options: [
-            {
-              label: "Newest",
-              value: "newest",
-            },
-            {
-              label: "Oldest",
-              value: "oldest",
-            },
-          ],
-        }}
-        tabs={{
-          value: filters.status,
-          onChange: (value) => updateFilter("status", value),
-          options: orderStatuses,
-        }}
-      />
-    </div>
+    <Filter
+      search={{
+        value: filters.search,
+        onChange: (value) => updateFilter("search", value),
+        placeholder: "Search orders...",
+      }}
+      sort={{
+        value: filters.sort,
+        onChange: (value) => updateFilter("sort", value),
+        options: [
+          {
+            label: "Newest",
+            value: "newest",
+          },
+          {
+            label: "Oldest",
+            value: "oldest",
+          },
+        ],
+      }}
+      tabs={{
+        value: filters.status,
+        onChange: (value) => updateFilter("status", value),
+        options: orderStatuses,
+      }}
+    />
   );
 };
 

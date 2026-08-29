@@ -25,7 +25,9 @@ interface OrderStore {
 
   getSingleOrder: (orderId: string) => Promise<void>;
 
-  getOrderByOrderNumber: (orderNumber: string) => Promise<void>;
+  getOrderByOrderNumber: (
+    orderNumber: string,
+  ) => Promise<OrderWithAction | null>;
 
   getMyOrders: (params?: GetOrdersParams) => Promise<IOrderResponse | null>;
 
@@ -83,6 +85,8 @@ const useOrderStore = create<OrderStore>((set) => ({
       console.log(res.data.data);
 
       set({ orderDetails: res.data.data });
+
+      return res.data.data;
     } catch (error: any) {
       console.log(error);
 
@@ -148,8 +152,6 @@ const useOrderStore = create<OrderStore>((set) => ({
         { amount },
       );
 
-      console.log(res.data.data);
-
       set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
@@ -160,7 +162,7 @@ const useOrderStore = create<OrderStore>((set) => ({
     try {
       let res = await axiosInstance.patch(`/v1/orders/${orderNumber}/confirm`);
 
-      set({ orderDetails: res.data });
+      set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -170,7 +172,7 @@ const useOrderStore = create<OrderStore>((set) => ({
     try {
       let res = await axiosInstance.patch(`/v1/orders/${orderNumber}/ship`);
 
-      set({ orderDetails: res.data });
+      set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -180,7 +182,7 @@ const useOrderStore = create<OrderStore>((set) => ({
     try {
       let res = await axiosInstance.patch(`/v1/orders/${orderNumber}/deliver`);
 
-      set({ orderDetails: res.data });
+      set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -192,7 +194,7 @@ const useOrderStore = create<OrderStore>((set) => ({
         reason,
       });
 
-      set({ orderDetails: res.data });
+      set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -202,7 +204,7 @@ const useOrderStore = create<OrderStore>((set) => ({
     try {
       let res = await axiosInstance.patch(`/v1/orders/${orderNumber}/return`);
 
-      set({ orderDetails: res.data });
+      set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -212,7 +214,7 @@ const useOrderStore = create<OrderStore>((set) => ({
     try {
       let res = await axiosInstance.patch(`/v1/orders/${orderNumber}/refund`);
 
-      set({ orderDetails: res.data });
+      set({ orderDetails: res.data.data });
     } catch (error: any) {
       throw new Error(error.message);
     }

@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom";
 // Components
 import { CopyButton } from "@/components/CopyButton";
 
-// Config
-import { BRAND } from "@/config/brand";
-
 // Utils
 import { capitalize } from "@/utils/StringManager";
 import { formatDateTime } from "@/utils/DateManager";
+import { formatCurrency } from "@/utils/CurrencyManager";
 
 // Icons
 import { Eye, Ellipsis } from "lucide-react";
@@ -63,9 +61,7 @@ export const TotalAmount = ({
   totalAmount: AdminOrder["totalAmount"];
 }) => {
   return (
-    <p className="text-foreground font-medium">
-      {BRAND.currency.symbol} {totalAmount}
-    </p>
+    <p className="text-foreground font-medium">{formatCurrency(totalAmount)}</p>
   );
 };
 
@@ -76,7 +72,7 @@ export const DeliveryCharge = ({
 }) => {
   return (
     <p className="text-sm text-foreground/60 font-medium">
-      {BRAND.currency.symbol} {deliveryCharge}
+      {formatCurrency(deliveryCharge)}
     </p>
   );
 };
@@ -93,6 +89,14 @@ export const OrderStatusData = ({
   status,
 }: {
   status: AdminOrder["orderStatus"];
+}) => {
+  return <p className="text-sm font-medium">{capitalize(status)}</p>;
+};
+
+export const PaymentStatusData = ({
+  status,
+}: {
+  status: AdminOrder["paymentStatus"];
 }) => {
   return <p className="text-sm font-medium">{capitalize(status)}</p>;
 };

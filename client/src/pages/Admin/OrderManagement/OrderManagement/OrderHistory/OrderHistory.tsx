@@ -11,6 +11,7 @@ import {
   DeliveryCharge,
   PaymentMethod,
   OrderStatusData,
+  PaymentStatusData,
   CreatedAt,
   LastUpdate,
   ActionButtons,
@@ -119,6 +120,12 @@ const columns: Column<AdminOrder>[] = [
     render: (row) => <OrderStatusData status={row.orderStatus} />,
   },
   {
+    key: "paymentStatus",
+    title: "Payment Status",
+    align: "left",
+    render: (row) => <PaymentStatusData status={row.paymentStatus} />,
+  },
+  {
     key: "createdAt",
     title: "Created",
     align: "left",
@@ -172,7 +179,7 @@ const mapOrderToAdminOrder = (order: IOrderRes): AdminOrder => ({
 });
 
 const OrderHistory = () => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { getAllOrders } = useOrderStore();
 
   const [filters, setFilters] = useState<AdminOrdersFilters>(DEFAULT_FILTERS);

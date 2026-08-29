@@ -41,6 +41,11 @@ import {
   Users,
   Wallet,
   ShoppingBag,
+  Layers3,
+  FolderTree,
+  Ruler,
+  Megaphone,
+  TicketPercent,
 } from "lucide-react";
 
 // Config
@@ -168,6 +173,33 @@ const menuItemsList: MenuGroup[] = [
         url: "/users-management",
         icon: Users,
       },
+      {
+        title: "Catelog",
+        icon: Layers3,
+        children: [
+          {
+            title: "Category Management",
+            url: "/attributes/category",
+            icon: FolderTree,
+          },
+          {
+            title: "Size Management",
+            url: "/attributes/sizes",
+            icon: Ruler,
+          },
+        ],
+      },
+      {
+        title: "Marketing",
+        icon: Megaphone,
+        children: [
+          {
+            title: "Coupon Management",
+            url: "/marketing/coupons",
+            icon: TicketPercent,
+          },
+        ],
+      },
     ],
   },
 ];
@@ -273,7 +305,7 @@ const SidebarLinkItem = ({ item, pathname }: SidebarLinkItemProps) => {
         }`}
       >
         <Link to={item.url} className="flex items-center gap-x-2">
-          {item.icon && <item.icon className="h-5 w-5 shrink-0" />}
+          {item.icon && <item.icon className="size-5 shrink-0" />}
 
           <span className="text-base">{item.title}</span>
         </Link>
@@ -324,7 +356,7 @@ const SidebarParentItem = ({ item, pathname }: SidebarParentItemProps) => {
             }`}
           >
             <div className="flex items-center gap-x-2">
-              {item.icon && <item.icon className="h-5 w-5 shrink-0" />}
+              {item.icon && <item.icon className="size-4.5 shrink-0" />}
               <span>{item.title}</span>
             </div>
 

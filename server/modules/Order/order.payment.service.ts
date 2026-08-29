@@ -10,17 +10,14 @@ import AppError from "../../Utils/AppError.ts";
 
 // Types
 import type { IOrder, PaymentStatus } from "../../Models/order.model.ts";
-
-interface VerifyPaymentResult {
-  order: IOrder;
-  verifiedAmount: number;
-  paymentStatus: PaymentStatus;
-}
+import type { OrderWithAction } from "../../Repositories/order.repository.ts";
+import type { IUser } from "../../Models/user.model.ts";
 
 export async function verifyOrderPayment(
+  user: IUser,
   order: IOrder,
   verifiedAmount: number,
-): Promise<VerifyPaymentResult> {
+): Promise<OrderWithAction> {
   if (
     order.paymentStatus === "partial" ||
     order.paymentStatus === "completed"
@@ -64,9 +61,7 @@ export async function verifyOrderPayment(
 
   await order.save();
 
-  return {
-    order,
-    verifiedAmount,
-    paymentStatus,
-  };
+  let orderData = await OrderRepository.adminOrderDetails(user, order);
+
+  return orderData;
 }

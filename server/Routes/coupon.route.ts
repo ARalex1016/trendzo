@@ -49,8 +49,13 @@ router.post(
 );
 
 // Admin
-router.get("/", protect, authorize("admin"), getAllCoupons);
-router.get("/:couponId", protect, authorize("admin"), getCouponById);
+router.get("/", protect, authorize("admin", "operator"), getAllCoupons);
+router.get(
+  "/:couponId",
+  protect,
+  authorize("admin", "operator"),
+  getCouponById,
+);
 router.post(
   "/",
   protect,

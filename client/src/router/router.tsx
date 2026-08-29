@@ -23,6 +23,10 @@ import AllProducts from "@/pages/Admin/ProductManagement/AllProducts/AllProducts
 import AddProduct from "@/pages/Admin/ProductManagement/AddProduct/AddProduct";
 import OrderManagement from "@/pages/Admin/OrderManagement/OrderManagement/OrderManagement";
 import AdminOrderDetails from "@/pages/Admin/OrderManagement/AdminOrderDetails/AdminOrderDetails";
+import UserManagement from "@/pages/Admin/UserManagement/UserManagement";
+import Coupons from "@/pages/Admin/Attributes/Coupons/Coupons";
+import Categories from "@/pages/Admin/Attributes/Categories/Categories";
+import Sizes from "@/pages/Admin/Attributes/Sizes/Sizes";
 
 // Auth
 import Signup from "@/pages/Auth/Signup/Signup";
@@ -171,6 +175,22 @@ const router = createBrowserRouter([
               {
                 path: ROUTES.ADMIN_ORDER_DETAILS(),
                 element: <AdminOrderDetails />,
+              },
+              {
+                path: ROUTES.USER_MANAGEMENT,
+                element: <UserManagement />,
+              },
+              {
+                path: ROUTES.COUPONS,
+                element: <Coupons />,
+              },
+              {
+                path: ROUTES.CATEGORY,
+                element: <Categories />,
+              },
+              {
+                path: ROUTES.SIZE,
+                element: <Sizes />,
               },
             ],
           },

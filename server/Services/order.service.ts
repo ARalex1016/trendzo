@@ -593,7 +593,6 @@ export const OrderService = {
            * Referral failure should not cause the
            * customer's order to fail.
            */
-          console.warn("Referral qualification failed:", err.message);
         }
       }
 
@@ -782,23 +781,7 @@ export const OrderService = {
   },
 
   async getSingleOrder({ order, user }: { order: IOrder; user: IUser }) {
-    const orderItems = await OrderItemRepository.findManyByIds(order.items);
-
-    const isAdmin = user.role === "admin" || user.role === "operator";
-
-    let userFields =
-      "name email phone isEmailVerified isPhoneVerified verified role createdAt updatedAt";
-
-    const orderData = {
-      ...order.toObject(),
-      items: orderItems,
-      ...(isAdmin && {
-        user: await UserRepository.getUserById(order.user, userFields),
-        availableActions: await OrderRepository.getAvailableOrderActions(
-          order.status,
-        ),
-      }),
-    };
+    let orderData = await OrderRepository.adminOrderDetails(user, order);
 
     return orderData;
   },
@@ -810,7 +793,6 @@ export const OrderService = {
   // For Admin Only
   async getAdminSingleOrder(orderId: string | Types.ObjectId, user: IUser) {
     const order = await OrderRepository.findById(new Types.ObjectId(orderId));
-    console.log(order);
 
     if (!order) {
       throw new AppError("Order not found", 404);

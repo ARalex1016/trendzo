@@ -197,9 +197,11 @@ export const verifyOrderPaymentController = asyncHandler(
   async (req: Request, res: Response) => {
     const order = req.targetOrder!;
 
+    const user = req?.user!;
+
     const { amount } = req.body;
 
-    let updatedOrder = await verifyOrderPayment(order, amount);
+    let updatedOrder = await verifyOrderPayment(user, order, amount);
 
     res.status(200).json({
       status: "success",

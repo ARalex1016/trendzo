@@ -52,9 +52,9 @@ const MyOrderDetails = () => {
     try {
       let res = await getOrderByOrderNumber(orderNumber);
 
-      if (!res?.data) return;
+      if (!res) return;
 
-      setOrder(res?.data);
+      setOrder(res);
     } catch (error) {}
   };
 

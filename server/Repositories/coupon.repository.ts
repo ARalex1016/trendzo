@@ -33,8 +33,26 @@ export const CouponRepository = {
     return mongooseQuery.exec();
   },
 
-  async findAll(filter: Record<string, unknown> = {}) {
-    return Coupon.find(filter).sort({ createdAt: -1 });
+  async findAll(filter: Record<string, unknown> = {}, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const [coupons, total] = await Promise.all([
+      Coupon.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+
+      Coupon.countDocuments(filter),
+    ]);
+
+    const meta = {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    };
+
+    return {
+      coupons,
+      meta,
+    };
   },
 
   async updateById(id: Types.ObjectId, updates: Partial<ICoupon>) {

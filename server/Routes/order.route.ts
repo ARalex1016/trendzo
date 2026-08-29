@@ -106,21 +106,21 @@ router.patch(
   deliverOrder,
 );
 
-router.post(
+router.patch(
   "/:orderNumber/cancel",
   protect,
   authorize("admin", "operator"),
   cancelOrder,
 );
 
-router.post(
+router.patch(
   "/:orderNumber/return",
   protect,
   authorize("admin", "operator"),
   returnOrder,
 );
 
-router.post(
+router.patch(
   "/:orderNumber/refund",
   protect,
   authorize("admin", "operator"),

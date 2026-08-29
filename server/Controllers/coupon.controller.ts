@@ -18,10 +18,13 @@ export const createCoupon = asyncHandler(
 
 export const getAllCoupons = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const coupons = await CouponService.getAllCoupons(req.query);
-    res
-      .status(200)
-      .json({ status: "success", total: coupons.length, data: coupons });
+    const { coupons, meta } = await CouponService.getAllCoupons(req.query);
+
+    res.status(200).json({
+      status: "success",
+      data: coupons,
+      meta,
+    });
   },
 );
 

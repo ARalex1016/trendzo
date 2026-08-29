@@ -67,7 +67,7 @@ export interface IOrderRes {
   _id: string;
   orderNumber: string;
 
-  user?: IOrderUser | string;
+  user?: IOrderUser;
   cashier?: string;
 
   orderType: OrderType;

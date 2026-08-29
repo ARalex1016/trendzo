@@ -31,6 +31,15 @@ export const ROUTES = {
   ADMIN_ORDER_DETAILS: (slug: string = ":orderNumber") =>
     `/orders-management/${slug}`,
 
+  USER_MANAGEMENT: "/users-management",
+
+  // Attributes
+  CATEGORY: "/attributes/category",
+  SIZE: "/attributes/sizes",
+
+  // Marketing
+  COUPONS: "/marketing/coupons",
+
   // Guest
   LOGIN: "/login",
   SIGNUP: "/signup",

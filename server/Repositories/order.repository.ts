@@ -793,6 +793,31 @@ export const OrderRepository = {
     });
   },
 
+  async adminOrderDetails(
+    user: IUser,
+    order: IOrder,
+  ): Promise<OrderWithAction> {
+    const orderItems = await OrderItemRepository.findManyByIds(order.items);
+
+    const isActionAllowed = user.role === "admin" || user.role === "customer";
+
+    let userFields =
+      "name email phone isEmailVerified isPhoneVerified verified role createdAt updatedAt";
+
+    const orderData = {
+      ...order.toObject(),
+      items: orderItems,
+      ...(isActionAllowed && {
+        user: await UserRepository.getUserById(order.user, userFields),
+        availableActions: await OrderRepository.getAvailableOrderActions(
+          order.status,
+        ),
+      }),
+    };
+
+    return orderData;
+  },
+
   async transitionOrderStatus(
     user: IUser,
     orderNumber: string,
@@ -823,26 +848,8 @@ export const OrderRepository = {
       return null;
     }
 
-    const orderItems = await OrderItemRepository.findManyByIds(order.items);
+    let orderdata = await OrderRepository.adminOrderDetails(user, order);
 
-    const isActionAllowed = user.role === "admin" || user.role === "customer";
-
-    let userFields =
-      "name email phone isEmailVerified isPhoneVerified verified role createdAt updatedAt";
-
-    const orderData = {
-      ...order.toObject(),
-      items: orderItems,
-      ...(isActionAllowed
-        ? {
-            user: await UserRepository.getUserById(order.user, userFields),
-            availableActions: await OrderRepository.getAvailableOrderActions(
-              order.status,
-            ),
-          }
-        : {}),
-    };
-
-    return orderData;
+    return orderdata;
   },
 };

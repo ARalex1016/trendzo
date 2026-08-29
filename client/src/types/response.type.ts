@@ -14,6 +14,7 @@ export interface ApiResponse<T> {
   status: string;
   message?: string;
   meta?: Meta;
+
   data: T;
   expiresAt?: number;
 }
