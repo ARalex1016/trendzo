@@ -11,7 +11,7 @@ export interface ICoupon {
   usageLimit?: number;
   usedCount: number;
   status: "active" | "inactive";
-  createdBy: mongoose.Schema.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

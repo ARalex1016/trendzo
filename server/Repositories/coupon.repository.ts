@@ -37,10 +37,16 @@ export const CouponRepository = {
     const skip = (page - 1) * limit;
 
     const [coupons, total] = await Promise.all([
-      Coupon.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Coupon.find(filter)
+        .sort({ createdAt: -1 })
+        .populate("createdBy", "name")
+        .skip(skip)
+        .limit(limit),
 
       Coupon.countDocuments(filter),
     ]);
+
+    console.log(coupons);
 
     const meta = {
       page,

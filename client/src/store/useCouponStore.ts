@@ -1,15 +1,18 @@
 import { create } from "zustand";
 import { axiosInstance } from "./axios";
+import toast from "react-hot-toast";
 
 // Types
 import type { AxiosError } from "axios";
 import type { ApiResponse, ApiErrorResponse } from "@/types/response.type";
-import type { ICoupon } from "@/types/coupon.type";
+import type { ICoupon, AdminCoupon } from "@/types/coupon.type";
 
 interface CouponStore {
   validateCoupon: (code: string) => Promise<ICoupon>;
 
-  getAllCoupons: () => Promise<ApiResponse<ICoupon[]>>;
+  getAllCoupons: () => Promise<ApiResponse<AdminCoupon[]>>;
+
+  toggleCouponStatus: (couponId: string) => Promise<void>;
 }
 
 const useCouponStore = create<CouponStore>(() => ({
@@ -35,8 +38,29 @@ const useCouponStore = create<CouponStore>(() => ({
     } catch (error: unknown) {
       const err = error as AxiosError<ApiErrorResponse>;
 
+      throw new Error(err.response?.data?.message || "Faild to fetched Coupon");
+    }
+  },
+
+  toggleCouponStatus: async (couponId) => {
+    try {
+      let promise = axiosInstance.patch(`v1/coupons/${couponId}/status`);
+
+      const response = toast.promise(promise, {
+        loading: "Updating coupon status...",
+        success: (res) => res.data.message,
+        error: (err) =>
+          err?.response?.data?.message ||
+          err?.message ||
+          "Failed to update coupon status",
+      });
+
+      await response;
+    } catch (error: any) {
+      const err = error as AxiosError<ApiErrorResponse>;
+
       throw new Error(
-        err.response?.data?.message || "Coupon validation failed",
+        err.response?.data?.message || "Failed to update coupon status",
       );
     }
   },

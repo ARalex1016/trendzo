@@ -3,7 +3,19 @@ import { useState, useEffect } from "react";
 // Components
 import CouponFilter from "../CouponFilter";
 import { DataTable } from "@/components/DataTable/DataTable";
-import { Usage } from "./CouponTableData";
+import {
+  CouponCode,
+  CouponTypeCompo,
+  Discount,
+  MinPurchase,
+  MaxDiscount,
+  Users,
+  Usage,
+  Expiry,
+  Status,
+  CreatedBy,
+  CreatedAt,
+} from "./CouponTableData";
 
 // Store
 import useAuthStore from "@/store/useAuthStore";
@@ -11,7 +23,7 @@ import useCouponStore from "@/store/useCouponStore";
 
 // Types
 import type {
-  ICoupon,
+  AdminCoupon,
   CouponStatus,
   ICode,
   CouponType,
@@ -55,77 +67,14 @@ export interface CouponDataTable {
 
   status: CouponStatus;
 
-  createdBy?: string;
+  createdBy?: {
+    name: string;
+  };
 
-  createdAt: string | Date;
+  createdAt: string;
 
-  updatedAt: string | Date;
+  updatedAt: string;
 }
-
-const columns: Column<CouponDataTable>[] = [
-  {
-    key: "code",
-    title: "Coupon Code",
-    align: "left",
-    // render: (row) => <OrderNumber orderNumber={row.orderNumber} />,
-  },
-  {
-    key: "type",
-    title: "Type",
-    align: "left",
-  },
-  {
-    key: "value",
-    title: "Discount",
-    align: "left",
-  },
-  {
-    key: "minPurchase",
-    title: "Min Purchase",
-    align: "left",
-  },
-  {
-    key: "maxDiscount",
-    title: "Max Discount",
-    align: "left",
-  },
-  {
-    key: "applicableUsers",
-    title: "Users",
-    align: "left",
-  },
-  {
-    key: "usage",
-    title: "Usage",
-    align: "left",
-    render: (row) => (
-      <Usage
-        usageLimit={row.usage.usageLimit}
-        usedCount={row.usage.usedCount}
-      />
-    ),
-  },
-  {
-    key: "expiryDate",
-    title: "Expiry",
-    align: "left",
-  },
-  {
-    key: "status",
-    title: "Status",
-    align: "left",
-  },
-  {
-    key: "createdBy",
-    title: "Created By",
-    align: "left",
-  },
-  {
-    key: "createdAt",
-    title: "Created At",
-    align: "left",
-  },
-];
 
 const DEFAULT_FILTERS: CouponFilters = {
   search: "",
@@ -133,7 +82,7 @@ const DEFAULT_FILTERS: CouponFilters = {
   sort: "newest",
 };
 
-const mapCouponToCouponTable = (coupon: ICoupon): CouponDataTable => ({
+const mapCouponToCouponTable = (coupon: AdminCoupon): CouponDataTable => ({
   _id: coupon._id ?? "",
 
   code: coupon.code,
@@ -167,7 +116,7 @@ const mapCouponToCouponTable = (coupon: ICoupon): CouponDataTable => ({
 
 const CouponsHistory = () => {
   const { user, isAuthenticated } = useAuthStore();
-  const { getAllCoupons } = useCouponStore();
+  const { getAllCoupons, toggleCouponStatus } = useCouponStore();
 
   const [filters, setFilters] = useState<CouponFilters>(DEFAULT_FILTERS);
 
@@ -198,6 +147,24 @@ const CouponsHistory = () => {
     }));
   };
 
+  const handleToggleCouponStatus = async (couponId: CouponDataTable["_id"]) => {
+    try {
+      await toggleCouponStatus(couponId);
+
+      // Update only the affected coupon
+      setCoupons((prev) =>
+        prev.map((coupon) =>
+          coupon._id !== couponId
+            ? coupon
+            : {
+                ...coupon,
+                status: coupon.status === "active" ? "inactive" : "active",
+              },
+        ),
+      );
+    } catch (error) {}
+  };
+
   const fetchAllCoupons = async () => {
     setLoading(true);
     try {
@@ -217,6 +184,85 @@ const CouponsHistory = () => {
       setLoading(false);
     }
   };
+
+  const columns: Column<CouponDataTable>[] = [
+    {
+      key: "code",
+      title: "Coupon Code",
+      align: "left",
+      render: (row) => <CouponCode code={row.code} />,
+    },
+    {
+      key: "type",
+      title: "Type",
+      align: "left",
+      render: (row) => <CouponTypeCompo type={row.type} />,
+    },
+    {
+      key: "value",
+      title: "Discount",
+      align: "left",
+      render: (row) => <Discount value={row.value} type={row.type} />,
+    },
+    {
+      key: "minPurchase",
+      title: "Min Purchase",
+      align: "left",
+      render: (row) => <MinPurchase minPurchase={row.minPurchase} />,
+    },
+    {
+      key: "maxDiscount",
+      title: "Max Discount",
+      align: "left",
+      render: (row) => <MaxDiscount maxDiscount={row.maxDiscount} />,
+    },
+    {
+      key: "applicableUsers",
+      title: "Users",
+      align: "left",
+      render: (row) => <Users applicableUsers={row.applicableUsers} />,
+    },
+    {
+      key: "usage",
+      title: "Usage",
+      align: "center",
+      render: (row) => (
+        <Usage
+          usageLimit={row.usage.usageLimit}
+          usedCount={row.usage.usedCount}
+        />
+      ),
+    },
+    {
+      key: "expiryDate",
+      title: "Expiry",
+      align: "left",
+      render: (row) => <Expiry expiryDate={row.expiryDate} />,
+    },
+    {
+      key: "status",
+      title: "Status",
+      align: "left",
+      render: (row) => (
+        <Status
+          status={row.status}
+          onToggle={() => handleToggleCouponStatus(row._id)}
+        />
+      ),
+    },
+    {
+      key: "createdBy",
+      title: "Created By",
+      align: "left",
+      render: (row) => <CreatedBy createdBy={row.createdBy} />,
+    },
+    {
+      key: "createdAt",
+      title: "Created At",
+      align: "left",
+      render: (row) => <CreatedAt createdAt={row.createdAt} />,
+    },
+  ];
 
   useEffect(() => {
     if (!isAuthenticated && user?.role !== "admin" && user?.role !== "operator")
