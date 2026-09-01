@@ -304,6 +304,7 @@ const TableBody = () => {
               </div>
             </Data>
 
+            {/* Active */}
             <Data>
               <div className="flex flex-row justify-center items-center">
                 <Switch
@@ -313,12 +314,14 @@ const TableBody = () => {
               </div>
             </Data>
 
+            {/* Last Updated */}
             <Data>
               <span className="text-xs font-medium text-foreground/80">
                 {getTimeAgo(product.updatedAt)}
               </span>
             </Data>
 
+            {/* Actions */}
             <Data>
               <div className="flex flex-row justify-center items-center">
                 <DropDownMenuAction slug={product.slug} />

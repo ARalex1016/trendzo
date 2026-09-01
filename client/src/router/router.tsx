@@ -24,7 +24,7 @@ import AddProduct from "@/pages/Admin/ProductManagement/AddProduct/AddProduct";
 import OrderManagement from "@/pages/Admin/OrderManagement/OrderManagement/OrderManagement";
 import AdminOrderDetails from "@/pages/Admin/OrderManagement/AdminOrderDetails/AdminOrderDetails";
 import UserManagement from "@/pages/Admin/UserManagement/UserManagement";
-import Coupons from "@/pages/Admin/Attributes/Coupons/Coupons";
+import CouponsManagement from "@/pages/Admin/Attributes/Coupons/CouponsManagement";
 import Categories from "@/pages/Admin/Attributes/Categories/Categories";
 import Sizes from "@/pages/Admin/Attributes/Sizes/Sizes";
 
@@ -182,7 +182,7 @@ const router = createBrowserRouter([
               },
               {
                 path: ROUTES.COUPONS,
-                element: <Coupons />,
+                element: <CouponsManagement />,
               },
               {
                 path: ROUTES.CATEGORY,

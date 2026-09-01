@@ -15,6 +15,7 @@ import {
   Status,
   CreatedBy,
   CreatedAt,
+  Actions,
 } from "./CouponTableData";
 
 // Store
@@ -74,6 +75,8 @@ export interface CouponDataTable {
   createdAt: string;
 
   updatedAt: string;
+
+  actions: string;
 }
 
 const DEFAULT_FILTERS: CouponFilters = {
@@ -112,11 +115,14 @@ const mapCouponToCouponTable = (coupon: AdminCoupon): CouponDataTable => ({
   createdAt: coupon?.createdAt ?? "",
 
   updatedAt: coupon?.updatedAt ?? "",
+
+  actions: "",
 });
 
 const CouponsHistory = () => {
   const { user, isAuthenticated } = useAuthStore();
-  const { getAllCoupons, toggleCouponStatus } = useCouponStore();
+  const { adminCoupons, getAllCoupons, toggleCouponStatus, deleteCoupon } =
+    useCouponStore();
 
   const [filters, setFilters] = useState<CouponFilters>(DEFAULT_FILTERS);
 
@@ -150,18 +156,12 @@ const CouponsHistory = () => {
   const handleToggleCouponStatus = async (couponId: CouponDataTable["_id"]) => {
     try {
       await toggleCouponStatus(couponId);
+    } catch (error) {}
+  };
 
-      // Update only the affected coupon
-      setCoupons((prev) =>
-        prev.map((coupon) =>
-          coupon._id !== couponId
-            ? coupon
-            : {
-                ...coupon,
-                status: coupon.status === "active" ? "inactive" : "active",
-              },
-        ),
-      );
+  const handleDeleteCoupon = async (couponId: CouponDataTable["_id"]) => {
+    try {
+      await deleteCoupon(couponId);
     } catch (error) {}
   };
 
@@ -172,13 +172,7 @@ const CouponsHistory = () => {
 
       if (!res) return;
 
-      console.log(res);
-
       if (!res.meta) return;
-
-      setCoupons(res.data.map(mapCouponToCouponTable));
-
-      setPagination(res?.meta);
     } catch (error) {
     } finally {
       setLoading(false);
@@ -262,7 +256,28 @@ const CouponsHistory = () => {
       align: "left",
       render: (row) => <CreatedAt createdAt={row.createdAt} />,
     },
+    {
+      key: "actions",
+      title: "Actions",
+      align: "center",
+      render: (row) => <Actions onDelete={() => handleDeleteCoupon(row._id)} />,
+    },
   ];
+
+  useEffect(() => {
+    if (!adminCoupons) return;
+
+    setCoupons(adminCoupons.data.map(mapCouponToCouponTable));
+
+    setPagination(
+      adminCoupons.meta ?? {
+        page: 1,
+        limit: 10,
+        total: adminCoupons.data.length,
+        pages: 1,
+      },
+    );
+  }, [adminCoupons]);
 
   useEffect(() => {
     if (!isAuthenticated && user?.role !== "admin" && user?.role !== "operator")

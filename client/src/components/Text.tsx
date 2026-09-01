@@ -24,7 +24,9 @@ interface TextWithIconProps {
 }
 
 export const Title = ({ text, className }: TitleProps) => {
-  return <h2 className={`text-xl font-semibold ${className}`}>{text}</h2>;
+  return (
+    <h2 className={`text-lg sm:text-xl font-semibold ${className}`}>{text}</h2>
+  );
 };
 
 export const BaseText = ({ children, className }: BaseTextComponentProps) => {

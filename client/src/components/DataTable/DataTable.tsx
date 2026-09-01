@@ -44,8 +44,8 @@ export function DataTable<T>({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
-      <div className="overflow-x-auto">
-        <table className="min-w-full no-scrollbar">
+      <div className="overflow-x-auto no-scrollbar">
+        <table className="min-w-full">
           <DataTableHeader columns={columns} expandable={expandable} />
 
           {loading ? (

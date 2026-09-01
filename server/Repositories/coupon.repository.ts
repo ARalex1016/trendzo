@@ -46,8 +46,6 @@ export const CouponRepository = {
       Coupon.countDocuments(filter),
     ]);
 
-    console.log(coupons);
-
     const meta = {
       page,
       limit,

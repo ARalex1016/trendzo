@@ -1,11 +1,27 @@
 import { useState } from "react";
 
+// Componnets
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+
 // Lib
 import { cn } from "@/lib/utils";
 
 // Icons
 import NPRIcon from "@/assets/Images/npr-currency-icon.png";
-import { Percent, Infinity, AlertTriangle, CheckCircle2 } from "lucide-react";
+import {
+  Percent,
+  Infinity,
+  AlertTriangle,
+  CheckCircle2,
+  Ellipsis,
+} from "lucide-react";
 
 // Utils
 import { formatCurrency } from "@/utils/CurrencyManager";
@@ -393,5 +409,51 @@ export const CreatedAt = ({
     <p className="text-nowrap text-xs text-foreground/70 font-medium">
       {formatDate(createdAt)}
     </p>
+  );
+};
+
+const DropDownMenuAction = ({
+  onDelete,
+}: {
+  onDelete: () => void | Promise<void>;
+}) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="size-7 flex flex-row justify-center items-center rounded-full p-1.5 hover:bg-accent transition-all duration-300">
+          <Ellipsis />
+        </div>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className="bg-accent/5 backdrop-blur-lg p-3 mr-side-spacing">
+        <DropdownMenuGroup>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={onDelete}
+            className="py-1!"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+export const Actions = ({
+  onDelete,
+}: {
+  onDelete: () => void | Promise<void>;
+}) => {
+  return (
+    <div className="w-full flex justify-center items-center">
+      <DropDownMenuAction onDelete={onDelete} />
+    </div>
   );
 };
