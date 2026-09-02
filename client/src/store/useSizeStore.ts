@@ -6,13 +6,14 @@ import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import type { ApiResponse, ApiErrorResponse } from "@/types/response.type";
 import type { AdminSize } from "@/types/size.types";
+import type { CreateSizeFormValues } from "@/pages/Admin/Attributes/Sizes/CreateSize";
 
 interface CouponStore {
   adminSizes: ApiResponse<AdminSize[]> | null;
 
   getAllSizes: () => Promise<void>;
 
-  createSize: (size: any) => Promise<void>;
+  createSize: (size: CreateSizeFormValues) => Promise<void>;
 
   deleteSize: (sizeId: string) => Promise<void>;
 }
