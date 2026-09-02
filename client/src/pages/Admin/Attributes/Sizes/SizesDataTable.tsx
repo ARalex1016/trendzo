@@ -25,6 +25,9 @@ import {
 // Utils
 import { formatDate } from "@/utils/DateManager";
 
+// Store
+import useSizeStore from "@/store/useSizeStore";
+
 // Types
 import type { SizeDataTable } from "./SizeHistory";
 import type { SizeType } from "@/types/size.types";
@@ -199,7 +202,13 @@ const DropDownMenuAction = ({
 };
 
 export const Actions = ({ sizeId }: { sizeId: SizeDataTable["_id"] }) => {
-  const handleDelete = () => {};
+  const { deleteSize } = useSizeStore();
+
+  const handleDelete = async () => {
+    try {
+      await deleteSize(sizeId);
+    } catch (error) {}
+  };
 
   return (
     <div className="w-full flex justify-center items-center">

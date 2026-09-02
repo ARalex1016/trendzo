@@ -12,6 +12,7 @@ export const createSize = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(201).json({
     status: "success",
+    message: "Size created successfully",
     data: size,
   });
 });
@@ -19,6 +20,7 @@ export const createSize = asyncHandler(async (req: Request, res: Response) => {
 export const getSize = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
+    message: "Size retrieved successfully",
     data: req.targetSize,
   });
 });
@@ -28,6 +30,7 @@ export const updateSize = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(200).json({
     status: "success",
+    message: "Size updated successfully",
     data: updated,
   });
 });
@@ -35,8 +38,9 @@ export const updateSize = asyncHandler(async (req: Request, res: Response) => {
 export const deleteSize = asyncHandler(async (req: Request, res: Response) => {
   await SizeService.deleteSize(req.targetSize!._id);
 
-  res.status(204).json({
+  res.status(200).json({
     status: "success",
+    message: "Size deleted successfully",
     data: null,
   });
 });
@@ -46,6 +50,7 @@ export const listSizes = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(200).json({
     status: "success",
+    message: "Sizes retrieved successfully",
     data: sizes,
   });
 });

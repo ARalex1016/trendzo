@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 // Components
+import SizeFilter from "./SizeFilter";
 import { DataTable } from "@/components/DataTable/DataTable";
 import {
   SizeName,
@@ -142,8 +143,6 @@ const SizeHistory = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { adminSizes, getAllSizes } = useSizeStore();
 
-  console.log(adminSizes);
-
   const [filters, setFilters] = useState<SizeFilters>(DEFAULT_FILTERS);
 
   const [sizes, setSizes] = useState<SizeDataTable[]>([]);
@@ -207,7 +206,7 @@ const SizeHistory = () => {
 
   return (
     <div className="space-y-5">
-      {/* <CouponFilter filters={filters} onFiltersChange={handleFiltersChange} /> */}
+      <SizeFilter filters={filters} onFiltersChange={handleFiltersChange} />
 
       <DataTable
         columns={columns}

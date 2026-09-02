@@ -153,7 +153,7 @@ const useCouponStore = create<CouponStore>((set) => ({
           },
         };
       });
-    } catch (error: unknown) {
+    } catch (error: any) {
       const err = error as AxiosError<ApiErrorResponse>;
 
       throw new Error(err.response?.data?.message || "Failed to delete coupon");
