@@ -130,7 +130,7 @@ export function StatsCard({
             trend ? "order-2" : "order-1",
           )}
         >
-          {title}
+          {title.toLocaleUpperCase()}
         </p>
       </div>
     </div>

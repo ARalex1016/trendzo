@@ -168,11 +168,7 @@ const CouponsHistory = () => {
   const fetchAllCoupons = async () => {
     setLoading(true);
     try {
-      let res = await getAllCoupons();
-
-      if (!res) return;
-
-      if (!res.meta) return;
+      await getAllCoupons();
     } catch (error) {
     } finally {
       setLoading(false);
