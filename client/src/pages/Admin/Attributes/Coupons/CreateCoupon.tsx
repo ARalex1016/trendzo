@@ -22,7 +22,6 @@ import {
   Plus,
   Percent,
   DollarSign,
-  Users,
   CalendarDays,
   Tag,
   Hash,
@@ -58,9 +57,9 @@ export const CreateCoupon = () => {
       showSwipeHandle={false}
       swipeDirection="right"
     >
-      <DrawerTrigger>
-        <CreateCouponButton />
-      </DrawerTrigger>
+      {/* <DrawerTrigger asChild> */}
+      <CreateCouponButton onClick={() => setOpen(true)} />
+      {/* </DrawerTrigger> */}
 
       <DrawerContent className="bg-card flex h-full max-h-screen flex-col">
         {/* Header */}
@@ -505,15 +504,6 @@ function TabButton({ active, onClick, icon, children }: TabButtonProps) {
       {children}
     </button>
   );
-}
-
-/* =========================================================
-   Switch
-========================================================= */
-
-interface SwitchProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
 }
 
 /* =========================================================
