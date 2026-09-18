@@ -41,6 +41,17 @@ const ledgerSchema = new Schema<ILedger>(
 
 ledgerSchema.index({ user: 1, status: 1 });
 
+// Prevent the same source from creating multiple ledger entries
+ledgerSchema.index(
+  {
+    "source.type": 1,
+    "source.id": 1,
+  },
+  {
+    unique: true,
+  },
+);
+
 const Ledger: Model<ILedger> = mongoose.model<ILedger>("Ledger", ledgerSchema);
 
 export default Ledger;

@@ -8,7 +8,7 @@ import Referral, { type IReferral } from "../Models/referral.model.ts";
 import type { PaginatedResult } from "../types/response.types.ts";
 import type { ReferralQueryOptions } from "../Services/referral.service.ts";
 
-const periodOfOrderHold = 0; // days
+const periodOfOrderHold = 7; // days
 
 export const ReferralRepository = {
   async create(

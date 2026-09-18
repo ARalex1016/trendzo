@@ -8,15 +8,18 @@ export const referralCronJob = () => {
   // Every minute
   // cron.schedule("* * * * *", async () => {
   // Every 2 minute
-  cron.schedule("*/2 * * * *", async () => {
-    // Every night at 2 AM
-    // cron.schedule("0 2 * * *", async () => {
+  // cron.schedule("*/2 * * * *", async () => {
+  // Every night at 2 AM
+  cron.schedule("0 2 * * *", async () => {
     try {
       // Runs daily at 2 AM
       const now = new Date();
 
       // get all referrals, that as that has status = "holding", and holdUntil = now
       const expiredReferrals = await ReferralRepository.findHoldExpired(now);
+
+      // console.log("Expired Length: ", expiredReferrals.length);
+      // console.log("Expired Referrals: ", expiredReferrals);
 
       for (const referral of expiredReferrals) {
         // 1. Add reward to ledger

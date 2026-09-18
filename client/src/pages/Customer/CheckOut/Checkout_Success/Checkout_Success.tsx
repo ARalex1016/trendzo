@@ -81,7 +81,7 @@ const Checkout_Success = () => {
       let res = await getOrderByOrderNumber(orderNumber);
 
       if (res) {
-        setOrder(res?.data);
+        setOrder(res);
       }
     } catch (error) {
     } finally {

@@ -82,14 +82,11 @@ const useOrderStore = create<OrderStore>((set) => ({
   getOrderByOrderNumber: async (orderNumber) => {
     try {
       let res = await axiosInstance.get(`/v1/orders/by-number/${orderNumber}`);
-      console.log(res.data.data);
 
       set({ orderDetails: res.data.data });
 
       return res.data.data;
     } catch (error: any) {
-      console.log(error);
-
       throw new Error(error.message);
     }
   },
