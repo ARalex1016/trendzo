@@ -5,10 +5,12 @@ import { ReferralRepository } from "../Repositories/referral.repository.ts";
 import { LedgerRepository } from "../Repositories/ledger.repository.ts";
 
 export const referralCronJob = () => {
-  // Every night at 2 AM
-  // cron.schedule("0 2 * * *", async () => {
   // Every minute
-  cron.schedule("* * * * *", async () => {
+  // cron.schedule("* * * * *", async () => {
+  // Every 2 minute
+  cron.schedule("*/2 * * * *", async () => {
+    // Every night at 2 AM
+    // cron.schedule("0 2 * * *", async () => {
     try {
       // Runs daily at 2 AM
       const now = new Date();
