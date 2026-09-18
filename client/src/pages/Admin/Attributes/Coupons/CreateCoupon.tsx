@@ -120,7 +120,7 @@ const CreateCouponButton = forwardRef<
     <button
       ref={ref}
       {...props}
-      className="text-sm sm:text-base text-nowrap font-medium bg-primary/80 rounded-lg flex flex-row items-center gap-x-1 sm:gap-x-2 p-2.5 sm:px-4 sm:py-1.5 hover:bg-primary hover:-translate-y-1 transition-all duration-200"
+      className="text-sm sm:text-base text-nowrap font-medium bg-primary/80 rounded-lg flex flex-row items-center gap-x-1 sm:gap-x-2 p-2.5 sm:px-4 sm:py-1.5 hover:bg-primary hover:-translate-y-0.5 transition-all duration-200"
     >
       <Plus className="size-6 sm:size-5" />
 

@@ -25,7 +25,7 @@ import OrderManagement from "@/pages/Admin/OrderManagement/OrderManagement/Order
 import AdminOrderDetails from "@/pages/Admin/OrderManagement/AdminOrderDetails/AdminOrderDetails";
 import UserManagement from "@/pages/Admin/UserManagement/UserManagement";
 import CouponsManagement from "@/pages/Admin/Attributes/Coupons/CouponsManagement";
-import Categories from "@/pages/Admin/Attributes/Categories/Categories";
+import AdminCategories from "@/pages/Admin/Attributes/Categories/AdminCategories";
 import Sizes from "@/pages/Admin/Attributes/Sizes/Sizes";
 
 // Auth
@@ -186,7 +186,7 @@ const router = createBrowserRouter([
               },
               {
                 path: ROUTES.CATEGORY,
-                element: <Categories />,
+                element: <AdminCategories />,
               },
               {
                 path: ROUTES.SIZE,

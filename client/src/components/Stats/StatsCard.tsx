@@ -42,9 +42,9 @@ const variants = {
   },
 
   info: {
-    card: "bg-cyan-500/10 border-cyan-500/20 hover:bg-cyan-500/15 hover:border-cyan-500/25",
-    icon: "text-cyan-500/80 group-hover:text-cyan-500",
-    value: "text-cyan-500/80 group-hover:text-cyan-500",
+    card: "bg-info/10 border-info/20 hover:bg-info/15 hover:border-info/25",
+    icon: "text-info/80 group-hover:text-info",
+    value: "text-info/80 group-hover:text-info",
   },
 } as const;
 
