@@ -937,6 +937,10 @@ export const OrderService = {
       throw new InvalidOrderTransitionError(order.status, nextStatus);
     }
 
+    if (updatedOrder.status === "delivered") {
+      ReferralService.holdReferral(updatedOrder.user, updatedOrder.deliveredAt);
+    }
+
     return updatedOrder;
   },
 

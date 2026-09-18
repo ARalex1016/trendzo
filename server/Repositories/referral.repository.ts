@@ -59,10 +59,10 @@ export const ReferralRepository = {
   // Mark referral as holding (after delivery)
   async markHolding(
     referralId: Types.ObjectId,
-    deliveredAt: Date,
+    deliveredAt?: Date,
     session?: ClientSession,
   ) {
-    const holdUntil = new Date(deliveredAt);
+    const holdUntil = new Date(deliveredAt ?? Date.now());
     holdUntil.setDate(holdUntil.getDate() + periodOfOrderHold);
 
     return Referral.findByIdAndUpdate(

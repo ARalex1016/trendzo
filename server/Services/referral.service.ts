@@ -82,7 +82,7 @@ export const ReferralService = {
   },
 
   // Mark referral as holding after delivery
-  async holdReferral(inviteeId: Types.ObjectId, deliveredAt: Date) {
+  async holdReferral(inviteeId: Types.ObjectId, deliveredAt?: Date) {
     const referral = await ReferralRepository.findByInvitee(inviteeId);
     if (!referral) return null;
 
