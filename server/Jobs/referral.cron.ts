@@ -6,9 +6,9 @@ import { LedgerRepository } from "../Repositories/ledger.repository.ts";
 
 export const referralCronJob = () => {
   // Every night at 2 AM
-  cron.schedule("0 2 * * *", async () => {
-    // Every minute
-    // cron.schedule("* * * * *", async () => {
+  // cron.schedule("0 2 * * *", async () => {
+  // Every minute
+  cron.schedule("* * * * *", async () => {
     try {
       // Runs daily at 2 AM
       const now = new Date();
@@ -33,7 +33,7 @@ export const referralCronJob = () => {
       }
 
       console.log(
-        `[ReferralCron] Processed ${expiredReferrals.length} referrals`
+        `[ReferralCron] Processed ${expiredReferrals.length} referrals`,
       );
     } catch (error) {
       console.error("[ReferralCron] Error:", error);
